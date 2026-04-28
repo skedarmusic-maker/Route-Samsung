@@ -274,7 +274,7 @@ function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
       }
 
       const distToHub = (firstCoords.lat && firstCoords.lng) 
-        ? computeDistance(consultorCoords, firstCoords) 
+        ? computeDistance(consultorCoords, firstCoords as { lat: number; lng: number }) 
         : 0;
       
       // Limite de 350km (Haversine) para considerar voo, já que a distância de estrada costuma ser 30% maior.
@@ -302,7 +302,7 @@ function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
             diaEstimado += 5; 
             curr = { lat, lng };
           } else {
-            diaEstimado += computeDistance(curr, { lat, lng });
+            diaEstimado += computeDistance(curr as { lat: number; lng: number }, { lat, lng } as { lat: number; lng: number });
             curr = { lat, lng };
           }
         }
@@ -310,7 +310,7 @@ function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
 
       // Volta para casa apenas se não for avião. Se for avião, volta para o hotel (5km)
       if (!goesByPlane) {
-        diaEstimado += computeDistance(curr, consultorCoords);
+        diaEstimado += computeDistance(curr as { lat: number; lng: number }, consultorCoords);
       } else {
         diaEstimado += 5;
       }

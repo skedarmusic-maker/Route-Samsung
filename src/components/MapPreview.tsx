@@ -25,7 +25,7 @@ let mapsApiPromise: Promise<void> | null = null;
 function loadMapsApi(): Promise<void> {
   if (!mapsApiPromise) {
     mapsApiPromise = (async () => {
-      setOptions({ key: GOOGLE_KEY, version: 'weekly' });
+      setOptions({ key: GOOGLE_KEY });
       await importLibrary('maps');
       await importLibrary('marker');
     })();

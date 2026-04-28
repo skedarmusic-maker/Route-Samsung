@@ -12,6 +12,7 @@ export interface ConsultorLocal {
   endereco: string;
   lat: number;
   lng: number;
+  cidade?: string;
 }
 
 export interface Loja {

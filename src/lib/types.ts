@@ -10,6 +10,8 @@ export interface LojaVisita {
   checkOut: string;
   tipo: 'local' | 'viagem';
   estadoViagem?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface RoteiroDia {
@@ -17,6 +19,7 @@ export interface RoteiroDia {
   diaSemana: string;
   feriado?: string;
   lojas: LojaVisita[];
+  aviso?: string;
 }
 
 export interface ResultadoRoteiro {

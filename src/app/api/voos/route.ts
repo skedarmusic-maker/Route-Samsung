@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
+  let origin: string | null = null;
+  let destination: string | null = null;
+  let date: string | null = null;
+
   try {
     const { searchParams } = new URL(req.url);
-    const origin = searchParams.get('origin');
-    const destination = searchParams.get('destination');
-    const date = searchParams.get('date');
+    origin = searchParams.get('origin');
+    destination = searchParams.get('destination');
+    date = searchParams.get('date');
 
     if (!origin || !destination || !date) {
       return NextResponse.json({ error: 'Parâmetros ausentes' }, { status: 400 });
@@ -93,6 +97,9 @@ export async function GET(req: Request) {
     return NextResponse.json({ isMock: false, offers });
 
   } catch (error: any) {
+    if (!origin || !destination || !date) {
+      return NextResponse.json({ error: 'Erro interno ou parâmetros ausentes' }, { status: 400 });
+    }
     return NextResponse.json({
       isMock: true,
       offers: generateMockFlights(origin, destination, date)
