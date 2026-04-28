@@ -679,6 +679,7 @@ export default function ConfigurationPanel() {
   const [mes, setMes] = useState('');
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
+  const [rotaBase, setRotaBase] = useState('');
 
   useEffect(() => {
     setDataInicio('');
@@ -936,6 +937,7 @@ export default function ConfigurationPanel() {
         viagem,
         dataInicio,
         dataFim,
+        rotaBase,
       });
       setResultado(res.data);
       setConsultorInfo(consultores.find(c => c.nome === selectedConsultor));
@@ -1002,7 +1004,7 @@ export default function ConfigurationPanel() {
                   <span className="flex items-center gap-2"><Users className="w-4 h-4" /> Consultor</span>
                   {selectedConsultor && (
                     <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">
-                      {lojas.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).length} LOJAS NO TOTAL
+                      {lojas.filter(l => normalize(l.consultor) === normalize(rotaBase || selectedConsultor)).length} LOJAS NA ROTA
                     </span>
                   )}
                 </label>
@@ -1031,6 +1033,29 @@ export default function ConfigurationPanel() {
                   setDataFim(end);
                 }} 
               />
+            </div>
+
+            <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+              <label className="text-sm font-medium text-gray-700 flex items-center justify-between mb-2">
+                <span className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-500" /> Cobrir Rota De (Opcional - Férias/Afastamento)</span>
+                {rotaBase && (
+                  <span className="text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold">
+                    ATENÇÃO: ROTEIRO BASEADO NA ROTA DE {rotaBase.split(' ')[0]}
+                  </span>
+                )}
+              </label>
+              <select value={rotaBase} onChange={e => setRotaBase(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white text-sm">
+                <option value="">Nenhuma (Consultor atende a própria rota)</option>
+                {consultores.map(c => {
+                  if (c.nome === selectedConsultor) return null;
+                  const countLojas = lojas.filter(l => normalize(l.consultor) === normalize(c.nome)).length;
+                  return (
+                    <option key={c.nome} value={c.nome}>
+                      {c.nome} ({countLojas} lojas)
+                    </option>
+                  );
+                })}
+              </select>
             </div>
             <div className={`mt-5 flex flex-col gap-4 p-4 rounded-lg border transition-all ${viagem ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200 hover:border-blue-200'}`}>
               <div className="flex items-center gap-4 cursor-pointer" onClick={() => setViagem(!viagem)}>

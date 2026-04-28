@@ -634,7 +634,8 @@ export async function POST(request: Request) {
       selectedStatus, 
       viagem,
       dataInicio,
-      dataFim
+      dataFim,
+      rotaBase
     } = body;
     if (!consultor || !mes || !ano) return NextResponse.json({ error: 'Parâmetros obrigatórios: consultor, mes, ano' }, { status: 400 });
 
@@ -642,7 +643,8 @@ export async function POST(request: Request) {
     if (errorC || !dataC) return NextResponse.json({ error: `Consultor "${consultor}" não encontrado.` }, { status: 404 });
 
     const consultorData: ConsultorLocal = { nome: dataC.nome, endereco: dataC.endereco_completo, lat: dataC.lat, lng: dataC.lng };
-    const { data: dataL, error: errorL } = await supabase.from('lojas').select('*').eq('consultor_vinculado', consultor);
+    const targetRota = rotaBase || consultor;
+    const { data: dataL, error: errorL } = await supabase.from('lojas').select('*').eq('consultor_vinculado', targetRota);
     if (errorL) return NextResponse.json({ error: 'Erro ao buscar lojas.' }, { status: 500 });
 
     // Buscar histórico de visitas para o filtro de período
@@ -663,7 +665,7 @@ export async function POST(request: Request) {
     const startOfMonth = new Date(ano, mes - 1, 1);
 
     const lojasFiltradas = todasLojas.filter(l => {
-      if (l.consultor !== consultor) return false;
+      if (l.consultor !== targetRota) return false;
       if (selectedStatus && l.status.toUpperCase().trim() !== selectedStatus.toUpperCase().trim()) return false;
       if (selectedClientes?.length > 0 && !selectedClientes.includes(l.cliente)) return false;
       if (selectedClusters?.length > 0 && !selectedClusters.includes(l.cluster)) return false;
