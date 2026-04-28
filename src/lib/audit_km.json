@@ -1,0 +1,2326 @@
+{
+  "ALEXANDRE RIBEIRO LIMA": {
+    "total_declared_km": 7241.370000000001,
+    "total_calculated_km": 5455.075997275715,
+    "days": [
+      {
+        "date": "02/03/2026",
+        "declared": 347.75,
+        "calculated": 304.7635773829437,
+        "diff": 42.98642261705629,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 410.57,
+        "calculated": 444.1363020386134,
+        "diff": -33.5663020386134,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 414.47,
+        "calculated": 451.5260134597598,
+        "diff": -37.056013459759754,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 398.22,
+        "calculated": 0.0,
+        "diff": 398.22,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 41.94,
+        "calculated": 10.961317746139933,
+        "diff": 30.978682253860065,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 474.93,
+        "calculated": 451.5260134597598,
+        "diff": 23.403986540240226,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 414.81,
+        "calculated": 304.7635773829437,
+        "diff": 110.0464226170563,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 404.64,
+        "calculated": 444.1363020386134,
+        "diff": -39.49630203861341,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 29.82,
+        "calculated": 10.961317746139933,
+        "diff": 18.858682253860067,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 365.31,
+        "calculated": 304.7635773829437,
+        "diff": 60.546422617056294,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 352.38,
+        "calculated": 304.7635773829437,
+        "diff": 47.61642261705629,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 407.24,
+        "calculated": 444.1363020386134,
+        "diff": -36.896302038613385,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 486.5,
+        "calculated": 451.5260134597598,
+        "diff": 34.97398654024022,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 409.19,
+        "calculated": 0.0,
+        "diff": 409.19,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 157.0,
+        "calculated": 10.961317746139933,
+        "diff": 146.03868225386006,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 364.69,
+        "calculated": 304.7635773829437,
+        "diff": 59.92642261705629,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 413.66,
+        "calculated": 444.1363020386134,
+        "diff": -30.47630203861337,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 525.44,
+        "calculated": 451.5260134597598,
+        "diff": 73.91398654024027,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 405.06,
+        "calculated": 0.0,
+        "diff": 405.06,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 35.35,
+        "calculated": 10.961317746139933,
+        "diff": 24.38868225386007,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 366.48,
+        "calculated": 304.7635773829437,
+        "diff": 61.71642261705631,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 15.92,
+        "calculated": 0.0,
+        "diff": 15.92,
+        "stores": 0,
+        "status": "Sem visitas"
+      }
+    ]
+  },
+  "DIOGO DO NASCIMENTO SANTOS": {
+    "total_declared_km": 2907.77,
+    "total_calculated_km": 6763.781278782001,
+    "days": [
+      {
+        "date": "02/03/2026",
+        "declared": 36.47,
+        "calculated": 81.69786228229741,
+        "diff": -45.22786228229741,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "02/03/2026",
+        "declared": 13.63,
+        "calculated": 81.69786228229741,
+        "diff": -68.06786228229741,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "02/03/2026",
+        "declared": 20.38,
+        "calculated": 81.69786228229741,
+        "diff": -61.31786228229741,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 31.18,
+        "calculated": 811.0917032296876,
+        "diff": -779.9117032296876,
+        "stores": 3,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 30.85,
+        "calculated": 811.0917032296876,
+        "diff": -780.2417032296876,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 24.78,
+        "calculated": 78.06224418227829,
+        "diff": -53.28224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 27.17,
+        "calculated": 78.06224418227829,
+        "diff": -50.89224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 46.09,
+        "calculated": 78.06224418227829,
+        "diff": -31.97224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 49.01,
+        "calculated": 92.9104405084118,
+        "diff": -43.9004405084118,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 20.8,
+        "calculated": 92.9104405084118,
+        "diff": -72.1104405084118,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 31.44,
+        "calculated": 92.9104405084118,
+        "diff": -61.4704405084118,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 25.15,
+        "calculated": 78.06224418227829,
+        "diff": -52.91224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 20.72,
+        "calculated": 78.06224418227829,
+        "diff": -57.34224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 25.88,
+        "calculated": 89.84676241872906,
+        "diff": -63.96676241872906,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 29.33,
+        "calculated": 89.84676241872906,
+        "diff": -60.51676241872906,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 61.12,
+        "calculated": 89.84676241872906,
+        "diff": -28.72676241872906,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 29.83,
+        "calculated": 78.06224418227829,
+        "diff": -48.23224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 60.78,
+        "calculated": 78.06224418227829,
+        "diff": -17.28224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 83.23,
+        "calculated": 78.06224418227829,
+        "diff": 5.167755817721712,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 30.1,
+        "calculated": 1051.0185020693398,
+        "diff": -1020.9185020693398,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 32.25,
+        "calculated": 1091.6094652535069,
+        "diff": -1059.3594652535069,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 60.73,
+        "calculated": 78.06224418227829,
+        "diff": -17.332244182278295,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 23.9,
+        "calculated": 78.06224418227829,
+        "diff": -54.16224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 38.93,
+        "calculated": 78.06224418227829,
+        "diff": -39.13224418227829,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 110.41,
+        "calculated": 78.06224418227829,
+        "diff": 32.347755817721705,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 110.96,
+        "calculated": 78.06224418227829,
+        "diff": 32.8977558177217,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 121.03,
+        "calculated": 78.06224418227829,
+        "diff": 42.96775581772171,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 167.2,
+        "calculated": 92.91044050841178,
+        "diff": 74.28955949158821,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 123.99,
+        "calculated": 78.06224418227829,
+        "diff": 45.9277558177217,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 376.97,
+        "calculated": 0.0,
+        "diff": 376.97,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 343.98,
+        "calculated": 586.8901705626813,
+        "diff": -242.9101705626813,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 330.43,
+        "calculated": 117.04808491934514,
+        "diff": 213.38191508065486,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 134.24,
+        "calculated": 81.69786228229741,
+        "diff": 52.5421377177026,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 124.4,
+        "calculated": 78.06224418227829,
+        "diff": 46.337755817721714,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 110.41,
+        "calculated": 78.06224418227829,
+        "diff": 32.347755817721705,
+        "stores": 1,
+        "status": "Ok"
+      }
+    ]
+  },
+  "LIEDY AQUINO GOMES DOS SANTOS": {
+    "total_declared_km": 2315.289999999999,
+    "total_calculated_km": 3028.6298595207923,
+    "days": [
+      {
+        "date": "02/03/2026",
+        "declared": 15.92,
+        "calculated": 0.0,
+        "diff": 15.92,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "02/03/2026",
+        "declared": 13.43,
+        "calculated": 0.0,
+        "diff": 13.43,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "02/03/2026",
+        "declared": 22.98,
+        "calculated": 0.0,
+        "diff": 22.98,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 27.46,
+        "calculated": 0.0,
+        "diff": 27.46,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 13.51,
+        "calculated": 0.0,
+        "diff": 13.51,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 30.1,
+        "calculated": 0.0,
+        "diff": 30.1,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 21.65,
+        "calculated": 0.0,
+        "diff": 21.65,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 5.97,
+        "calculated": 0.0,
+        "diff": 5.97,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 22.36,
+        "calculated": 0.0,
+        "diff": 22.36,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 135.17,
+        "calculated": 229.76914855431664,
+        "diff": -94.59914855431666,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 2.55,
+        "calculated": 229.76914855431664,
+        "diff": -227.21914855431663,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 123.35,
+        "calculated": 229.76914855431664,
+        "diff": -106.41914855431665,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 25.9,
+        "calculated": 0.0,
+        "diff": 25.9,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 9.02,
+        "calculated": 0.0,
+        "diff": 9.02,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 29.99,
+        "calculated": 0.0,
+        "diff": 29.99,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 18.26,
+        "calculated": 0.0,
+        "diff": 18.26,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 11.82,
+        "calculated": 0.0,
+        "diff": 11.82,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 24.07,
+        "calculated": 0.0,
+        "diff": 24.07,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 30.56,
+        "calculated": 0.0,
+        "diff": 30.56,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 14.55,
+        "calculated": 0.0,
+        "diff": 14.55,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 28.79,
+        "calculated": 0.0,
+        "diff": 28.79,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 117.95,
+        "calculated": 246.04740924822522,
+        "diff": -128.09740924822523,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 2.7,
+        "calculated": 246.04740924822522,
+        "diff": -243.34740924822523,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 4.06,
+        "calculated": 246.04740924822522,
+        "diff": -241.98740924822522,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 115.55,
+        "calculated": 246.04740924822522,
+        "diff": -130.4974092482252,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 17.4,
+        "calculated": 0.0,
+        "diff": 17.4,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 18.38,
+        "calculated": 0.0,
+        "diff": 18.38,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 19.88,
+        "calculated": 0.0,
+        "diff": 19.88,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 31.64,
+        "calculated": 0.0,
+        "diff": 31.64,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 22.53,
+        "calculated": 0.0,
+        "diff": 22.53,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 62.4,
+        "calculated": 102.83175818671096,
+        "diff": -40.43175818671096,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 57.1,
+        "calculated": 102.83175818671096,
+        "diff": -45.731758186710955,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 5.89,
+        "calculated": 102.83175818671096,
+        "diff": -96.94175818671096,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 28.29,
+        "calculated": 0.0,
+        "diff": 28.29,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 12.61,
+        "calculated": 0.0,
+        "diff": 12.61,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 28.93,
+        "calculated": 0.0,
+        "diff": 28.93,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 18.08,
+        "calculated": 0.0,
+        "diff": 18.08,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 20.35,
+        "calculated": 0.0,
+        "diff": 20.35,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 139.35,
+        "calculated": 0.0,
+        "diff": 139.35,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 123.71,
+        "calculated": 0.0,
+        "diff": 123.71,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 27.25,
+        "calculated": 0.0,
+        "diff": 27.25,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 12.89,
+        "calculated": 0.0,
+        "diff": 12.89,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 26.66,
+        "calculated": 0.0,
+        "diff": 26.66,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 22.12,
+        "calculated": 0.0,
+        "diff": 22.12,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 24.61,
+        "calculated": 0.0,
+        "diff": 24.61,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 26.79,
+        "calculated": 0.0,
+        "diff": 26.79,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 19.39,
+        "calculated": 0.0,
+        "diff": 19.39,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 28.58,
+        "calculated": 0.0,
+        "diff": 28.58,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 27.14,
+        "calculated": 0.0,
+        "diff": 27.14,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 13.22,
+        "calculated": 0.0,
+        "diff": 13.22,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 26.32,
+        "calculated": 0.0,
+        "diff": 26.32,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 146.09,
+        "calculated": 246.04740924822522,
+        "diff": -99.95740924822522,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 3.79,
+        "calculated": 246.04740924822522,
+        "diff": -242.25740924822523,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 151.45,
+        "calculated": 246.04740924822522,
+        "diff": -94.59740924822523,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 25.9,
+        "calculated": 102.83175818671096,
+        "diff": -76.93175818671097,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 86.67,
+        "calculated": 102.83175818671096,
+        "diff": -16.161758186710955,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 62.73,
+        "calculated": 102.83175818671096,
+        "diff": -40.10175818671096,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 15.4,
+        "calculated": 0.0,
+        "diff": 15.4,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 9.93,
+        "calculated": 0.0,
+        "diff": 9.93,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 26.04,
+        "calculated": 0.0,
+        "diff": 26.04,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 28.66,
+        "calculated": 0.0,
+        "diff": 28.66,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 29.45,
+        "calculated": 0.0,
+        "diff": 29.45,
+        "stores": 0,
+        "status": "Sem visitas"
+      }
+    ]
+  },
+  "LUIZ FALCAO DE SOUZA NETO": {
+    "total_declared_km": 2499.4499999999994,
+    "total_calculated_km": 9475.33475741527,
+    "days": [
+      {
+        "date": "02/03/2026",
+        "declared": 33.76,
+        "calculated": 1613.2171006257752,
+        "diff": -1579.4571006257752,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 31.34,
+        "calculated": 1613.2171006257752,
+        "diff": -1581.8771006257753,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 120.3,
+        "calculated": 233.94759629550384,
+        "diff": -113.64759629550385,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 10.92,
+        "calculated": 233.94759629550384,
+        "diff": -223.02759629550386,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 120.29,
+        "calculated": 233.94759629550384,
+        "diff": -113.65759629550384,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 27.11,
+        "calculated": 41.432224012947906,
+        "diff": -14.322224012947906,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 4.41,
+        "calculated": 41.432224012947906,
+        "diff": -37.0222240129479,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 29.45,
+        "calculated": 41.432224012947906,
+        "diff": -11.982224012947906,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 32.21,
+        "calculated": 41.432224012947906,
+        "diff": -9.222224012947905,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 8.43,
+        "calculated": 41.432224012947906,
+        "diff": -33.002224012947906,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 28.82,
+        "calculated": 41.432224012947906,
+        "diff": -12.612224012947905,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 119.8,
+        "calculated": 233.94759629550384,
+        "diff": -114.14759629550385,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 11.77,
+        "calculated": 233.94759629550384,
+        "diff": -222.17759629550383,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 108.08,
+        "calculated": 233.94759629550384,
+        "diff": -125.86759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 29.91,
+        "calculated": 58.32266049847849,
+        "diff": -28.41266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 28.8,
+        "calculated": 58.32266049847849,
+        "diff": -29.52266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 119.17,
+        "calculated": 233.94759629550384,
+        "diff": -114.77759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 111.69,
+        "calculated": 233.94759629550384,
+        "diff": -122.25759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 25.97,
+        "calculated": 41.432224012947906,
+        "diff": -15.462224012947907,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 10.15,
+        "calculated": 41.432224012947906,
+        "diff": -31.282224012947907,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 36.26,
+        "calculated": 41.432224012947906,
+        "diff": -5.172224012947908,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 28.22,
+        "calculated": 58.32266049847849,
+        "diff": -30.102660498478492,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 26.78,
+        "calculated": 58.32266049847849,
+        "diff": -31.54266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 111.49,
+        "calculated": 233.94759629550384,
+        "diff": -122.45759629550385,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 25.17,
+        "calculated": 233.94759629550384,
+        "diff": -208.77759629550383,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 104.25,
+        "calculated": 233.94759629550384,
+        "diff": -129.69759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 27.55,
+        "calculated": 41.432224012947906,
+        "diff": -13.882224012947905,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 4.61,
+        "calculated": 41.432224012947906,
+        "diff": -36.822224012947906,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 5.86,
+        "calculated": 41.432224012947906,
+        "diff": -35.572224012947906,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 27.31,
+        "calculated": 41.432224012947906,
+        "diff": -14.122224012947907,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 112.47,
+        "calculated": 233.94759629550384,
+        "diff": -121.47759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 9.29,
+        "calculated": 233.94759629550384,
+        "diff": -224.65759629550385,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 117.5,
+        "calculated": 233.94759629550384,
+        "diff": -116.44759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 27.94,
+        "calculated": 41.432224012947906,
+        "diff": -13.492224012947904,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 3.58,
+        "calculated": 41.432224012947906,
+        "diff": -37.85222401294791,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 28.39,
+        "calculated": 41.432224012947906,
+        "diff": -13.042224012947905,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 30.11,
+        "calculated": 58.32266049847849,
+        "diff": -28.212660498478492,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 6.29,
+        "calculated": 58.32266049847849,
+        "diff": -52.03266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 28.44,
+        "calculated": 58.32266049847849,
+        "diff": -29.88266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 30.75,
+        "calculated": 58.32266049847849,
+        "diff": -27.57266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 27.86,
+        "calculated": 58.32266049847849,
+        "diff": -30.462660498478492,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 28.26,
+        "calculated": 58.32266049847849,
+        "diff": -30.06266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 4.61,
+        "calculated": 58.32266049847849,
+        "diff": -53.71266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 28.16,
+        "calculated": 58.32266049847849,
+        "diff": -30.16266049847849,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 117.56,
+        "calculated": 233.94759629550384,
+        "diff": -116.38759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 7.72,
+        "calculated": 233.94759629550384,
+        "diff": -226.22759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 111.27,
+        "calculated": 233.94759629550384,
+        "diff": -122.67759629550385,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 111.17,
+        "calculated": 233.94759629550384,
+        "diff": -122.77759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 17.59,
+        "calculated": 233.94759629550384,
+        "diff": -216.35759629550384,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 114.41,
+        "calculated": 233.94759629550384,
+        "diff": -119.53759629550385,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 32.76,
+        "calculated": 41.432224012947906,
+        "diff": -8.672224012947908,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 8.49,
+        "calculated": 41.432224012947906,
+        "diff": -32.942224012947904,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 30.16,
+        "calculated": 41.432224012947906,
+        "diff": -11.272224012947905,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 29.98,
+        "calculated": 41.432224012947906,
+        "diff": -11.452224012947905,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 24.81,
+        "calculated": 41.432224012947906,
+        "diff": -16.622224012947907,
+        "stores": 1,
+        "status": "Ok"
+      }
+    ]
+  },
+  "PAULO SERGIO MARQUES DA SILVA": {
+    "total_declared_km": 3144.3199999999993,
+    "total_calculated_km": 20622.78078137911,
+    "days": [
+      {
+        "date": "02/03/2026",
+        "declared": 39.06,
+        "calculated": 105.27955212027794,
+        "diff": -66.21955212027794,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "02/03/2026",
+        "declared": 37.35,
+        "calculated": 105.27955212027794,
+        "diff": -67.92955212027795,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "02/03/2026",
+        "declared": 68.14,
+        "calculated": 105.27955212027794,
+        "diff": -37.13955212027794,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 20.93,
+        "calculated": 0.0,
+        "diff": 20.93,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 27.4,
+        "calculated": 0.0,
+        "diff": 27.4,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 31.24,
+        "calculated": 0.0,
+        "diff": 31.24,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 11.33,
+        "calculated": 2310.4536584422303,
+        "diff": -2299.1236584422304,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 15.03,
+        "calculated": 2310.4536584422303,
+        "diff": -2295.42365844223,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 8.59,
+        "calculated": 2149.7814121434562,
+        "diff": -2141.191412143456,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 208.39,
+        "calculated": 2149.7814121434562,
+        "diff": -1941.3914121434564,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 13.68,
+        "calculated": 2149.7814121434562,
+        "diff": -2136.1014121434564,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 0.58,
+        "calculated": 2149.7814121434562,
+        "diff": -2149.2014121434563,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 3.38,
+        "calculated": 2149.7814121434562,
+        "diff": -2146.401412143456,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 153.25,
+        "calculated": 255.97205461349546,
+        "diff": -102.72205461349546,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 4.79,
+        "calculated": 255.97205461349546,
+        "diff": -251.18205461349547,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 154.35,
+        "calculated": 255.97205461349546,
+        "diff": -101.62205461349546,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 65.63,
+        "calculated": 107.41564856610026,
+        "diff": -41.785648566100264,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 27.82,
+        "calculated": 107.41564856610026,
+        "diff": -79.59564856610027,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 61.78,
+        "calculated": 107.41564856610026,
+        "diff": -45.63564856610026,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 19.22,
+        "calculated": 23.414330091617312,
+        "diff": -4.194330091617314,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 13.45,
+        "calculated": 23.414330091617312,
+        "diff": -9.964330091617313,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 28.7,
+        "calculated": 0.0,
+        "diff": 28.7,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 18.27,
+        "calculated": 0.0,
+        "diff": 18.27,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 14.87,
+        "calculated": 0.0,
+        "diff": 14.87,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 215.37,
+        "calculated": 390.7891116106556,
+        "diff": -175.4191116106556,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 79.96,
+        "calculated": 390.7891116106556,
+        "diff": -310.8291116106556,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 145.23,
+        "calculated": 390.7891116106556,
+        "diff": -245.5591116106556,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 27.52,
+        "calculated": 0.0,
+        "diff": 27.52,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 14.18,
+        "calculated": 0.0,
+        "diff": 14.18,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 15.39,
+        "calculated": 0.0,
+        "diff": 15.39,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 13.8,
+        "calculated": 23.414330091617312,
+        "diff": -9.614330091617312,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 45.42,
+        "calculated": 23.414330091617312,
+        "diff": 22.00566990838269,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 65.52,
+        "calculated": 23.414330091617312,
+        "diff": 42.10566990838268,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 66.27,
+        "calculated": 107.41564856610026,
+        "diff": -41.14564856610026,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 24.8,
+        "calculated": 107.41564856610026,
+        "diff": -82.61564856610026,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 62.22,
+        "calculated": 107.41564856610026,
+        "diff": -45.19564856610026,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 22.85,
+        "calculated": 62.86657225168517,
+        "diff": -40.01657225168517,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 20.6,
+        "calculated": 62.86657225168517,
+        "diff": -42.26657225168517,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 69.0,
+        "calculated": 62.86657225168517,
+        "diff": 6.13342774831483,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 61.61,
+        "calculated": 107.41564856610026,
+        "diff": -45.80564856610026,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 24.62,
+        "calculated": 107.41564856610026,
+        "diff": -82.79564856610025,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 61.68,
+        "calculated": 107.41564856610026,
+        "diff": -45.73564856610026,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 21.7,
+        "calculated": 0.0,
+        "diff": 21.7,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 27.77,
+        "calculated": 0.0,
+        "diff": 27.77,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 28.99,
+        "calculated": 0.0,
+        "diff": 28.99,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 68.79,
+        "calculated": 62.86657225168517,
+        "diff": 5.923427748314836,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 19.3,
+        "calculated": 62.86657225168517,
+        "diff": -43.56657225168517,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 21.54,
+        "calculated": 62.86657225168517,
+        "diff": -41.32657225168517,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 199.07,
+        "calculated": 255.97205461349546,
+        "diff": -56.902054613495466,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 5.39,
+        "calculated": 255.97205461349546,
+        "diff": -250.58205461349547,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 152.19,
+        "calculated": 255.97205461349546,
+        "diff": -103.78205461349546,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 28.59,
+        "calculated": 0.0,
+        "diff": 28.59,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 24.52,
+        "calculated": 0.0,
+        "diff": 24.52,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 20.63,
+        "calculated": 0.0,
+        "diff": 20.63,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 26.53,
+        "calculated": 0.0,
+        "diff": 26.53,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 31.49,
+        "calculated": 0.0,
+        "diff": 31.49,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 150.35,
+        "calculated": 255.97205461349546,
+        "diff": -105.62205461349546,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 4.89,
+        "calculated": 255.97205461349546,
+        "diff": -251.08205461349547,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "30/03/2026",
+        "declared": 201.05,
+        "calculated": 255.97205461349546,
+        "diff": -54.92205461349545,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 13.85,
+        "calculated": 0.0,
+        "diff": 13.85,
+        "stores": 0,
+        "status": "Sem visitas"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 14.41,
+        "calculated": 0.0,
+        "diff": 14.41,
+        "stores": 0,
+        "status": "Sem visitas"
+      }
+    ]
+  },
+  "TATIANE SOUZA DOS SANTOS": {
+    "total_declared_km": 2428.8500000000004,
+    "total_calculated_km": 4738.922693953833,
+    "days": [
+      {
+        "date": "02/03/2026",
+        "declared": 118.93,
+        "calculated": 248.05138134860462,
+        "diff": -129.12138134860461,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "02/03/2026",
+        "declared": 124.19,
+        "calculated": 248.05138134860462,
+        "diff": -123.86138134860462,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 7.23,
+        "calculated": 1.9703878800321,
+        "diff": 5.2596121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 5.91,
+        "calculated": 1.9703878800321,
+        "diff": 3.9396121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "03/03/2026",
+        "declared": 5.22,
+        "calculated": 1.9703878800321,
+        "diff": 3.2496121199678996,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 1.97,
+        "calculated": 248.05138134860462,
+        "diff": -246.08138134860462,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 126.32,
+        "calculated": 248.05138134860462,
+        "diff": -121.73138134860463,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "04/03/2026",
+        "declared": 118.8,
+        "calculated": 248.05138134860462,
+        "diff": -129.25138134860464,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 5.07,
+        "calculated": 1.9703878800321,
+        "diff": 3.0996121199679,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 18.82,
+        "calculated": 1.9703878800321,
+        "diff": 16.8496121199679,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "05/03/2026",
+        "declared": 15.3,
+        "calculated": 1.9703878800321,
+        "diff": 13.329612119967901,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 1.91,
+        "calculated": 58.85239076834014,
+        "diff": -56.94239076834015,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 42.47,
+        "calculated": 58.85239076834014,
+        "diff": -16.382390768340144,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "06/03/2026",
+        "declared": 32.27,
+        "calculated": 58.85239076834014,
+        "diff": -26.58239076834014,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 1.93,
+        "calculated": 1.9703878800321,
+        "diff": -0.04038788003210003,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 12.12,
+        "calculated": 1.9703878800321,
+        "diff": 10.1496121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "09/03/2026",
+        "declared": 10.28,
+        "calculated": 1.9703878800321,
+        "diff": 8.3096121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 1.74,
+        "calculated": 1.9703878800321,
+        "diff": -0.23038788003209998,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 104.17,
+        "calculated": 1.9703878800321,
+        "diff": 102.1996121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "10/03/2026",
+        "declared": 122.97,
+        "calculated": 1.9703878800321,
+        "diff": 120.99961211996789,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 3.53,
+        "calculated": 248.05138134860462,
+        "diff": -244.52138134860462,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 134.85,
+        "calculated": 248.05138134860462,
+        "diff": -113.20138134860463,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "11/03/2026",
+        "declared": 123.35,
+        "calculated": 248.05138134860462,
+        "diff": -124.70138134860463,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 18.47,
+        "calculated": 1.9703878800321,
+        "diff": 16.4996121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "12/03/2026",
+        "declared": 17.61,
+        "calculated": 1.9703878800321,
+        "diff": 15.6396121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 13.77,
+        "calculated": 1.9703878800321,
+        "diff": 11.7996121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "13/03/2026",
+        "declared": 2.67,
+        "calculated": 1.9703878800321,
+        "diff": 0.6996121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 6.84,
+        "calculated": 248.05138134860462,
+        "diff": -241.21138134860462,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 133.8,
+        "calculated": 248.05138134860462,
+        "diff": -114.25138134860461,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "16/03/2026",
+        "declared": 126.74,
+        "calculated": 248.05138134860462,
+        "diff": -121.31138134860463,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 30.6,
+        "calculated": 58.85239076834014,
+        "diff": -28.252390768340142,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "17/03/2026",
+        "declared": 29.3,
+        "calculated": 58.85239076834014,
+        "diff": -29.552390768340143,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 127.07,
+        "calculated": 248.05138134860462,
+        "diff": -120.98138134860463,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "18/03/2026",
+        "declared": 116.69,
+        "calculated": 248.05138134860462,
+        "diff": -131.36138134860462,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 4.88,
+        "calculated": 1.9703878800321,
+        "diff": 2.9096121199678997,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "19/03/2026",
+        "declared": 7.78,
+        "calculated": 1.9703878800321,
+        "diff": 5.8096121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 118.07,
+        "calculated": 248.05138134860462,
+        "diff": -129.98138134860463,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "20/03/2026",
+        "declared": 118.25,
+        "calculated": 248.05138134860462,
+        "diff": -129.80138134860462,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 5.14,
+        "calculated": 1.9703878800321,
+        "diff": 3.1696121199678995,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 18.19,
+        "calculated": 1.9703878800321,
+        "diff": 16.219612119967902,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "23/03/2026",
+        "declared": 15.9,
+        "calculated": 1.9703878800321,
+        "diff": 13.929612119967901,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 3.86,
+        "calculated": 58.85239076834014,
+        "diff": -54.992390768340144,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 30.11,
+        "calculated": 58.85239076834014,
+        "diff": -28.742390768340144,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "24/03/2026",
+        "declared": 34.24,
+        "calculated": 58.85239076834014,
+        "diff": -24.61239076834014,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 8.05,
+        "calculated": 1.9703878800321,
+        "diff": 6.0796121199679005,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "25/03/2026",
+        "declared": 10.11,
+        "calculated": 1.9703878800321,
+        "diff": 8.1396121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 139.23,
+        "calculated": 248.05138134860462,
+        "diff": -108.82138134860463,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "26/03/2026",
+        "declared": 118.04,
+        "calculated": 248.05138134860462,
+        "diff": -130.01138134860463,
+        "stores": 2,
+        "status": "Ok"
+      },
+      {
+        "date": "27/03/2026",
+        "declared": 5.83,
+        "calculated": 1.9703878800321,
+        "diff": 3.8596121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 19.59,
+        "calculated": 1.9703878800321,
+        "diff": 17.6196121199679,
+        "stores": 1,
+        "status": "Ok"
+      },
+      {
+        "date": "31/03/2026",
+        "declared": 8.67,
+        "calculated": 1.9703878800321,
+        "diff": 6.6996121199679,
+        "stores": 1,
+        "status": "Ok"
+      }
+    ]
+  }
+}

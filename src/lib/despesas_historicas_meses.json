@@ -1,0 +1,137 @@
+{
+  "03": {
+    "ALEXANDRE RIBEIRO LIMA": {
+      "km": 7241.370000000001,
+      "valor": 5793.1,
+      "detalhes": {
+        "KM": 5793.1
+      }
+    },
+    "ANDRÉ SILVA PINTO": {
+      "km": 1113.8999999999999,
+      "valor": 1336.6499999999999,
+      "detalhes": {
+        "KM": 1336.6499999999999
+      }
+    },
+    "BIBIANO RODRIGUES NETO": {
+      "km": 548.74,
+      "valor": 658.47,
+      "detalhes": {
+        "KM": 658.47
+      }
+    },
+    "DIOGO DO NASCIMENTO SANTOS": {
+      "km": 2907.77,
+      "valor": 2326.2,
+      "detalhes": {
+        "KM": 2326.2
+      }
+    },
+    "LIEDY AQUINO GOMES DOS SANTOS": {
+      "km": 2315.289999999999,
+      "valor": 1852.3099999999993,
+      "detalhes": {
+        "KM": 1852.3099999999993
+      }
+    },
+    "LUIZ FALCAO DE SOUZA NETO": {
+      "km": 2499.4499999999994,
+      "valor": 1999.5999999999995,
+      "detalhes": {
+        "KM": 1999.5999999999995
+      }
+    },
+    "MARCIO JOSÉ FLORES PEREIRA": {
+      "km": 1265.3900000000003,
+      "valor": 1012.2600000000003,
+      "detalhes": {
+        "KM": 1012.2600000000003
+      }
+    },
+    "PAULO SERGIO MARQUES DA SILVA": {
+      "km": 3144.3199999999993,
+      "valor": 2515.4399999999996,
+      "detalhes": {
+        "KM": 2515.4399999999996
+      }
+    },
+    "TATIANE SOUZA DOS SANTOS": {
+      "km": 2428.8500000000004,
+      "valor": 1943.0900000000006,
+      "detalhes": {
+        "KM": 1943.0900000000006
+      }
+    }
+  },
+  "04": {
+    "ALEXANDRE RIBEIRO LIMA": {
+      "km": 3978.04,
+      "valor": 3491.4599999999996,
+      "detalhes": {
+        "Pedágio": 229.79999999999995,
+        "Percurso - TRACKING": 3182.4199999999996,
+        "Café da Manhã em viagem": 32.24,
+        "Jantar em Viagem": 47.0
+      }
+    },
+    "DIOGO DO NASCIMENTO SANTOS": {
+      "km": 2147.08,
+      "valor": 1994.66,
+      "detalhes": {
+        "Estacionamento": 273.0,
+        "Pedágio": 4.0,
+        "Percurso - MAPA": 1717.66
+      }
+    },
+    "LIEDY AQUINO GOMES DOS SANTOS": {
+      "km": 1317.8999999999999,
+      "valor": 1291.28,
+      "detalhes": {
+        "Jantar em Viagem": 46.9,
+        "Água durante viagem": 10.0,
+        "Café da Manhã em viagem": 20.0,
+        "Pedágio": 3.1,
+        "Percurso - TRACKING": 1026.64,
+        "Estacionamento": 157.0,
+        "Percurso - MAPA": 27.64
+      }
+    },
+    "LUIZ FALCAO DE SOUZA NETO": {
+      "km": 1880.1399999999996,
+      "valor": 1746.45,
+      "detalhes": {
+        "Café da Manhã em viagem": 102.0,
+        "Jantar": 140.35,
+        "Percurso - TRACKING": 1421.5200000000002,
+        "Percurso - MAPA": 82.58
+      }
+    },
+    "MARCIO JOSÉ FLORES PEREIRA": {
+      "km": 807.8399999999999,
+      "valor": 777.2699999999999,
+      "detalhes": {
+        "Estacionamento": 91.0,
+        "Café da Manhã em viagem": 40.0,
+        "Percurso - TRACKING": 592.2,
+        "Percurso - MAPA": 54.07
+      }
+    },
+    "PAULO SERGIO MARQUES DA SILVA": {
+      "km": 2088.879999999999,
+      "valor": 1908.72,
+      "detalhes": {
+        "Estacionamento": 165.0,
+        "Pedágio": 72.6,
+        "Percurso - TRACKING": 1671.1200000000001
+      }
+    },
+    "TATIANE SOUZA DOS SANTOS": {
+      "km": 1527.4299999999998,
+      "valor": 1221.9399999999998,
+      "detalhes": {
+        "Percurso - TRACKING": 1221.9399999999998
+      }
+    }
+  }
+}
