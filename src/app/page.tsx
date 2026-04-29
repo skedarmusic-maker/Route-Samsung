@@ -927,8 +927,28 @@ export default function ConfigurationPanel() {
   }, [lojasFiltradasCompletas, consultorInfo]);
 
   const lojasVisiveisConsultor = useMemo(() => {
+    const cityCoordsNormalized: Record<string, {lat: number, lng: number}> = {};
+    Object.keys(cityCoords).forEach(k => {
+      cityCoordsNormalized[normalize(k)] = (cityCoords as any)[k];
+    });
+
     let filtered = lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
     
+    filtered = filtered.map(l => {
+      const cityKey = normalize(`${l.cidade}-${l.uf}`);
+      const fallbackCoords = cityCoordsNormalized[cityKey];
+      
+      const coords = (l.lat && l.lng && (l.lat !== 0 || l.lng !== 0)) 
+        ? { lat: l.lat, lng: l.lng } 
+        : fallbackCoords;
+      
+      if (coords && consultorInfo?.lat && consultorInfo?.lng) {
+        const dist = computeDistance({ lat: consultorInfo.lat, lng: consultorInfo.lng }, coords);
+        return { ...l, distDoConsultor: dist };
+      }
+      return { ...l, distDoConsultor: 0 };
+    });
+
     if (viagem) {
       filtered = filtered.filter(l => {
         if (selectedUFs.size > 0 && l.uf && !selectedUFs.has(l.uf)) return false;
@@ -941,7 +961,7 @@ export default function ConfigurationPanel() {
     }
     
     return filtered;
-  }, [lojasFiltradasBase, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem]);
+  }, [lojasFiltradasBase, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem, consultorInfo]);
 
   const opcoesUFs = useMemo(() => {
     const ufs = new Set<string>();
@@ -1165,7 +1185,14 @@ export default function ConfigurationPanel() {
                           className="rounded text-blue-600 w-3 h-3"
                         />
                         <div className="flex-1 min-w-0">
-                          <span className="font-semibold text-gray-700 block truncate">{loja.nome_pdv_novo}</span>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-semibold text-gray-700 block truncate">{loja.nome_pdv_novo}</span>
+                            {(loja as any).distDoConsultor !== undefined && (loja as any).distDoConsultor > 0 && (
+                              <span className="shrink-0 text-[9px] bg-blue-50 text-blue-600 font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5" title="Distância aproximada da casa do consultor">
+                                <Navigation className="w-2.5 h-2.5" /> {Math.round((loja as any).distDoConsultor)} km
+                              </span>
+                            )}
+                          </div>
                           <span className="text-gray-400 block truncate">{loja.cidade} - {loja.uf} · Status: {loja.status}</span>
                         </div>
                       </label>
