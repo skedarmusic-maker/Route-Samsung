@@ -649,7 +649,7 @@ export async function POST(request: Request) {
       viagem,
       dataInicio,
       dataFim,
-      rotaBase,
+      selectedRotasBase = [],
       includedCoberturaLojasIds = []
     } = body;
     if (!consultor || !mes || !ano) return NextResponse.json({ error: 'Parâmetros obrigatórios: consultor, mes, ano' }, { status: 400 });
@@ -659,11 +659,10 @@ export async function POST(request: Request) {
 
     const consultorData: ConsultorLocal = { nome: dataC.nome, endereco: dataC.endereco_completo, lat: dataC.lat, lng: dataC.lng };
     let query = supabase.from('lojas').select('*');
-    if (rotaBase) {
-      query = query.or(`consultor_vinculado.eq."${consultor}",consultor_vinculado.eq."${rotaBase}"`);
-    } else {
-      query = query.eq('consultor_vinculado', consultor);
-    }
+    
+    const rotasToFetch = [consultor, ...selectedRotasBase];
+    const orCondition = rotasToFetch.map(r => `consultor_vinculado.eq."${r}"`).join(',');
+    query = query.or(orCondition);
     const { data: dataL, error: errorL } = await query;
     if (errorL) return NextResponse.json({ error: 'Erro ao buscar lojas.' }, { status: 500 });
 
@@ -686,14 +685,14 @@ export async function POST(request: Request) {
 
     const lojasFiltradas = todasLojas.filter(l => {
       const isMyStore = l.consultor && l.consultor.toUpperCase().trim() === consultor.toUpperCase().trim();
-      const isCoveredStore = rotaBase && l.consultor && l.consultor.toUpperCase().trim() === rotaBase.toUpperCase().trim();
+      const isCoveredStore = l.consultor && selectedRotasBase.map((r: string) => r.toUpperCase().trim()).includes(l.consultor.toUpperCase().trim());
       
       if (!isMyStore && !isCoveredStore) return false;
       
       const lojaId = `${l.nome_pdv_novo}-${l.cidade}`;
       if (excludedLojasIds.includes(lojaId)) return false;
 
-      if (isCoveredStore && rotaBase) {
+      if (isCoveredStore) {
         if (!includedCoberturaLojasIds.includes(lojaId)) return false;
       }
 

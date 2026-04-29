@@ -712,13 +712,13 @@ export default function ConfigurationPanel() {
   const [mes, setMes] = useState('');
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
-  const [rotaBase, setRotaBase] = useState('');
+  const [selectedRotasBase, setSelectedRotasBase] = useState<string[]>([]);
   const [selectedCoberturaLojas, setSelectedCoberturaLojas] = useState<Set<string>>(new Set());
   const [cenarioNome, setCenarioNome] = useState('Cenário Principal');
 
   useEffect(() => {
     setSelectedCoberturaLojas(new Set());
-  }, [rotaBase]);
+  }, [selectedRotasBase]);
 
   useEffect(() => {
     setDataInicio('');
@@ -789,13 +789,14 @@ export default function ConfigurationPanel() {
   }, [selectedConsultor, consultores]);
 
   const lojasFiltradasBase = useMemo(() => {
+    const normalizedSelectedRotas = selectedRotasBase.map(r => normalize(r));
     return lojas.filter(l => {
       const isMyStore = selectedConsultor && normalize(l.consultor) === normalize(selectedConsultor);
-      const isCoveredStore = rotaBase && normalize(l.consultor) === normalize(rotaBase);
+      const isCoveredStore = normalizedSelectedRotas.includes(normalize(l.consultor));
       
       if (!isMyStore && !isCoveredStore) return false;
       
-      if (isCoveredStore && rotaBase) {
+      if (isCoveredStore) {
         const lojaId = `${l.nome_pdv_novo}-${l.cidade}`;
         if (!selectedCoberturaLojas.has(lojaId)) return false;
       }
@@ -807,7 +808,7 @@ export default function ConfigurationPanel() {
       }
       return true;
     });
-  }, [lojas, selectedConsultor, selectedStatus, rotaBase, selectedCoberturaLojas]);
+  }, [lojas, selectedConsultor, selectedStatus, selectedRotasBase, selectedCoberturaLojas]);
 
   // 2. Calcular opções de Cluster e Cliente baseadas nas lojas filtradas acima
   const lojasFiltradasCompletas = useMemo(() => {
@@ -984,7 +985,7 @@ export default function ConfigurationPanel() {
         viagem,
         dataInicio,
         dataFim,
-        rotaBase,
+        selectedRotasBase,
         includedCoberturaLojasIds: Array.from(selectedCoberturaLojas),
       });
       setResultado(res.data);
@@ -1054,9 +1055,9 @@ export default function ConfigurationPanel() {
                     <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">
                       {lojas.filter(l => {
                         const isMyStore = selectedConsultor && normalize(l.consultor) === normalize(selectedConsultor);
-                        const isCoveredStore = rotaBase && normalize(l.consultor) === normalize(rotaBase);
+                        const isCoveredStore = selectedRotasBase.map(r => normalize(r)).includes(normalize(l.consultor));
                         if (!isMyStore && !isCoveredStore) return false;
-                        if (isCoveredStore && rotaBase) {
+                        if (isCoveredStore) {
                           const lojaId = `${l.nome_pdv_novo}-${l.cidade}`;
                           if (!selectedCoberturaLojas.has(lojaId)) return false;
                         }
@@ -1158,43 +1159,59 @@ export default function ConfigurationPanel() {
               <label className="text-sm font-medium text-gray-700 flex items-center justify-between mb-2">
                 <span className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-500" /> Cobrir Lojas de Outra Rota (Opcional)</span>
               </label>
-              <select value={rotaBase} onChange={e => setRotaBase(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white text-sm">
-                <option value="">Nenhuma (Consultor atende a própria rota)</option>
+              <div className="flex flex-wrap gap-2 mt-2 mb-3">
                 {consultores.map(c => {
                   if (c.nome === selectedConsultor) return null;
+                  const isSelected = selectedRotasBase.includes(c.nome);
                   const rotaSigla = ROTA_MAP[c.nome] || c.nome.split(' ')[0];
                   const countLojas = lojas.filter(l => normalize(l.consultor) === normalize(c.nome)).length;
                   return (
-                    <option key={c.nome} value={c.nome}>
-                      ROTA {rotaSigla} ({countLojas} lojas)
-                    </option>
+                    <label key={c.nome} className={`flex items-center gap-2 p-2.5 rounded-lg border text-[11px] font-bold cursor-pointer transition-all ${isSelected ? 'bg-orange-100/80 border-orange-300 text-orange-900 shadow-sm' : 'bg-white border-gray-200 text-gray-700 hover:border-orange-200'}`}>
+                      <input 
+                        type="checkbox" 
+                        checked={isSelected} 
+                        onChange={(e) => {
+                          const nextRotas = e.target.checked 
+                            ? [...selectedRotasBase, c.nome] 
+                            : selectedRotasBase.filter(r => r !== c.nome);
+                          setSelectedRotasBase(nextRotas);
+                        }} 
+                        className="rounded text-orange-500 w-3.5 h-3.5" 
+                      />
+                      <span>ROTA {rotaSigla} ({countLojas} lojas)</span>
+                    </label>
                   );
                 })}
-              </select>
+              </div>
 
-              {rotaBase && (
+              {selectedRotasBase.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-orange-200">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-bold text-orange-800 uppercase">Selecione as lojas da Rota {ROTA_MAP[rotaBase] || rotaBase.split(' ')[0]} para cobrir:</p>
+                    <p className="text-xs font-bold text-orange-800 uppercase">Selecione as lojas das rotas cobertas para incluir:</p>
                     <button 
                       onClick={() => {
-                        const lojasRota = lojas.filter(l => normalize(l.consultor) === normalize(rotaBase));
-                        if (selectedCoberturaLojas.size === lojasRota.length) {
-                          setSelectedCoberturaLojas(new Set());
+                        const lojasRotas = lojas.filter(l => selectedRotasBase.map(r => normalize(r)).includes(normalize(l.consultor)));
+                        const allIds = lojasRotas.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
+                        const someExcluded = allIds.some(id => !selectedCoberturaLojas.has(id));
+                        
+                        const nextSet = new Set(selectedCoberturaLojas);
+                        if (someExcluded) {
+                          allIds.forEach(id => nextSet.add(id));
                         } else {
-                          const allIds = lojasRota.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
-                          setSelectedCoberturaLojas(new Set(allIds));
+                          allIds.forEach(id => nextSet.delete(id));
                         }
+                        setSelectedCoberturaLojas(nextSet);
                       }}
                       className="text-[10px] font-bold text-orange-600 bg-orange-100 hover:bg-orange-200 px-2 py-1 rounded transition-colors"
                     >
-                      {selectedCoberturaLojas.size === lojas.filter(l => normalize(l.consultor) === normalize(rotaBase)).length ? 'Desmarcar Todas' : 'Selecionar Todas'}
+                      {lojas.filter(l => selectedRotasBase.map(r => normalize(r)).includes(normalize(l.consultor))).map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => selectedCoberturaLojas.has(id)) ? 'Desmarcar Todas' : 'Selecionar Todas'}
                     </button>
                   </div>
                   <div className="max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-scrollbar">
-                    {lojas.filter(l => normalize(l.consultor) === normalize(rotaBase)).map((loja, idx) => {
+                    {lojas.filter(l => selectedRotasBase.map(r => normalize(r)).includes(normalize(l.consultor))).map((loja, idx) => {
                       const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
                       const isSelected = selectedCoberturaLojas.has(lojaId);
+                      const siglaLoja = ROTA_MAP[loja.consultor] || loja.consultor?.split(' ')[0] || '';
                       return (
                         <label key={idx} className={`flex items-center gap-2 p-2 rounded border text-[10px] cursor-pointer transition-all ${isSelected ? 'bg-orange-50 border-orange-300' : 'bg-gray-50 border-gray-200 opacity-60 hover:opacity-100'}`}>
                           <input 
@@ -1210,14 +1227,14 @@ export default function ConfigurationPanel() {
                           />
                           <div className="flex-1 min-w-0">
                             <span className="font-semibold text-gray-700 block truncate">{loja.nome_pdv_novo}</span>
-                            <span className="text-gray-400 block truncate">{loja.cidade} - {loja.uf}</span>
+                            <span className="text-gray-400 block truncate">{loja.cidade} - {loja.uf} <span className="text-orange-500 font-bold ml-1">({siglaLoja})</span></span>
                           </div>
                         </label>
                       )
                     })}
                   </div>
                   {selectedCoberturaLojas.size === 0 && (
-                     <p className="text-[10px] text-red-500 mt-2 font-medium">Nenhuma loja selecionada. A geração irá ignorar esta rota.</p>
+                     <p className="text-[10px] text-red-500 mt-2 font-medium">Nenhuma loja selecionada. A geração irá ignorar estas rotas.</p>
                   )}
                 </div>
               )}
@@ -1323,7 +1340,7 @@ export default function ConfigurationPanel() {
                             {polo.lojas.map((loja, idx) => {
                               const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
                               const isExcluded = excludedLojasIds.has(lojaId);
-                              const isCovered = rotaBase && normalize(loja.consultor) === normalize(rotaBase);
+                              const isCovered = selectedRotasBase.map(r => normalize(r)).includes(normalize(loja.consultor));
                             return (
                               <label key={idx} className={`flex items-center gap-3 p-2 rounded-lg border text-[11px] transition-all cursor-pointer ${isExcluded ? 'bg-red-50 border-red-100 opacity-60' : isCovered ? 'bg-orange-50 border-orange-200 hover:border-orange-300 shadow-sm' : 'bg-white border-gray-100 hover:border-blue-200 shadow-sm'}`}>
                                 <input 
