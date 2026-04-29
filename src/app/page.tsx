@@ -908,8 +908,8 @@ export default function ConfigurationPanel() {
         
         let shouldGroup = false;
         if (coordsCenter.lat !== 0 && coordsCand) {
-          // Raio de 150km para agrupamento de VIAGEM (mais amplo que o local)
-          if (computeDistance(coordsCenter, coordsCand) <= 150) shouldGroup = true;
+          // Raio de 150km para agrupamento de VIAGEM e mesma UF
+          if (computeDistance(coordsCenter, coordsCand) <= 150 && candidate.uf === centerStore.uf) shouldGroup = true;
         } 
         
         // Se for a mesma cidade, agrupa sempre (evita duplicados de SÃO PAULO)

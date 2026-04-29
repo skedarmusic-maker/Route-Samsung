@@ -221,8 +221,8 @@ function distribuirLojasNoDias(
         const coordsCand = getLojaCoords(candidate);
         let match = false;
         if (coordsCenter.lat !== 0 && coordsCand) {
-          // Raio de 350km para agrupamento de VIAGEM (para pegar DF+GO, por exemplo)
-          if (computeDistance(coordsCenter, coordsCand) <= 350) match = true;
+          // Raio de 350km para agrupamento de VIAGEM (restrito à mesma UF)
+          if (computeDistance(coordsCenter, coordsCand) <= 350 && candidate.uf === centerStore.uf) match = true;
         } else if (candidate.uf === centerStore.uf && centerStore.uf !== '') {
           if (!coordsCand) match = true;
         }
