@@ -927,26 +927,21 @@ export default function ConfigurationPanel() {
   }, [lojasFiltradasCompletas, consultorInfo]);
 
   const lojasVisiveisConsultor = useMemo(() => {
-    let filtered = lojasFiltradasCompletas.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
+    let filtered = lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
     
-    const idsLojasViagem = new Set(polosViagem.flatMap(p => p.lojas.map(loja => `${loja.nome_pdv_novo}-${loja.cidade}`)));
-
-    filtered = filtered.filter(l => {
-      const lojaId = `${l.nome_pdv_novo}-${l.cidade}`;
-      
-      if (!idsLojasViagem.has(lojaId)) return true;
-      if (!viagem) return false;
-      
-      if (selectedUFs.size > 0 && l.uf && !selectedUFs.has(l.uf)) return false;
-      
-      const poloDaLoja = polosViagem.find(p => p.lojas.some(lojaPolo => `${lojaPolo.nome_pdv_novo}-${lojaPolo.cidade}` === lojaId));
-      if (poloDaLoja && selectedPolos.size > 0 && !selectedPolos.has(poloDaLoja.nome)) return false;
-      
-      return true;
-    });
+    if (viagem) {
+      filtered = filtered.filter(l => {
+        if (selectedUFs.size > 0 && l.uf && !selectedUFs.has(l.uf)) return false;
+        
+        const poloDaLoja = polosViagem.find(p => p.lojas.some(lojaPolo => `${lojaPolo.nome_pdv_novo}-${lojaPolo.cidade}` === `${l.nome_pdv_novo}-${l.cidade}`));
+        if (poloDaLoja && selectedPolos.size > 0 && !selectedPolos.has(poloDaLoja.nome)) return false;
+        
+        return true;
+      });
+    }
     
     return filtered;
-  }, [lojasFiltradasCompletas, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem]);
+  }, [lojasFiltradasBase, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem]);
 
   const opcoesUFs = useMemo(() => {
     const ufs = new Set<string>();
