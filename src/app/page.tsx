@@ -926,27 +926,24 @@ export default function ConfigurationPanel() {
   const lojasVisiveisConsultor = useMemo(() => {
     let filtered = lojasFiltradasCompletas.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
     
-    let ufConsultor = 'SP';
-    const ufRegex = /\s([A-Z]{2})(?:\s|,|-|$)/g;
-    const matches = Array.from((consultorInfo?.endereco || '').matchAll(ufRegex));
-    if (matches.length > 0) ufConsultor = matches[matches.length - 1][1];
+    const idsLojasViagem = new Set(polosViagem.flatMap(p => p.lojas.map(loja => `${loja.nome_pdv_novo}-${loja.cidade}`)));
 
-    if (viagem) {
-      filtered = filtered.filter(l => {
-        if (l.uf === ufConsultor || !l.uf) return true;
-        if (selectedUFs.size > 0 && !selectedUFs.has(l.uf)) return false;
-        
-        const poloDaLoja = polosViagem.find(p => p.lojas.some(lojaPolo => `${lojaPolo.nome_pdv_novo}-${lojaPolo.cidade}` === `${l.nome_pdv_novo}-${l.cidade}`));
-        if (poloDaLoja && selectedPolos.size > 0 && !selectedPolos.has(poloDaLoja.nome)) return false;
-        
-        return true;
-      });
-    } else {
-      filtered = filtered.filter(l => l.uf === ufConsultor || !l.uf);
-    }
+    filtered = filtered.filter(l => {
+      const lojaId = `${l.nome_pdv_novo}-${l.cidade}`;
+      
+      if (!idsLojasViagem.has(lojaId)) return true;
+      if (!viagem) return false;
+      
+      if (selectedUFs.size > 0 && l.uf && !selectedUFs.has(l.uf)) return false;
+      
+      const poloDaLoja = polosViagem.find(p => p.lojas.some(lojaPolo => `${lojaPolo.nome_pdv_novo}-${lojaPolo.cidade}` === lojaId));
+      if (poloDaLoja && selectedPolos.size > 0 && !selectedPolos.has(poloDaLoja.nome)) return false;
+      
+      return true;
+    });
     
     return filtered;
-  }, [lojasFiltradasCompletas, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem, consultorInfo]);
+  }, [lojasFiltradasCompletas, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem]);
 
   const opcoesUFs = useMemo(() => {
     const ufs = new Set<string>();
