@@ -845,21 +845,23 @@ export default function ConfigurationPanel() {
         
         if (errorL) throw errorL;
         
-        // Mapear campos do banco para a interface Loja usada no frontend
-        const mappedLojas = (dataL || []).map(l => ({
-          cliente: l.cliente,
-          nome_pdv_novo: l.nome_pdv, // Ajustado para bater com a interface do frontend
-          endereco: l.endereco,
-          cidade: l.cidade,
-          uf: l.uf,
-          cluster: l.cluster,
-          canal: l.canal,
-          periodo: l.periodo,
-          status: l.status,
-          consultor: l.consultor_vinculado,
-          lat: l.lat,
-          lng: l.lng
-        }));
+        const forbiddenClients = ['A.DIAS', 'DUFRIO', 'UNIAR'];
+        const mappedLojas = (dataL || [])
+          .filter(l => !l.cliente || !forbiddenClients.includes(l.cliente.toUpperCase().trim()))
+          .map(l => ({
+            cliente: l.cliente,
+            nome_pdv_novo: l.nome_pdv, // Ajustado para bater com a interface do frontend
+            endereco: l.endereco,
+            cidade: l.cidade,
+            uf: l.uf,
+            cluster: l.cluster,
+            canal: l.canal,
+            periodo: l.periodo,
+            status: l.status,
+            consultor: l.consultor_vinculado,
+            lat: l.lat,
+            lng: l.lng
+          }));
         
         setLojas(mappedLojas as any);
       } catch (e: any) {

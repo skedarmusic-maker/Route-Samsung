@@ -672,9 +672,12 @@ export async function POST(request: Request) {
       });
     }
 
-    const todasLojas: Loja[] = (dataL || []).map(l => ({
-      trader: '', cliente: l.cliente, bandeira: '', nome_pdv_novo: l.nome_pdv, cnpj: l.codigo_sap, endereco: l.endereco, canal: '', consultor: l.consultor_vinculado, cidade: l.cidade, uf: l.uf, status: l.status, cluster: l.cluster, periodo: l.periodo, lat: l.lat, lng: l.lng
-    }));
+    const forbiddenClients = ['A.DIAS', 'DUFRIO', 'UNIAR'];
+    const todasLojas: Loja[] = (dataL || [])
+      .filter(l => !l.cliente || !forbiddenClients.includes(l.cliente.toUpperCase().trim()))
+      .map(l => ({
+        trader: '', cliente: l.cliente, bandeira: '', nome_pdv_novo: l.nome_pdv, cnpj: l.codigo_sap, endereco: l.endereco, canal: '', consultor: l.consultor_vinculado, cidade: l.cidade, uf: l.uf, status: l.status, cluster: l.cluster, periodo: l.periodo, lat: l.lat, lng: l.lng
+      }));
 
     // Extrair UF da base de dados de forma robusta
     const ufConsultor = dataC.uf_base || 'SP';

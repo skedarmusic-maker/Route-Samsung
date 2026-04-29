@@ -37,8 +37,11 @@ export async function GET(request: Request) {
     if (clientes && clientes.length > 0) query = query.in('cliente', clientes);
     if (canais && canais.length > 0) query = query.in('canal', canais);
 
-    const { data: lojas, error: errorL } = await query;
+    const { data: lojasRaw, error: errorL } = await query;
     if (errorL) throw errorL;
+
+    const forbiddenClients = ['A.DIAS', 'DUFRIO', 'UNIAR'];
+    const lojas = (lojasRaw || []).filter(l => !l.cliente || !forbiddenClients.includes(l.cliente.toUpperCase().trim()));
 
     // 2. Buscar histórico de visitas
     const { data: historico, error: errorH } = await supabase
@@ -60,7 +63,7 @@ export async function GET(request: Request) {
     const porRede: Record<string, { total: number; emDia: number; atrasadas: number; semHistorico: number; maiorAtraso: number }> = {};
     const criticas: { nome_pdv: string; cliente: string; cluster: string; diasSemVisita: number; periodo: string }[] = [];
 
-    (lojas || []).forEach(loja => {
+    lojas.forEach(loja => {
       const rede = loja.cliente || 'Sem Rede';
       if (!porRede[rede]) porRede[rede] = { total: 0, emDia: 0, atrasadas: 0, semHistorico: 0, maiorAtraso: 0 };
       porRede[rede].total++;
