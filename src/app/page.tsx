@@ -127,6 +127,19 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight }: {
 }
 
 // ─────────────────────────────────────────────────────────
+// Constantes Injetadas
+// ─────────────────────────────────────────────────────────
+const ROTA_MAP: Record<string, string> = {
+  "PAULO SERGIO MARQUES DA SILVA": "SPC2",
+  "LIEDY AQUINO GOMES DOS SANTOS": "SPC1",
+  "MARCIO JOSE FLORES PEREIRA": "SUL_1",
+  "ALEXANDRE RIBEIRO LIMA": "SPI_2",
+  "DIOGO DO NASCIMENTO SANTOS": "RJ",
+  "TATIANE SOUZA DOS SANTOS": "NE_1",
+  "LUIZ FALCAO DE SOUZA NETO": "NE_2"
+};
+
+// ─────────────────────────────────────────────────────────
 // Card do dia (com suporte a seleção para o mapa)
 // ─────────────────────────────────────────────────────────
 function DiaCard({ dia, selected, onClick, distancia, onBuscarVoo, chosenFlights }: {
@@ -219,9 +232,10 @@ function DiaCard({ dia, selected, onClick, distancia, onBuscarVoo, chosenFlights
 // ─────────────────────────────────────────────────────────
 // Tela de Prévia do Roteiro (com mapa integrado)
 // ─────────────────────────────────────────────────────────
-function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
+function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: {
   resultado: any;
   consultorInfo: ConsultorLocal | undefined;
+  initialCenario?: string;
   onVoltar: () => void;
 }) {
   const totalVisitas = resultado.roteiro.reduce((acc: number, d: RoteiroDia) => acc + d.lojas.length, 0);
@@ -251,6 +265,9 @@ function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
   const [flightTargetLoja, setFlightTargetLoja] = useState<any | null>(null);
   const [flightTargetDia, setFlightTargetDia] = useState<any | null>(null);
   const [chosenFlights, setChosenFlights] = useState<Record<string, any>>({});
+
+  // Nome do Cenário
+  const [cenarioNome, setCenarioNome] = useState(initialCenario || 'Cenário Principal');
 
   // Calcula KM total aproximado do roteiro
   const totalEstimatedKM = useMemo(() => {
@@ -359,6 +376,8 @@ function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
           Data: dia.data,
           'Dia da Semana': dia.diaSemana,
           Consultor: resultado.consultor,
+          Rota: ROTA_MAP[resultado.consultor] || '',
+          'Cenário': cenarioNome,
           'Nome PDV': dia.feriado,
           'Status': 'FERIADO/FOLGA'
         }];
@@ -368,6 +387,8 @@ function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
         Data: dia.data,
         'Dia da Semana': dia.diaSemana,
         Consultor: resultado.consultor,
+        Rota: loja.rota || ROTA_MAP[resultado.consultor] || '',
+        'Cenário': cenarioNome,
         'Nome PDV': loja.nome_pdv,
         Cliente: loja.cliente,
         Cidade: loja.cidade,
@@ -404,10 +425,11 @@ function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
           consultor: resultado.consultor,
           mes: resultado.mes,
           ano: resultado.ano,
+          cenario: cenarioNome,
           dados_roteiro: finalResultado,
           status: 'APROVADO'
         }, {
-          onConflict: 'consultor, mes, ano'
+          onConflict: 'consultor, mes, ano, cenario'
         });
 
       if (error) throw error;
@@ -434,6 +456,17 @@ function PreviewRoteiro({ resultado, consultorInfo, onVoltar }: {
             <h1 className="text-xl font-bold text-gray-900 leading-tight">Prévia do Roteiro</h1>
             <p className="text-sm text-gray-500 capitalize">{resultado.consultor} · {mesNome}</p>
           </div>
+        </div>
+
+        {/* Input para Nome do Cenário */}
+        <div className="flex-1 max-w-sm mx-4">
+          <input 
+            type="text" 
+            value={cenarioNome} 
+            onChange={(e) => setCenarioNome(e.target.value)}
+            placeholder="Nome do Cenário (ex: Cenário B - Viagens)"
+            className="w-full text-sm font-medium p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+          />
         </div>
 
         {/* SELETOR DE MÊS PARA COMPARAÇÃO */}
@@ -680,6 +713,12 @@ export default function ConfigurationPanel() {
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
   const [rotaBase, setRotaBase] = useState('');
+  const [selectedCoberturaLojas, setSelectedCoberturaLojas] = useState<Set<string>>(new Set());
+  const [cenarioNome, setCenarioNome] = useState('Cenário Principal');
+
+  useEffect(() => {
+    setSelectedCoberturaLojas(new Set());
+  }, [rotaBase]);
 
   useEffect(() => {
     setDataInicio('');
@@ -749,18 +788,26 @@ export default function ConfigurationPanel() {
     }
   }, [selectedConsultor, consultores]);
 
-  // 1. Filtrar lojas pelo Consultor e Status (Filtros Primários)
   const lojasFiltradasBase = useMemo(() => {
     return lojas.filter(l => {
-      if (selectedConsultor && normalize(l.consultor) !== normalize(selectedConsultor)) return false;
+      const isMyStore = selectedConsultor && normalize(l.consultor) === normalize(selectedConsultor);
+      const isCoveredStore = rotaBase && normalize(l.consultor) === normalize(rotaBase);
+      
+      if (!isMyStore && !isCoveredStore) return false;
+      
+      if (isCoveredStore && rotaBase) {
+        const lojaId = `${l.nome_pdv_novo}-${l.cidade}`;
+        if (!selectedCoberturaLojas.has(lojaId)) return false;
+      }
+      
       if (selectedStatus) {
         const sNorm = normalize(selectedStatus);
         const lStatusNorm = normalize(l.status);
-        if (!lStatusNorm.includes(sNorm) && !sNorm.includes(lStatusNorm)) return false;
+        if (sNorm !== lStatusNorm) return false;
       }
       return true;
     });
-  }, [lojas, selectedConsultor, selectedStatus]);
+  }, [lojas, selectedConsultor, selectedStatus, rotaBase, selectedCoberturaLojas]);
 
   // 2. Calcular opções de Cluster e Cliente baseadas nas lojas filtradas acima
   const lojasFiltradasCompletas = useMemo(() => {
@@ -938,6 +985,7 @@ export default function ConfigurationPanel() {
         dataInicio,
         dataFim,
         rotaBase,
+        includedCoberturaLojasIds: Array.from(selectedCoberturaLojas),
       });
       setResultado(res.data);
       setConsultorInfo(consultores.find(c => c.nome === selectedConsultor));
@@ -959,7 +1007,7 @@ export default function ConfigurationPanel() {
 
   // Mostrar prévia se roteiro foi gerado
   if (resultado) {
-    return <PreviewRoteiro resultado={resultado} consultorInfo={consultorInfo} onVoltar={() => setResultado(null)} />;
+    return <PreviewRoteiro resultado={resultado} consultorInfo={consultorInfo} initialCenario={cenarioNome} onVoltar={() => setResultado(null)} />;
   }
 
   // Mostrar Dashboard Consolidado
@@ -998,13 +1046,22 @@ export default function ConfigurationPanel() {
             <h2 className="text-base font-semibold mb-5 flex items-center gap-2">
               <Calendar className="w-4 h-4 text-blue-600" /> Parâmetros Principais
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center justify-between">
                   <span className="flex items-center gap-2"><Users className="w-4 h-4" /> Consultor</span>
                   {selectedConsultor && (
                     <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold">
-                      {lojas.filter(l => normalize(l.consultor) === normalize(rotaBase || selectedConsultor)).length} LOJAS NA ROTA
+                      {lojas.filter(l => {
+                        const isMyStore = selectedConsultor && normalize(l.consultor) === normalize(selectedConsultor);
+                        const isCoveredStore = rotaBase && normalize(l.consultor) === normalize(rotaBase);
+                        if (!isMyStore && !isCoveredStore) return false;
+                        if (isCoveredStore && rotaBase) {
+                          const lojaId = `${l.nome_pdv_novo}-${l.cidade}`;
+                          if (!selectedCoberturaLojas.has(lojaId)) return false;
+                        }
+                        return true;
+                      }).length} LOJAS NA ROTA
                     </span>
                   )}
                 </label>
@@ -1033,29 +1090,137 @@ export default function ConfigurationPanel() {
                   setDataFim(end);
                 }} 
               />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Nome do Cenário</label>
+                <input 
+                  type="text" 
+                  value={cenarioNome} 
+                  onChange={(e) => setCenarioNome(e.target.value)} 
+                  placeholder="ex: Cenário A" 
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium" 
+                />
+              </div>
             </div>
+            
+            {selectedConsultor && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-bold text-blue-800 uppercase flex items-center gap-2">
+                    <Users className="w-4 h-4" /> Carteira de Lojas do Consultor ({selectedConsultor.split(' ')[0]}):
+                  </p>
+                  <button 
+                    onClick={() => {
+                      const lojasConsultor = lojas.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
+                      const allIds = lojasConsultor.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
+                      const someExcluded = allIds.some(id => excludedLojasIds.has(id));
+                      const nextExcl = new Set(excludedLojasIds);
+                      if (someExcluded) {
+                        allIds.forEach(id => nextExcl.delete(id));
+                      } else {
+                        allIds.forEach(id => nextExcl.add(id));
+                      }
+                      setExcludedLojasIds(nextExcl);
+                    }}
+                    className="text-[10px] font-bold text-blue-600 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
+                  >
+                    {lojas.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => excludedLojasIds.has(id)) ? 'Selecionar Todas' : 'Desmarcar Todas'}
+                  </button>
+                </div>
+                <div className="max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-scrollbar">
+                  {lojas.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).map((loja, idx) => {
+                    const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
+                    const isExcluded = excludedLojasIds.has(lojaId);
+                    return (
+                      <label key={idx} className={`flex items-center gap-2 p-2 rounded border text-[10px] cursor-pointer transition-all ${!isExcluded ? 'bg-blue-50/50 border-blue-200' : 'bg-gray-50 border-gray-200 opacity-50 hover:opacity-100'}`}>
+                        <input 
+                          type="checkbox" 
+                          checked={!isExcluded}
+                          onChange={(e) => {
+                            const nextExcl = new Set(excludedLojasIds);
+                            if (e.target.checked) nextExcl.delete(lojaId);
+                            else nextExcl.add(lojaId);
+                            setExcludedLojasIds(nextExcl);
+                          }}
+                          className="rounded text-blue-600 w-3 h-3"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold text-gray-700 block truncate">{loja.nome_pdv_novo}</span>
+                          <span className="text-gray-400 block truncate">{loja.cidade} - {loja.uf} · Status: {loja.status}</span>
+                        </div>
+                      </label>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
 
             <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
               <label className="text-sm font-medium text-gray-700 flex items-center justify-between mb-2">
-                <span className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-500" /> Cobrir Rota De (Opcional - Férias/Afastamento)</span>
-                {rotaBase && (
-                  <span className="text-[10px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-bold">
-                    ATENÇÃO: ROTEIRO BASEADO NA ROTA DE {rotaBase.split(' ')[0]}
-                  </span>
-                )}
+                <span className="flex items-center gap-2"><Users className="w-4 h-4 text-gray-500" /> Cobrir Lojas de Outra Rota (Opcional)</span>
               </label>
               <select value={rotaBase} onChange={e => setRotaBase(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white text-sm">
                 <option value="">Nenhuma (Consultor atende a própria rota)</option>
                 {consultores.map(c => {
                   if (c.nome === selectedConsultor) return null;
+                  const rotaSigla = ROTA_MAP[c.nome] || c.nome.split(' ')[0];
                   const countLojas = lojas.filter(l => normalize(l.consultor) === normalize(c.nome)).length;
                   return (
                     <option key={c.nome} value={c.nome}>
-                      {c.nome} ({countLojas} lojas)
+                      ROTA {rotaSigla} ({countLojas} lojas)
                     </option>
                   );
                 })}
               </select>
+
+              {rotaBase && (
+                <div className="mt-4 pt-4 border-t border-orange-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-bold text-orange-800 uppercase">Selecione as lojas da Rota {ROTA_MAP[rotaBase] || rotaBase.split(' ')[0]} para cobrir:</p>
+                    <button 
+                      onClick={() => {
+                        const lojasRota = lojas.filter(l => normalize(l.consultor) === normalize(rotaBase));
+                        if (selectedCoberturaLojas.size === lojasRota.length) {
+                          setSelectedCoberturaLojas(new Set());
+                        } else {
+                          const allIds = lojasRota.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
+                          setSelectedCoberturaLojas(new Set(allIds));
+                        }
+                      }}
+                      className="text-[10px] font-bold text-orange-600 bg-orange-100 hover:bg-orange-200 px-2 py-1 rounded transition-colors"
+                    >
+                      {selectedCoberturaLojas.size === lojas.filter(l => normalize(l.consultor) === normalize(rotaBase)).length ? 'Desmarcar Todas' : 'Selecionar Todas'}
+                    </button>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-scrollbar">
+                    {lojas.filter(l => normalize(l.consultor) === normalize(rotaBase)).map((loja, idx) => {
+                      const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
+                      const isSelected = selectedCoberturaLojas.has(lojaId);
+                      return (
+                        <label key={idx} className={`flex items-center gap-2 p-2 rounded border text-[10px] cursor-pointer transition-all ${isSelected ? 'bg-orange-50 border-orange-300' : 'bg-gray-50 border-gray-200 opacity-60 hover:opacity-100'}`}>
+                          <input 
+                            type="checkbox" 
+                            checked={isSelected}
+                            onChange={(e) => {
+                              const nextSet = new Set(selectedCoberturaLojas);
+                              if (e.target.checked) nextSet.add(lojaId);
+                              else nextSet.delete(lojaId);
+                              setSelectedCoberturaLojas(nextSet);
+                            }}
+                            className="rounded text-orange-500 w-3 h-3"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <span className="font-semibold text-gray-700 block truncate">{loja.nome_pdv_novo}</span>
+                            <span className="text-gray-400 block truncate">{loja.cidade} - {loja.uf}</span>
+                          </div>
+                        </label>
+                      )
+                    })}
+                  </div>
+                  {selectedCoberturaLojas.size === 0 && (
+                     <p className="text-[10px] text-red-500 mt-2 font-medium">Nenhuma loja selecionada. A geração irá ignorar esta rota.</p>
+                  )}
+                </div>
+              )}
             </div>
             <div className={`mt-5 flex flex-col gap-4 p-4 rounded-lg border transition-all ${viagem ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200 hover:border-blue-200'}`}>
               <div className="flex items-center gap-4 cursor-pointer" onClick={() => setViagem(!viagem)}>
@@ -1158,8 +1323,9 @@ export default function ConfigurationPanel() {
                             {polo.lojas.map((loja, idx) => {
                               const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
                               const isExcluded = excludedLojasIds.has(lojaId);
+                              const isCovered = rotaBase && normalize(loja.consultor) === normalize(rotaBase);
                             return (
-                              <label key={idx} className={`flex items-center gap-3 p-2 rounded-lg border text-[11px] transition-all cursor-pointer ${isExcluded ? 'bg-red-50 border-red-100 opacity-60' : 'bg-white border-gray-100 hover:border-blue-200 shadow-sm'}`}>
+                              <label key={idx} className={`flex items-center gap-3 p-2 rounded-lg border text-[11px] transition-all cursor-pointer ${isExcluded ? 'bg-red-50 border-red-100 opacity-60' : isCovered ? 'bg-orange-50 border-orange-200 hover:border-orange-300 shadow-sm' : 'bg-white border-gray-100 hover:border-blue-200 shadow-sm'}`}>
                                 <input 
                                   type="checkbox" 
                                   checked={!isExcluded} 
@@ -1169,18 +1335,23 @@ export default function ConfigurationPanel() {
                                     else nextExcl.add(lojaId);
                                     setExcludedLojasIds(nextExcl);
                                   }}
-                                  className="w-3.5 h-3.5 rounded text-blue-600"
+                                  className={`w-3.5 h-3.5 rounded ${isCovered ? 'text-orange-600' : 'text-blue-600'}`}
                                 />
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between gap-2">
-                                    <p className={`font-semibold truncate ${isExcluded ? 'text-gray-400' : 'text-gray-700'}`}>{loja.nome_pdv_novo}</p>
-                                    {(loja as any).distDoConsultor !== undefined && (loja as any).distDoConsultor > 0 && (
+                                    <p className={`font-semibold truncate ${isExcluded ? 'text-gray-400' : isCovered ? 'text-orange-900' : 'text-gray-700'}`}>{loja.nome_pdv_novo}</p>
+                                    {isCovered && (
+                                      <span className="shrink-0 text-[8px] bg-orange-100 text-orange-700 font-bold px-1.5 py-0.5 rounded flex items-center">
+                                        COBERTURA
+                                      </span>
+                                    )}
+                                    {(loja as any).distDoConsultor !== undefined && (loja as any).distDoConsultor > 0 && !isCovered && (
                                       <span className="shrink-0 text-[9px] bg-blue-50 text-blue-600 font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5" title="Distância aproximada da casa do consultor">
                                         <Navigation className="w-2.5 h-2.5" /> {Math.round((loja as any).distDoConsultor)} km
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-[10px] text-gray-400">{loja.cidade} - {loja.uf} · Cluster {loja.cluster}</p>
+                                  <p className={`text-[10px] ${isCovered ? 'text-orange-600/80' : 'text-gray-400'}`}>{loja.cidade} - {loja.uf} · Cluster {loja.cluster}</p>
                                 </div>
                               </label>
                             );

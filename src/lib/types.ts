@@ -10,6 +10,7 @@ export interface LojaVisita {
   checkOut: string;
   tipo: 'local' | 'viagem';
   estadoViagem?: string;
+  rota?: string;
   lat?: number;
   lng?: number;
 }

@@ -59,6 +59,7 @@ export interface LojaVisita {
   checkOut: string;
   tipo: 'local' | 'viagem';
   estadoViagem?: string;
+  rota?: string;
 }
 
 export interface RoteiroDia {
@@ -81,6 +82,15 @@ const HORARIO_TRES_LOJAS = [
   { checkIn: '12:00', checkOut: '14:30' },
   { checkIn: '15:00', checkOut: '18:00' },
 ];
+const ROTA_MAP: Record<string, string> = {
+  "PAULO SERGIO MARQUES DA SILVA": "SPC2",
+  "LIEDY AQUINO GOMES DOS SANTOS": "SPC1",
+  "MARCIO JOSE FLORES PEREIRA": "SUL_1",
+  "ALEXANDRE RIBEIRO LIMA": "SPI_2",
+  "DIOGO DO NASCIMENTO SANTOS": "RJ",
+  "TATIANE SOUZA DOS SANTOS": "NE_1",
+  "LUIZ FALCAO DE SOUZA NETO": "NE_2"
+};
 
 async function getFeriados(ano: number, uf: string): Promise<Record<string, string>> {
   const API_KEY = process.env.FERIADOS_API_KEY;
@@ -185,7 +195,9 @@ function distribuirLojasNoDias(
     return { ...l, forcarViagem: false };
   });
 
-  const lojasLocais = lojasComDistancia.filter(l => !l.forcarViagem && (l.uf === ufConsultor || !l.uf));
+  const lojasLocais = lojasComDistancia
+    .filter(l => !l.forcarViagem && (l.uf === ufConsultor || !l.uf))
+    .filter(l => !excludedLojasIds.includes(`${l.nome_pdv_novo}-${l.cidade}`));
   const lojasViagemPre = lojasComDistancia.filter(l => l.forcarViagem || (l.uf && l.uf !== ufConsultor))
     .filter(l => !excludedLojasIds.includes(`${l.nome_pdv_novo}-${l.cidade}`));
   const lojasViagem = viagem ? lojasViagemPre : [];
@@ -359,7 +371,8 @@ function distribuirLojasNoDias(
             checkIn: horarios[j].checkIn,
             checkOut: horarios[j].checkOut,
             tipo: 'viagem',
-            estadoViagem: loja.uf
+            estadoViagem: loja.uf,
+            rota: ROTA_MAP[loja.consultor] || loja.consultor?.split(' ')[0] || ''
           });
         });
         
@@ -585,7 +598,8 @@ function distribuirLojasNoDias(
         cluster: loja.cluster,
         checkIn: HORARIOS_PADRAO[idx].checkIn,
         checkOut: HORARIOS_PADRAO[idx].checkOut,
-        tipo: loja.uf !== ufConsultor ? 'viagem' : 'local'
+        tipo: loja.uf !== ufConsultor ? 'viagem' : 'local',
+        rota: ROTA_MAP[loja.consultor] || loja.consultor?.split(' ')[0] || ''
       });
     });
 
@@ -635,7 +649,8 @@ export async function POST(request: Request) {
       viagem,
       dataInicio,
       dataFim,
-      rotaBase
+      rotaBase,
+      includedCoberturaLojasIds = []
     } = body;
     if (!consultor || !mes || !ano) return NextResponse.json({ error: 'Parâmetros obrigatórios: consultor, mes, ano' }, { status: 400 });
 
@@ -643,8 +658,13 @@ export async function POST(request: Request) {
     if (errorC || !dataC) return NextResponse.json({ error: `Consultor "${consultor}" não encontrado.` }, { status: 404 });
 
     const consultorData: ConsultorLocal = { nome: dataC.nome, endereco: dataC.endereco_completo, lat: dataC.lat, lng: dataC.lng };
-    const targetRota = rotaBase || consultor;
-    const { data: dataL, error: errorL } = await supabase.from('lojas').select('*').eq('consultor_vinculado', targetRota);
+    let query = supabase.from('lojas').select('*');
+    if (rotaBase) {
+      query = query.or(`consultor_vinculado.eq."${consultor}",consultor_vinculado.eq."${rotaBase}"`);
+    } else {
+      query = query.eq('consultor_vinculado', consultor);
+    }
+    const { data: dataL, error: errorL } = await query;
     if (errorL) return NextResponse.json({ error: 'Erro ao buscar lojas.' }, { status: 500 });
 
     // Buscar histórico de visitas para o filtro de período
@@ -665,7 +685,18 @@ export async function POST(request: Request) {
     const startOfMonth = new Date(ano, mes - 1, 1);
 
     const lojasFiltradas = todasLojas.filter(l => {
-      if (l.consultor !== targetRota) return false;
+      const isMyStore = l.consultor && l.consultor.toUpperCase().trim() === consultor.toUpperCase().trim();
+      const isCoveredStore = rotaBase && l.consultor && l.consultor.toUpperCase().trim() === rotaBase.toUpperCase().trim();
+      
+      if (!isMyStore && !isCoveredStore) return false;
+      
+      const lojaId = `${l.nome_pdv_novo}-${l.cidade}`;
+      if (excludedLojasIds.includes(lojaId)) return false;
+
+      if (isCoveredStore && rotaBase) {
+        if (!includedCoberturaLojasIds.includes(lojaId)) return false;
+      }
+
       if (selectedStatus && l.status.toUpperCase().trim() !== selectedStatus.toUpperCase().trim()) return false;
       if (selectedClientes?.length > 0 && !selectedClientes.includes(l.cliente)) return false;
       if (selectedClusters?.length > 0 && !selectedClusters.includes(l.cluster)) return false;
@@ -690,14 +721,30 @@ export async function POST(request: Request) {
     if (lojasFiltradas.length === 0) return NextResponse.json({ error: 'Nenhuma loja encontrada para este mês após filtros de período.' }, { status: 400 });
 
     const feriados = await getFeriados(ano, ufConsultor || 'SP');
-    const diasUteis = getDiasUteis(ano, mes, feriados);
+    let diasUteis = [];
+    if (dataInicio && dataFim) {
+      const start = new Date(dataInicio + 'T00:00:00');
+      const end = new Date(dataFim + 'T00:00:00');
+      let current = new Date(start);
+      
+      while (current <= end) {
+        const diaSemanaNum = getDay(current);
+        if (diaSemanaNum !== 0 && diaSemanaNum !== 6) {
+          const dataStr = format(current, 'yyyy-MM-dd');
+          const feriadoNome = feriados[dataStr];
+          diasUteis.push({
+            data: dataStr,
+            diaSemana: DIAS_SEMANA[diaSemanaNum],
+            feriado: feriadoNome,
+          });
+        }
+        current.setDate(current.getDate() + 1);
+      }
+    } else {
+      diasUteis = getDiasUteis(ano, mes, feriados);
+    }
     
-    // Filtrar dias úteis pelo range personalizado (se fornecido)
-    const diasFiltrados = diasUteis.filter(d => {
-      if (dataInicio && d.data < dataInicio) return false;
-      if (dataFim && d.data > dataFim) return false;
-      return true;
-    });
+    const diasFiltrados = diasUteis;
 
     const roteiro = distribuirLojasNoDias(
       diasFiltrados, 

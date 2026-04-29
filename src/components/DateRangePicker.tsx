@@ -10,7 +10,8 @@ import {
   isSameDay, 
   isWithinInterval, 
   getDay,
-  parse
+  parse,
+  addMonths
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react';
@@ -37,18 +38,34 @@ export default function DateRangePicker({ mes, startDate, endDate, onChange }: D
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const [currentViewDate, setCurrentViewDate] = useState<Date>(new Date());
+
+  useEffect(() => {
+    if (mes) {
+      setCurrentViewDate(parse(mes, 'yyyy-MM', new Date()));
+    }
+  }, [mes]);
+
   if (!mes) return null;
 
-  // Converter o mês 'YYYY-MM' para um objeto Date
-  const baseDate = parse(mes, 'yyyy-MM', new Date());
-  const monthStart = startOfMonth(baseDate);
-  const monthEnd = endOfMonth(baseDate);
+  const monthStart = startOfMonth(currentViewDate);
+  const monthEnd = endOfMonth(currentViewDate);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   // Ajustar o início da semana (Domingo = 0, Segunda = 1)
   // Queremos que a grade comece no Domingo
   const startDayOfWeek = getDay(monthStart);
   const blanks = Array(startDayOfWeek).fill(null);
+
+  const prevMonth = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentViewDate(prev => addMonths(prev, -1));
+  };
+
+  const nextMonth = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentViewDate(prev => addMonths(prev, 1));
+  };
 
   const handleDayClick = (day: Date) => {
     const dayStr = format(day, 'yyyy-MM-dd');
@@ -130,12 +147,15 @@ export default function DateRangePicker({ mes, startDate, endDate, onChange }: D
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 p-4 bg-white border border-gray-200 rounded-xl shadow-xl z-50 w-[320px] animate-in fade-in slide-in-from-top-1 duration-200">
           <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-2">
+            <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded text-gray-500 transition-colors">
+              <ChevronLeft className="w-4 h-4" />
+            </button>
             <h3 className="text-sm font-bold text-gray-800 capitalize">
-              {format(baseDate, 'MMMM yyyy', { locale: ptBR })}
+              {format(currentViewDate, 'MMMM yyyy', { locale: ptBR })}
             </h3>
-            <span className="text-[10px] bg-blue-100 text-blue-700 font-black px-2 py-0.5 rounded-full uppercase">
-              Selecione o range
-            </span>
+            <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded text-gray-500 transition-colors">
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Dias da Semana */}

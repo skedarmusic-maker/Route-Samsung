@@ -10,10 +10,21 @@ interface RoteiroSalvo {
   consultor: string;
   mes: number;
   ano: number;
+  cenario?: string;
   status: string;
   created_at: string;
   dados_roteiro: any; // A estrutura JSON do roteiro aprovado
 }
+
+const ROTA_MAP: Record<string, string> = {
+  "PAULO SERGIO MARQUES DA SILVA": "SPC2",
+  "LIEDY AQUINO GOMES DOS SANTOS": "SPC1",
+  "MARCIO JOSE FLORES PEREIRA": "SUL_1",
+  "ALEXANDRE RIBEIRO LIMA": "SPI_2",
+  "DIOGO DO NASCIMENTO SANTOS": "RJ",
+  "TATIANE SOUZA DOS SANTOS": "NE_1",
+  "LUIZ FALCAO DE SOUZA NETO": "NE_2"
+};
 
 export default function RoteirosSalvos({ onEdit, onViewConsolidated }: { 
   onEdit?: (roteiro: any) => void;
@@ -53,8 +64,8 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
     });
   }, [roteiros, filterMes, filterAno]);
 
-  const handleDelete = async (id: string, consultor: string, mes: number, ano: number) => {
-    const confirmado = window.confirm(`Tem certeza que deseja apagar o roteiro de ${consultor} (${mes}/${ano})?`);
+  const handleDelete = async (id: string, consultor: string, mes: number, ano: number, cenario: string) => {
+    const confirmado = window.confirm(`Tem certeza que deseja apagar o roteiro de ${consultor} (${mes}/${ano}) - Cenário: ${cenario || 'Principal'}?`);
     if (!confirmado) return;
     try {
       const { error } = await supabase.from('roteiros').delete().eq('id', id);
@@ -79,6 +90,8 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
             Data: dia.data,
             'Dia da Semana': dia.diaSemana,
             Consultor: resultado.consultor,
+            Rota: ROTA_MAP[resultado.consultor] || '',
+            'Cenário': r.cenario || 'Cenário Principal',
             'Nome PDV': dia.feriado,
             'Status': 'FERIADO/FOLGA'
           }];
@@ -88,6 +101,8 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
           Data: dia.data,
           'Dia da Semana': dia.diaSemana,
           Consultor: resultado.consultor,
+          Rota: loja.rota || ROTA_MAP[resultado.consultor] || '',
+          'Cenário': r.cenario || 'Cenário Principal',
           'Nome PDV': loja.nome_pdv,
           Cliente: loja.cliente,
           Cidade: loja.cidade,
@@ -188,6 +203,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
               <tr>
                 <th className="px-6 py-3">Consultor</th>
                 <th className="px-6 py-3">Referência</th>
+                <th className="px-6 py-3">Cenário</th>
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">Data de Aprovação</th>
                 <th className="px-6 py-3 text-right">Ações</th>
@@ -201,6 +217,9 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
                   </td>
                   <td className="px-6 py-4 flex items-center gap-2">
                     <CalendarIcon className="w-4 h-4 text-gray-400" /> {roteiro.mes}/{roteiro.ano}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-blue-600">
+                    {roteiro.cenario || 'Cenário Principal'}
                   </td>
                   <td className="px-6 py-4">
                     <span className="px-2.5 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
@@ -219,7 +238,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
                         <Edit className="w-4 h-4" /> Carregar
                       </button>
                       <button 
-                        onClick={() => handleDelete(roteiro.id, roteiro.consultor, roteiro.mes, roteiro.ano)}
+                        onClick={() => handleDelete(roteiro.id, roteiro.consultor, roteiro.mes, roteiro.ano, roteiro.cenario || '')}
                         className="text-red-500 hover:text-red-700 flex items-center gap-1"
                       >
                         <Trash2 className="w-4 h-4" /> Apagar
