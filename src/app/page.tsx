@@ -923,6 +923,31 @@ export default function ConfigurationPanel() {
     return hubs;
   }, [lojasFiltradasCompletas, consultorInfo]);
 
+  const lojasVisiveisConsultor = useMemo(() => {
+    let filtered = lojasFiltradasCompletas.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
+    
+    let ufConsultor = 'SP';
+    const ufRegex = /\s([A-Z]{2})(?:\s|,|-|$)/g;
+    const matches = Array.from((consultorInfo?.endereco || '').matchAll(ufRegex));
+    if (matches.length > 0) ufConsultor = matches[matches.length - 1][1];
+
+    if (viagem) {
+      filtered = filtered.filter(l => {
+        if (l.uf === ufConsultor || !l.uf) return true;
+        if (selectedUFs.size > 0 && !selectedUFs.has(l.uf)) return false;
+        
+        const poloDaLoja = polosViagem.find(p => p.lojas.some(lojaPolo => `${lojaPolo.nome_pdv_novo}-${lojaPolo.cidade}` === `${l.nome_pdv_novo}-${l.cidade}`));
+        if (poloDaLoja && selectedPolos.size > 0 && !selectedPolos.has(poloDaLoja.nome)) return false;
+        
+        return true;
+      });
+    } else {
+      filtered = filtered.filter(l => l.uf === ufConsultor || !l.uf);
+    }
+    
+    return filtered;
+  }, [lojasFiltradasCompletas, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem, consultorInfo]);
+
   const opcoesUFs = useMemo(() => {
     const ufs = new Set<string>();
     polosViagem.forEach(p => ufs.add(p.ufPrincipal));
@@ -1111,7 +1136,7 @@ export default function ConfigurationPanel() {
                   </p>
                   <button 
                     onClick={() => {
-                      const lojasConsultor = lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
+                      const lojasConsultor = lojasVisiveisConsultor;
                       const allIds = lojasConsultor.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
                       const someExcluded = allIds.some(id => excludedLojasIds.has(id));
                       const nextExcl = new Set(excludedLojasIds);
@@ -1124,11 +1149,11 @@ export default function ConfigurationPanel() {
                     }}
                     className="text-[10px] font-bold text-blue-600 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
                   >
-                    {lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => excludedLojasIds.has(id)) ? 'Selecionar Todas' : 'Desmarcar Todas'}
+                    {lojasVisiveisConsultor.map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => excludedLojasIds.has(id)) ? 'Selecionar Todas' : 'Desmarcar Todas'}
                   </button>
                 </div>
                 <div className="max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-scrollbar">
-                  {lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).map((loja, idx) => {
+                  {lojasVisiveisConsultor.map((loja, idx) => {
                     const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
                     const isExcluded = excludedLojasIds.has(lojaId);
                     return (
