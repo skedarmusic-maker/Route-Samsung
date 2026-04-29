@@ -707,7 +707,7 @@ export default function ConfigurationPanel() {
   const [consolidatedRoutes, setConsolidatedRoutes] = useState<any[] | null>(null);
 
   const [selectedConsultor, setSelectedConsultor] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('ATENDIMENTO');
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [viagem, setViagem] = useState(false);
   const [mes, setMes] = useState('');
   const [dataInicio, setDataInicio] = useState('');
@@ -783,6 +783,9 @@ export default function ConfigurationPanel() {
   useEffect(() => {
     if (selectedConsultor) {
       setConsultorInfo(consultores.find(c => c.nome === selectedConsultor));
+      setSelectedStatus('');
+      setViagem(false);
+      setExcludedLojasIds(new Set());
     } else {
       setConsultorInfo(undefined);
     }
