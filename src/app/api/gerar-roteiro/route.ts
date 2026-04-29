@@ -180,9 +180,6 @@ function distribuirLojasNoDias(
   });
 
   const getFrequencia = (periodo: string): number => {
-    const p = (periodo || '').toUpperCase().trim();
-    if (p.includes('SEMANAL/QUINZENAL') || p === 'SEMANAL') return 3;
-    if (p === 'QUINZENAL') return 2;
     return 1;
   };
 
@@ -700,19 +697,7 @@ export async function POST(request: Request) {
       if (selectedClientes?.length > 0 && !selectedClientes.includes(l.cliente)) return false;
       if (selectedClusters?.length > 0 && !selectedClusters.includes(l.cluster)) return false;
       
-      // Inteligência de Período (Cooldown de meses anteriores)
-      const requiredGap = parsePeriodoToDays(l.periodo);
-      if (requiredGap > 0) {
-        const lastVisitStr = historicoMap[l.nome_pdv_novo];
-        if (lastVisitStr) {
-          const lastVisitDate = new Date(lastVisitStr + 'T00:00:00');
-          const diffTime = startOfMonth.getTime() - lastVisitDate.getTime();
-          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          if (diffDays < requiredGap) {
-            return false; // A loja foi visitada recentemente, ignora este mês
-          }
-        }
-      }
+      // Inteligência de Período removida a pedido do usuário
       
       return true;
     });
