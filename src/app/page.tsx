@@ -932,7 +932,7 @@ export default function ConfigurationPanel() {
       cityCoordsNormalized[normalize(k)] = (cityCoords as any)[k];
     });
 
-    let filtered = lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
+    let filtered = lojasFiltradasCompletas.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
     
     filtered = filtered.map(l => {
       const cityKey = normalize(`${l.cidade}-${l.uf}`);
@@ -961,7 +961,7 @@ export default function ConfigurationPanel() {
     }
     
     return filtered;
-  }, [lojasFiltradasBase, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem, consultorInfo]);
+  }, [lojasFiltradasCompletas, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem, consultorInfo]);
 
   const opcoesUFs = useMemo(() => {
     const ufs = new Set<string>();
