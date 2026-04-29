@@ -1110,7 +1110,7 @@ export default function ConfigurationPanel() {
                   </p>
                   <button 
                     onClick={() => {
-                      const lojasConsultor = lojas.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
+                      const lojasConsultor = lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor));
                       const allIds = lojasConsultor.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
                       const someExcluded = allIds.some(id => excludedLojasIds.has(id));
                       const nextExcl = new Set(excludedLojasIds);
@@ -1123,11 +1123,11 @@ export default function ConfigurationPanel() {
                     }}
                     className="text-[10px] font-bold text-blue-600 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
                   >
-                    {lojas.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => excludedLojasIds.has(id)) ? 'Selecionar Todas' : 'Desmarcar Todas'}
+                    {lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => excludedLojasIds.has(id)) ? 'Selecionar Todas' : 'Desmarcar Todas'}
                   </button>
                 </div>
                 <div className="max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-scrollbar">
-                  {lojas.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).map((loja, idx) => {
+                  {lojasFiltradasBase.filter(l => normalize(l.consultor) === normalize(selectedConsultor)).map((loja, idx) => {
                     const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
                     const isExcluded = excludedLojasIds.has(lojaId);
                     return (
