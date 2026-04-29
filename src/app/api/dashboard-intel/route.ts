@@ -26,14 +26,16 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
     const clusters = searchParams.get('clusters')?.split(',').filter(Boolean);
     const clientes = searchParams.get('clientes')?.split(',').filter(Boolean);
+    const canais = searchParams.get('canais')?.split(',').filter(Boolean);
 
     // 1. Buscar lojas (filtrar por consultor se informado)
-    let query = supabase.from('lojas').select('nome_pdv, cliente, cluster, periodo, status, consultor_vinculado');
+    let query = supabase.from('lojas').select('nome_pdv, cliente, cluster, periodo, status, consultor_vinculado, canal');
     
     if (consultor) query = query.eq('consultor_vinculado', consultor);
     if (status) query = query.ilike('status', status);
     if (clusters && clusters.length > 0) query = query.in('cluster', clusters);
     if (clientes && clientes.length > 0) query = query.in('cliente', clientes);
+    if (canais && canais.length > 0) query = query.in('canal', canais);
 
     const { data: lojas, error: errorL } = await query;
     if (errorL) throw errorL;

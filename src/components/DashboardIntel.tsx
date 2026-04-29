@@ -124,11 +124,12 @@ function HealthBar({ percent }: { percent: number }) {
   );
 }
 
-export default function DashboardIntel({ consultor, status, clusters, clientes }: { 
+export default function DashboardIntel({ consultor, status, clusters, clientes, canais }: { 
   consultor?: string;
   status?: string;
   clusters?: string[];
   clientes?: string[];
+  canais?: string[];
 }) {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -144,6 +145,7 @@ export default function DashboardIntel({ consultor, status, clusters, clientes }
     if (status) params.append('status', status);
     if (clusters && clusters.length > 0) params.append('clusters', clusters.join(','));
     if (clientes && clientes.length > 0) params.append('clientes', clientes.join(','));
+    if (canais && canais.length > 0) params.append('canais', canais.join(','));
 
     const url = `/api/dashboard-intel?${params.toString()}`;
 
@@ -152,7 +154,7 @@ export default function DashboardIntel({ consultor, status, clusters, clientes }
       .then(d => setData(d))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [consultor, status, clusters, clientes]);
+  }, [consultor, status, clusters, clientes, canais]);
 
   if (loading) {
     return (

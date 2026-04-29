@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`}>
+      <body className={`${inter.className} bg-gray-50 text-gray-900 min-h-screen`} suppressHydrationWarning>
         <nav className="bg-[#1428A0] text-white p-4 shadow-md">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">

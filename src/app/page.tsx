@@ -727,6 +727,7 @@ export default function ConfigurationPanel() {
 
   const [selectedClientes, setSelectedClientes] = useState<Set<string>>(new Set());
   const [selectedClusters, setSelectedClusters] = useState<Set<string>>(new Set());
+  const [selectedCanais, setSelectedCanais] = useState<Set<string>>(new Set());
   const [selectedPolos, setSelectedPolos] = useState<Set<string>>(new Set());
   const [selectedUFs, setSelectedUFs] = useState<Set<string>>(new Set());
   const [excludedLojasIds, setExcludedLojasIds] = useState<Set<string>>(new Set());
@@ -763,6 +764,7 @@ export default function ConfigurationPanel() {
           cidade: l.cidade,
           uf: l.uf,
           cluster: l.cluster,
+          canal: l.canal,
           periodo: l.periodo,
           status: l.status,
           consultor: l.consultor_vinculado,
@@ -820,9 +822,10 @@ export default function ConfigurationPanel() {
     return lojasFiltradasBase.filter(l => {
       if (selectedClientes.size > 0 && !selectedClientes.has(l.cliente)) return false;
       if (selectedClusters.size > 0 && !selectedClusters.has(l.cluster)) return false;
+      if (selectedCanais.size > 0 && !selectedCanais.has(l.canal)) return false;
       return true;
     });
-  }, [lojasFiltradasBase, selectedClientes, selectedClusters]);
+  }, [lojasFiltradasBase, selectedClientes, selectedClusters, selectedCanais]);
 
   const opcoesClientes = useMemo(() => {
     return Array.from(new Set(lojasFiltradasBase.map(l => l.cliente).filter(Boolean))).sort();
@@ -830,6 +833,10 @@ export default function ConfigurationPanel() {
 
   const opcoesClusters = useMemo(() => {
     return Array.from(new Set(lojasFiltradasBase.map(l => l.cluster).filter(Boolean))).sort();
+  }, [lojasFiltradasBase]);
+
+  const opcoesCanais = useMemo(() => {
+    return Array.from(new Set(lojasFiltradasBase.map(l => l.canal).filter(Boolean))).sort();
   }, [lojasFiltradasBase]);
 
   // 2.1 Calcular os Pólos de Viagem caso haja lojas de viagem para o consultor atual
@@ -1013,6 +1020,10 @@ export default function ConfigurationPanel() {
   useEffect(() => {
     setSelectedClusters(new Set(opcoesClusters));
   }, [opcoesClusters]);
+
+  useEffect(() => {
+    setSelectedCanais(new Set(opcoesCanais));
+  }, [opcoesCanais]);
 
   // 4. Contagem final das lojas (Filtros Primários + Secundários)
   const lojasFiltadasCount = lojasFiltradasCompletas.length;
@@ -1483,7 +1494,7 @@ export default function ConfigurationPanel() {
                 <span className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{count} loja{count !== 1 ? 's' : ''} selecionada{count !== 1 ? 's' : ''}</span>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Status</label>
                 <select value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-sm">
@@ -1492,6 +1503,7 @@ export default function ConfigurationPanel() {
                   <option value="NÃO ATENDIMENTO">Não Atendimento</option>
                 </select>
               </div>
+              <CheckboxList title="Canal" options={opcoesCanais} selected={selectedCanais} onChange={setSelectedCanais} />
               <CheckboxList title="Cluster" options={opcoesClusters} selected={selectedClusters} onChange={setSelectedClusters} />
               <CheckboxList title="Cliente (Rede)" options={opcoesClientes} selected={selectedClientes} onChange={setSelectedClientes} />
             </div>
@@ -1529,6 +1541,7 @@ export default function ConfigurationPanel() {
             status={selectedStatus || undefined}
             clusters={Array.from(selectedClusters)}
             clientes={Array.from(selectedClientes)}
+            canais={Array.from(selectedCanais)}
           />
         </div>
       </div>
