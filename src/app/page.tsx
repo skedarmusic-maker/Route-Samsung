@@ -730,6 +730,8 @@ export default function ConfigurationPanel() {
   const [selectedPolos, setSelectedPolos] = useState<Set<string>>(new Set());
   const [selectedUFs, setSelectedUFs] = useState<Set<string>>(new Set());
   const [excludedLojasIds, setExcludedLojasIds] = useState<Set<string>>(new Set());
+  const [filtroCarteira, setFiltroCarteira] = useState('');
+  const [filtroPolos, setFiltroPolos] = useState('');
 
   useEffect(() => {
     async function loadDataFromSupabase() {
@@ -963,6 +965,16 @@ export default function ConfigurationPanel() {
     return filtered;
   }, [lojasFiltradasCompletas, selectedConsultor, viagem, selectedUFs, selectedPolos, polosViagem, consultorInfo]);
 
+  const lojasVisiveisFiltradas = useMemo(() => {
+    if (!filtroCarteira) return lojasVisiveisConsultor;
+    const search = normalize(filtroCarteira);
+    return lojasVisiveisConsultor.filter(l => 
+      normalize(l.nome_pdv_novo || '').includes(search) || 
+      normalize(l.cidade || '').includes(search) || 
+      normalize(l.uf || '').includes(search)
+    );
+  }, [lojasVisiveisConsultor, filtroCarteira]);
+
   const opcoesUFs = useMemo(() => {
     const ufs = new Set<string>();
     polosViagem.forEach(p => ufs.add(p.ufPrincipal));
@@ -1145,30 +1157,39 @@ export default function ConfigurationPanel() {
             
             {selectedConsultor && (
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
                   <p className="text-xs font-bold text-blue-800 uppercase flex items-center gap-2">
                     <Users className="w-4 h-4" /> Carteira de Lojas do Consultor ({selectedConsultor.split(' ')[0]}):
                   </p>
-                  <button 
-                    onClick={() => {
-                      const lojasConsultor = lojasVisiveisConsultor;
-                      const allIds = lojasConsultor.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
-                      const someExcluded = allIds.some(id => excludedLojasIds.has(id));
-                      const nextExcl = new Set(excludedLojasIds);
-                      if (someExcluded) {
-                        allIds.forEach(id => nextExcl.delete(id));
-                      } else {
-                        allIds.forEach(id => nextExcl.add(id));
-                      }
-                      setExcludedLojasIds(nextExcl);
-                    }}
-                    className="text-[10px] font-bold text-blue-600 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
-                  >
-                    {lojasVisiveisConsultor.map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => excludedLojasIds.has(id)) ? 'Selecionar Todas' : 'Desmarcar Todas'}
-                  </button>
+                  <div className="flex items-center gap-2 flex-1 md:flex-initial">
+                    <input 
+                      type="text" 
+                      value={filtroCarteira} 
+                      onChange={(e) => setFiltroCarteira(e.target.value)} 
+                      placeholder="Buscar por loja, cidade ou UF..." 
+                      className="px-2 py-1 text-[10px] border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 outline-none w-full md:w-48 font-medium" 
+                    />
+                    <button 
+                      onClick={() => {
+                        const lojasConsultor = lojasVisiveisConsultor;
+                        const allIds = lojasConsultor.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
+                        const someExcluded = allIds.some(id => excludedLojasIds.has(id));
+                        const nextExcl = new Set(excludedLojasIds);
+                        if (someExcluded) {
+                          allIds.forEach(id => nextExcl.delete(id));
+                        } else {
+                          allIds.forEach(id => nextExcl.add(id));
+                        }
+                        setExcludedLojasIds(nextExcl);
+                      }}
+                      className="text-[10px] whitespace-nowrap font-bold text-blue-600 bg-blue-100 hover:bg-blue-200 px-2 py-1 rounded transition-colors"
+                    >
+                      {lojasVisiveisConsultor.map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => excludedLojasIds.has(id)) ? 'Selecionar Todas' : 'Desmarcar Todas'}
+                    </button>
+                  </div>
                 </div>
                 <div className="max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-scrollbar">
-                  {lojasVisiveisConsultor.map((loja, idx) => {
+                  {lojasVisiveisFiltradas.map((loja, idx) => {
                     const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
                     const isExcluded = excludedLojasIds.has(lojaId);
                     return (
@@ -1357,12 +1378,31 @@ export default function ConfigurationPanel() {
               {/* Detalhamento das Lojas dos Pólos Selecionados */}
               {viagem && selectedPolos.size > 0 && (
                 <div className="pt-4 border-t border-blue-100 mt-4 bg-white/50 p-4 rounded-xl border border-blue-50">
-                  <p className="text-xs font-bold text-blue-600 uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <CheckSquare className="w-3 h-3" /> Gestão Individual de Lojas por Pólo
-                  </p>
+                  <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+                    <p className="text-xs font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2">
+                      <CheckSquare className="w-3 h-3" /> Gestão Individual de Lojas por Pólo
+                    </p>
+                    <input 
+                      type="text" 
+                      value={filtroPolos} 
+                      onChange={(e) => setFiltroPolos(e.target.value)} 
+                      placeholder="Buscar por loja ou cidade..." 
+                      className="px-2 py-1 text-[10px] border border-gray-200 rounded focus:ring-1 focus:ring-blue-400 outline-none w-full md:w-48 font-medium bg-white" 
+                    />
+                  </div>
                   <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                     {polosViagem.filter(p => selectedPolos.has(p.nome)).map(polo => {
-                      const allIds = polo.lojas.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
+                      let lojasPolo = polo.lojas;
+                      if (filtroPolos) {
+                        const search = normalize(filtroPolos);
+                        lojasPolo = lojasPolo.filter(l => 
+                          normalize(l.nome_pdv_novo || '').includes(search) || 
+                          normalize(l.cidade || '').includes(search)
+                        );
+                      }
+                      if (lojasPolo.length === 0) return null;
+                      
+                      const allIds = lojasPolo.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
                       const allExcluded = allIds.every(id => excludedLojasIds.has(id));
                       const someExcluded = allIds.some(id => excludedLojasIds.has(id));
                       
@@ -1384,7 +1424,7 @@ export default function ConfigurationPanel() {
                             <span className="opacity-50">{allExcluded ? '(Desativado)' : someExcluded ? '(Parcial)' : '(Ativo)'}</span>
                           </button>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            {polo.lojas.map((loja, idx) => {
+                            {lojasPolo.map((loja, idx) => {
                               const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
                               const isExcluded = excludedLojasIds.has(lojaId);
                               const isCovered = selectedRotasBase.map(r => normalize(r)).includes(normalize(loja.consultor));
