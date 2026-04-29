@@ -142,13 +142,24 @@ const ROTA_MAP: Record<string, string> = {
 // ─────────────────────────────────────────────────────────
 // Card do dia (com suporte a seleção para o mapa)
 // ─────────────────────────────────────────────────────────
-function DiaCard({ dia, selected, onClick, distancia, onBuscarVoo, chosenFlights }: {
+function DiaCard({ 
+  dia, 
+  selected, 
+  onClick, 
+  distancia, 
+  onBuscarVoo, 
+  chosenFlights,
+  onSwapDays,
+  outrosDias
+}: {
   dia: RoteiroDia;
   selected: boolean;
   onClick: () => void;
   distancia?: number;
   onBuscarVoo?: (loja: LojaVisita, dia: RoteiroDia) => void;
   chosenFlights?: Record<string, any>;
+  onSwapDays?: (dataA: string, dataB: string) => void;
+  outrosDias?: { data: string; diaSemana: string }[];
 }) {
   const [dataObj] = useState(() => {
     const [y, m, d] = dia.data.split('-').map(Number);
@@ -174,9 +185,38 @@ function DiaCard({ dia, selected, onClick, distancia, onBuscarVoo, chosenFlights
       <div className="flex items-center justify-between mb-2">
         <div>
           <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">{dia.diaSemana}</p>
-          <p className="text-base font-bold text-gray-900">
-            {dataObj.getDate().toString().padStart(2, '0')}/{(dataObj.getMonth() + 1).toString().padStart(2, '0')}
-          </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <p className="text-base font-bold text-gray-900">
+              {dataObj.getDate().toString().padStart(2, '0')}/{(dataObj.getMonth() + 1).toString().padStart(2, '0')}
+            </p>
+            {onSwapDays && outrosDias && (
+              <select
+                value={dia.data}
+                onChange={(e) => {
+                  const targetData = e.target.value;
+                  if (targetData !== dia.data) {
+                    onSwapDays(dia.data, targetData);
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()} // Impede disparar o select do mapa
+                className="text-[10px] bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 font-bold text-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer hover:bg-blue-50 transition-colors"
+                title="Trocar visitas com outro dia"
+              >
+                <option value={dia.data}>Trocar...</option>
+                {outrosDias
+                  .filter(o => o.data !== dia.data)
+                  .map(o => {
+                    const [oy, om, od] = o.data.split('-').map(Number);
+                    const oDateStr = `${od.toString().padStart(2, '0')}/${om.toString().padStart(2, '0')}`;
+                    return (
+                      <option key={o.data} value={o.data}>
+                        com {oDateStr} ({o.diaSemana.substring(0, 3)})
+                      </option>
+                    );
+                  })}
+              </select>
+            )}
+          </div>
         </div>
         {isFeriado && (
           <span className="text-[10px] text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-medium max-w-[130px] text-right leading-tight">{dia.feriado}</span>
@@ -238,14 +278,16 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
   initialCenario?: string;
   onVoltar: () => void;
 }) {
-  const totalVisitas = resultado.roteiro.reduce((acc: number, d: RoteiroDia) => acc + d.lojas.length, 0);
-  const diasComVisitas = resultado.roteiro.filter((d: RoteiroDia) => d.lojas.length > 0);
-  const feriadosDias = resultado.roteiro.filter((d: RoteiroDia) => d.feriado && !d.feriado.startsWith('__viagem_'));
+  const [roteiroState, setRoteiroState] = useState<RoteiroDia[]>(resultado.roteiro);
+
+  const totalVisitas = roteiroState.reduce((acc: number, d: RoteiroDia) => acc + d.lojas.length, 0);
+  const diasComVisitas = roteiroState.filter((d: RoteiroDia) => d.lojas.length > 0);
+  const feriadosDias = roteiroState.filter((d: RoteiroDia) => d.feriado && !d.feriado.startsWith('__viagem_'));
   const mesNome = new Date(resultado.ano, resultado.mes - 1, 1).toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
 
   // Dia selecionado para o mapa — inicializa no primeiro dia com visitas
   const [diaSelecionado, setDiaSelecionado] = useState<RoteiroDia | null>(
-    () => resultado.roteiro.find((d: RoteiroDia) => d.lojas.length > 0) ?? null
+    () => roteiroState.find((d: RoteiroDia) => d.lojas.length > 0) ?? null
   );
 
   const consultorCoords = useMemo(() => 
@@ -269,10 +311,52 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
   // Nome do Cenário
   const [cenarioNome, setCenarioNome] = useState(initialCenario || 'Cenário Principal');
 
+  const handleSwapDays = (dataA: string, dataB: string) => {
+    setRoteiroState(prev => {
+      const next = [...prev];
+      const indexA = next.findIndex(d => d.data === dataA);
+      const indexB = next.findIndex(d => d.data === dataB);
+      
+      if (indexA !== -1 && indexB !== -1) {
+        const tempLojas = next[indexA].lojas;
+        const tempFeriado = next[indexA].feriado;
+        const tempAviso = next[indexA].aviso;
+        
+        next[indexA] = {
+          ...next[indexA],
+          lojas: next[indexB].lojas,
+          feriado: next[indexB].feriado,
+          aviso: next[indexB].aviso
+        };
+        
+        next[indexB] = {
+          ...next[indexB],
+          lojas: tempLojas,
+          feriado: tempFeriado,
+          aviso: tempAviso
+        };
+        
+        if (diaSelecionado && (diaSelecionado.data === dataA || diaSelecionado.data === dataB)) {
+          setTimeout(() => {
+            setDiaSelecionado(next.find(d => d.data === diaSelecionado.data) || null);
+          }, 0);
+        }
+      }
+      return next;
+    });
+
+    setDistancias(prev => {
+      const next = { ...prev };
+      delete next[dataA];
+      delete next[dataB];
+      return next;
+    });
+  };
+
   // Calcula KM total aproximado do roteiro
   const totalEstimatedKM = useMemo(() => {
     let total = 0;
-    resultado.roteiro.forEach((dia: RoteiroDia) => {
+    roteiroState.forEach((dia: RoteiroDia) => {
       if (dia.lojas.length === 0) return;
 
       // Se o Google Maps já calculou a distância real para este dia, usamos ela com precisão máxima!
@@ -335,7 +419,7 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
       total += (diaEstimado * 1.3); // Fator de correção de ruas (30%)
     });
     return total;
-  }, [resultado.roteiro, consultorCoords, distancias]);
+  }, [roteiroState, consultorCoords, distancias]);
 
   // Inteligência Financeira e de Desempenho
   const despesasMes = (despesasHistoricasMeses as any)[mesComparacao] || {};
@@ -370,7 +454,7 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
   const economizouCusto = variacaoCusto ? variacaoCusto < 0 : false;
 
   const handleExport = () => {
-    const dataToExport = resultado.roteiro.flatMap((dia: any) => {
+    const dataToExport = roteiroState.flatMap((dia: any) => {
       if (dia.feriado && !dia.feriado.startsWith('__viagem')) {
         return [{
           Data: dia.data,
@@ -416,7 +500,8 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
         ...resultado,
         totalEstimatedKM: totalEstimatedKM,
         estimatedCost: estimatedCost,
-        totalLojas: resultado.totalLojas || resultado.roteiro.reduce((acc: number, dia: any) => acc + (dia.lojas?.length || 0), 0)
+        totalLojas: resultado.totalLojas || roteiroState.reduce((acc: number, dia: any) => acc + (dia.lojas?.length || 0), 0),
+        roteiro: roteiroState
       };
 
       const { error } = await supabase
@@ -629,7 +714,7 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
               </div>
 
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-1 mt-2">Clique num dia para ver no mapa</p>
-              {resultado.roteiro.map((dia: RoteiroDia) => (
+              {roteiroState.map((dia: RoteiroDia) => (
                 <DiaCard
                   key={dia.data}
                   dia={dia}
@@ -642,6 +727,8 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
                     setFlightModalOpen(true);
                   }}
                   chosenFlights={chosenFlights}
+                  onSwapDays={handleSwapDays}
+                  outrosDias={roteiroState.map(d => ({ data: d.data, diaSemana: d.diaSemana }))}
                 />
               ))}
             </div>

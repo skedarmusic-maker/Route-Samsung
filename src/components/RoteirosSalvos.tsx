@@ -34,6 +34,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
   const [loading, setLoading] = useState(true);
   const [filterMes, setFilterMes] = useState<string>('');
   const [filterAno, setFilterAno] = useState<string>('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const fetchRoteiros = async () => {
     setLoading(true);
@@ -64,6 +65,10 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
     });
   }, [roteiros, filterMes, filterAno]);
 
+  const roteirosSelecionados = useMemo(() => {
+    return roteirosFiltrados.filter(r => selectedIds.has(r.id));
+  }, [roteirosFiltrados, selectedIds]);
+
   const handleDelete = async (id: string, consultor: string, mes: number, ano: number, cenario: string) => {
     const confirmado = window.confirm(`Tem certeza que deseja apagar o roteiro de ${consultor} (${mes}/${ano}) - Cenário: ${cenario || 'Principal'}?`);
     if (!confirmado) return;
@@ -77,10 +82,10 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
   };
 
   const handleExportConsolidado = () => {
-    if (roteirosFiltrados.length === 0) return;
+    const alvos = selectedIds.size > 0 ? roteirosSelecionados : roteirosFiltrados;
+    if (alvos.length === 0) return;
 
-    // Juntar todos os dias de todos os roteiros filtrados
-    const dataToExport = roteirosFiltrados.flatMap((r) => {
+    const dataToExport = alvos.flatMap((r) => {
       const resultado = r.dados_roteiro;
       if (!resultado || !resultado.roteiro) return [];
 
@@ -171,11 +176,11 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
           </button>
           
           <button 
-            onClick={() => onViewConsolidated?.(roteirosFiltrados)}
+            onClick={() => onViewConsolidated?.(selectedIds.size > 0 ? roteirosSelecionados : roteirosFiltrados)}
             disabled={roteirosFiltrados.length === 0}
             className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 font-bold rounded-xl hover:bg-blue-100 transition-all text-xs disabled:opacity-50"
           >
-            <Activity className="w-4 h-4" /> Ver Dashboard Consolidado
+            <Activity className="w-4 h-4" /> Ver Dashboard Consolidado {selectedIds.size > 0 && `(${selectedIds.size})`}
           </button>
           
           <button 
@@ -183,7 +188,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
             disabled={roteirosFiltrados.length === 0}
             className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 shadow-sm transition-all"
           >
-            <Download className="w-4 h-4" /> Baixar Consolidado ({roteirosFiltrados.length})
+            <Download className="w-4 h-4" /> Baixar Consolidado ({selectedIds.size > 0 ? selectedIds.size : roteirosFiltrados.length})
           </button>
         </div>
       </div>
@@ -201,6 +206,20 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
           <table className="w-full text-sm text-left text-gray-500">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b">
               <tr>
+                <th className="px-4 py-3 w-10">
+                  <input 
+                    type="checkbox"
+                    checked={selectedIds.size === roteirosFiltrados.length && roteirosFiltrados.length > 0}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedIds(new Set(roteirosFiltrados.map(r => r.id)));
+                      } else {
+                        setSelectedIds(new Set());
+                      }
+                    }}
+                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  />
+                </th>
                 <th className="px-6 py-3">Consultor</th>
                 <th className="px-6 py-3">Referência</th>
                 <th className="px-6 py-3">Cenário</th>
@@ -211,7 +230,23 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
             </thead>
             <tbody>
               {roteirosFiltrados.map(roteiro => (
-                <tr key={roteiro.id} className="bg-white border-b hover:bg-gray-50">
+                <tr key={roteiro.id} className={`border-b hover:bg-gray-50 ${selectedIds.has(roteiro.id) ? 'bg-blue-50/40' : 'bg-white'}`}>
+                  <td className="px-4 py-4 w-10">
+                    <input 
+                      type="checkbox"
+                      checked={selectedIds.has(roteiro.id)}
+                      onChange={(e) => {
+                        const next = new Set(selectedIds);
+                        if (e.target.checked) {
+                          next.add(roteiro.id);
+                        } else {
+                          next.delete(roteiro.id);
+                        }
+                        setSelectedIds(next);
+                      }}
+                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                    />
+                  </td>
                   <td className="px-6 py-4 font-medium text-gray-900 flex items-center gap-2">
                     <User className="w-4 h-4 text-gray-400" /> {roteiro.consultor}
                   </td>
