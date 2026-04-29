@@ -802,9 +802,11 @@ export default function ConfigurationPanel() {
   const [selectedRotasBase, setSelectedRotasBase] = useState<string[]>([]);
   const [selectedCoberturaLojas, setSelectedCoberturaLojas] = useState<Set<string>>(new Set());
   const [cenarioNome, setCenarioNome] = useState('Cenário Principal');
+  const [ufFiltroCobertura, setUfFiltroCobertura] = useState<string>('');
 
   useEffect(() => {
     setSelectedCoberturaLojas(new Set());
+    setUfFiltroCobertura('');
   }, [selectedRotasBase]);
 
   useEffect(() => {
@@ -1350,60 +1352,86 @@ export default function ConfigurationPanel() {
                 })}
               </div>
 
-              {selectedRotasBase.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-orange-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-bold text-orange-800 uppercase">Selecione as lojas das rotas cobertas para incluir:</p>
-                    <button 
-                      onClick={() => {
-                        const lojasRotas = lojas.filter(l => selectedRotasBase.map(r => normalize(r)).includes(normalize(l.consultor)));
-                        const allIds = lojasRotas.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
-                        const someExcluded = allIds.some(id => !selectedCoberturaLojas.has(id));
+              {selectedRotasBase.length > 0 && (() => {
+                const lojasRotas = lojas.filter(l => selectedRotasBase.map(r => normalize(r)).includes(normalize(l.consultor)));
+                const ufsCobertura = Array.from(new Set(lojasRotas.map(l => l.uf?.toUpperCase().trim()).filter(Boolean))).sort();
+                
+                const lojasVisiveis = lojasRotas.filter(l => !ufFiltroCobertura || l.uf?.toUpperCase().trim() === ufFiltroCobertura.toUpperCase().trim());
+                const allVisibleIds = lojasVisiveis.map(l => `${l.nome_pdv_novo}-${l.cidade}`);
+                const someVisibleExcluded = allVisibleIds.some(id => !selectedCoberturaLojas.has(id));
+                
+                return (
+                  <div className="mt-4 pt-4 border-t border-orange-200">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <p className="text-xs font-bold text-orange-800 uppercase">Selecione as lojas das rotas cobertas para incluir:</p>
                         
-                        const nextSet = new Set(selectedCoberturaLojas);
-                        if (someExcluded) {
-                          allIds.forEach(id => nextSet.add(id));
-                        } else {
-                          allIds.forEach(id => nextSet.delete(id));
-                        }
-                        setSelectedCoberturaLojas(nextSet);
-                      }}
-                      className="text-[10px] font-bold text-orange-600 bg-orange-100 hover:bg-orange-200 px-2 py-1 rounded transition-colors"
-                    >
-                      {lojas.filter(l => selectedRotasBase.map(r => normalize(r)).includes(normalize(l.consultor))).map(l => `${l.nome_pdv_novo}-${l.cidade}`).every(id => selectedCoberturaLojas.has(id)) ? 'Desmarcar Todas' : 'Selecionar Todas'}
-                    </button>
-                  </div>
-                  <div className="max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-scrollbar">
-                    {lojas.filter(l => selectedRotasBase.map(r => normalize(r)).includes(normalize(l.consultor))).map((loja, idx) => {
-                      const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
-                      const isSelected = selectedCoberturaLojas.has(lojaId);
-                      const siglaLoja = ROTA_MAP[loja.consultor] || loja.consultor?.split(' ')[0] || '';
-                      return (
-                        <label key={idx} className={`flex items-center gap-2 p-2 rounded border text-[10px] cursor-pointer transition-all ${isSelected ? 'bg-orange-50 border-orange-300' : 'bg-gray-50 border-gray-200 opacity-60 hover:opacity-100'}`}>
-                          <input 
-                            type="checkbox" 
-                            checked={isSelected}
-                            onChange={(e) => {
-                              const nextSet = new Set(selectedCoberturaLojas);
-                              if (e.target.checked) nextSet.add(lojaId);
-                              else nextSet.delete(lojaId);
-                              setSelectedCoberturaLojas(nextSet);
-                            }}
-                            className="rounded text-orange-500 w-3 h-3"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <span className="font-semibold text-gray-700 block truncate">{loja.nome_pdv_novo}</span>
-                            <span className="text-gray-400 block truncate">{loja.cidade} - {loja.uf} <span className="text-orange-500 font-bold ml-1">({siglaLoja})</span></span>
+                        {ufsCobertura.length > 1 && (
+                          <div className="flex items-center gap-2 bg-orange-50 border border-orange-200 rounded-xl px-3 py-1 shadow-sm">
+                            <span className="text-[10px] font-bold text-orange-700 uppercase">Filtrar por UF:</span>
+                            <select
+                              value={ufFiltroCobertura}
+                              onChange={(e) => setUfFiltroCobertura(e.target.value)}
+                              className="text-[11px] font-bold bg-white border border-orange-200 rounded-lg px-2 py-1 text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer shadow-inner"
+                            >
+                              <option value="">Todos os Estados</option>
+                              {ufsCobertura.map(uf => (
+                                <option key={uf} value={uf}>{uf}</option>
+                              ))}
+                            </select>
                           </div>
-                        </label>
-                      )
-                    })}
+                        )}
+                      </div>
+
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          const nextSet = new Set(selectedCoberturaLojas);
+                          if (someVisibleExcluded) {
+                            allVisibleIds.forEach(id => nextSet.add(id));
+                          } else {
+                            allVisibleIds.forEach(id => nextSet.delete(id));
+                          }
+                          setSelectedCoberturaLojas(nextSet);
+                        }}
+                        className="text-xs font-bold text-orange-700 bg-orange-100 hover:bg-orange-200 px-3 py-1.5 rounded-xl transition-all shadow-sm active:scale-95"
+                      >
+                        {someVisibleExcluded ? 'Selecionar Todas Visíveis' : 'Desmarcar Todas Visíveis'}
+                      </button>
+                    </div>
+                    
+                    <div className="max-h-48 overflow-y-auto pr-2 grid grid-cols-1 md:grid-cols-2 gap-2 custom-scrollbar">
+                      {lojasVisiveis.map((loja, idx) => {
+                        const lojaId = `${loja.nome_pdv_novo}-${loja.cidade}`;
+                        const isSelected = selectedCoberturaLojas.has(lojaId);
+                        const siglaLoja = ROTA_MAP[loja.consultor] || loja.consultor?.split(' ')[0] || '';
+                        return (
+                          <label key={idx} className={`flex items-center gap-2.5 p-2.5 rounded-xl border text-[11px] cursor-pointer transition-all ${isSelected ? 'bg-orange-50 border-orange-300 shadow-sm' : 'bg-white border-gray-100 opacity-70 hover:opacity-100 hover:border-orange-200'}`}>
+                            <input 
+                              type="checkbox" 
+                              checked={isSelected}
+                              onChange={(e) => {
+                                const nextSet = new Set(selectedCoberturaLojas);
+                                if (e.target.checked) nextSet.add(lojaId);
+                                else nextSet.delete(lojaId);
+                                setSelectedCoberturaLojas(nextSet);
+                              }}
+                              className="rounded text-orange-500 w-3.5 h-3.5"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <span className="font-semibold text-gray-800 block truncate">{loja.nome_pdv_novo}</span>
+                              <span className="text-gray-400 font-medium block truncate mt-0.5">{loja.cidade} - {loja.uf} <span className="text-orange-500 font-bold ml-1">({siglaLoja})</span></span>
+                            </div>
+                          </label>
+                        )
+                      })}
+                    </div>
+                    {selectedCoberturaLojas.size === 0 && (
+                       <p className="text-xs text-red-500 mt-2 font-medium">Nenhuma loja selecionada. A geração irá ignorar estas rotas.</p>
+                    )}
                   </div>
-                  {selectedCoberturaLojas.size === 0 && (
-                     <p className="text-[10px] text-red-500 mt-2 font-medium">Nenhuma loja selecionada. A geração irá ignorar estas rotas.</p>
-                  )}
-                </div>
-              )}
+                )
+              })()}
             </div>
             <div className={`mt-5 flex flex-col gap-4 p-4 rounded-lg border transition-all ${viagem ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200 hover:border-blue-200'}`}>
               <div className="flex items-center gap-4 cursor-pointer" onClick={() => setViagem(!viagem)}>
