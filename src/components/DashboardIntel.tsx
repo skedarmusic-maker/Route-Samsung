@@ -34,6 +34,19 @@ interface DashboardData {
 }
 
 function ModalFullList({ list, onClose }: { list: CriticaData[]; onClose: () => void }) {
+  const [expandedRede, setExpandedRede] = useState<string | null>(null);
+
+  // Agrupar lojas por rede
+  const grouped = list.reduce((acc, item) => {
+    const rede = item.cliente || 'Sem Rede';
+    if (!acc[rede]) acc[rede] = [];
+    acc[rede].push(item);
+    return acc;
+  }, {} as Record<string, CriticaData[]>);
+
+  // Ordenar redes pela quantidade de críticas (maior primeiro)
+  const sortedRedes = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-gray-200">
@@ -48,43 +61,77 @@ function ModalFullList({ list, onClose }: { list: CriticaData[]; onClose: () => 
             <Activity className="w-6 h-6 rotate-90" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto">
-          <table className="w-full text-left border-collapse">
-            <thead className="sticky top-0 bg-white shadow-sm z-10">
-              <tr className="text-[10px] uppercase text-gray-400 font-black border-b border-gray-100">
-                <th className="px-6 py-4">Loja / PDV</th>
-                <th className="px-6 py-4">Rede</th>
-                <th className="px-6 py-4 text-center">Cluster</th>
-                <th className="px-6 py-4 text-center">Status</th>
-                <th className="px-6 py-4 text-right">Dias Sem Visita</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50 text-sm">
-              {list.map((l, i) => (
-                <tr key={i} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <p className="font-semibold text-gray-800">{l.nome_pdv}</p>
-                    <p className="text-[10px] text-gray-400 mt-0.5 uppercase">{l.periodo}</p>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{l.cliente}</td>
-                  <td className="px-6 py-4 text-center">
-                    <span className="text-[10px] font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-600">{l.cluster}</span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${l.diasSemVisita >= 999 ? 'bg-gray-100 text-gray-500' : 'bg-red-50 text-red-600'}`}>
-                      {l.diasSemVisita >= 999 ? 'Sem Registro' : 'Atrasada'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <span className={`font-bold ${l.diasSemVisita >= 999 ? 'text-gray-400' : 'text-red-600'}`}>
-                      {l.diasSemVisita >= 999 ? '--' : `${l.diasSemVisita}d`}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+          <div className="space-y-3">
+            {sortedRedes.map(([rede, lojas]) => {
+              const isExpanded = expandedRede === rede;
+              const maiorAtraso = Math.max(...lojas.map(l => l.diasSemVisita >= 999 ? 0 : l.diasSemVisita));
+              
+              return (
+                <div key={rede} className={`border rounded-2xl transition-all duration-300 ${isExpanded ? 'border-orange-300 bg-white shadow-md' : 'border-gray-100 bg-gray-50/50 hover:border-gray-200'}`}>
+                  <button 
+                    onClick={() => setExpandedRede(isExpanded ? null : rede)}
+                    className="w-full px-6 py-4 flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-colors ${isExpanded ? 'bg-orange-500 text-white' : 'bg-white text-gray-400 border border-gray-200'}`}>
+                        {lojas.length}
+                      </div>
+                      <div className="text-left">
+                        <p className="font-bold text-gray-800 text-base">{rede}</p>
+                        <p className="text-[10px] text-gray-400 uppercase tracking-widest font-black">
+                          {lojas.length} lojas críticas {maiorAtraso > 0 && `· Maior atraso: ${maiorAtraso} dias`}
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className={`w-5 h-5 text-gray-300 transition-transform duration-300 ${isExpanded ? 'rotate-90 text-orange-500' : 'group-hover:text-gray-400'}`} />
+                  </button>
+
+                  {isExpanded && (
+                    <div className="px-6 pb-6 animate-in slide-in-from-top-2 duration-300">
+                      <div className="rounded-xl border border-gray-100 overflow-hidden bg-white">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="text-[10px] uppercase text-gray-400 font-black bg-gray-50/50">
+                              <th className="px-4 py-3">Loja / PDV</th>
+                              <th className="px-4 py-3 text-center">Cluster</th>
+                              <th className="px-4 py-3 text-center">Status</th>
+                              <th className="px-4 py-3 text-right">Dias Sem Visita</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-50 text-xs">
+                            {lojas.sort((a, b) => b.diasSemVisita - a.diasSemVisita).map((l, idx) => (
+                              <tr key={idx} className="hover:bg-orange-50/30 transition-colors">
+                                <td className="px-4 py-3">
+                                  <p className="font-bold text-gray-700">{l.nome_pdv}</p>
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <span className="font-bold bg-gray-100 px-2 py-0.5 rounded text-gray-600">{l.cluster}</span>
+                                </td>
+                                <td className="px-4 py-3 text-center">
+                                  <span className={`font-bold px-2 py-0.5 rounded-full ${l.diasSemVisita >= 999 ? 'bg-gray-100 text-gray-500' : 'bg-red-50 text-red-600'}`}>
+                                    {l.diasSemVisita >= 999 ? 'Sem Registro' : 'Atrasada'}
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3 text-right">
+                                  <span className={`font-bold ${l.diasSemVisita >= 999 ? 'text-gray-400' : 'text-red-600'}`}>
+                                    {l.diasSemVisita >= 999 ? '--' : `${l.diasSemVisita}d`}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
+        
         <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
           <button onClick={onClose} className="px-8 py-2.5 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all shadow-lg active:scale-95">
             Fechar Relatório

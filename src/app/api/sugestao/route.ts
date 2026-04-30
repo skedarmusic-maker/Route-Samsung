@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getConsultoresLocais } from '@/lib/dataParser';
+import { supabase } from '@/lib/supabase';
 import cityCoords from '@/lib/city_coords.json';
 
 // Função Haversine para cálculo de distância
@@ -34,7 +34,16 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Coordenadas da cidade não encontradas no cache.' }, { status: 404 });
     }
 
-    const consultores = await getConsultoresLocais();
+    const { data: dataC, error: errorC } = await supabase.from('consultores').select('*');
+    if (errorC) throw errorC;
+
+    const consultores = (dataC || []).map(c => ({
+      nome: c.nome,
+      endereco: c.endereco_completo,
+      lat: c.lat,
+      lng: c.lng,
+      cidade: c.cidade
+    }));
 
     const consultoresComDistancia = consultores.map(c => {
       const dist = computeDistance({ lat: c.lat, lng: c.lng }, coords);

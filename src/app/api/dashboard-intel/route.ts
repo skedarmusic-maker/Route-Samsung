@@ -7,15 +7,7 @@ const supabase = createClient(
 );
 
 function parsePeriodoToDays(periodo: string): number {
-  if (!periodo) return 30;
-  const p = periodo.toUpperCase().trim();
-  if (p.includes('60 DIAS') || p.includes('BIMESTRAL')) return 60;
-  if (p.includes('45 DIAS')) return 45;
-  if (p.includes('MENSAL')) return 30;
-  if (p.includes('90 DIAS') || p.includes('TRIMESTRAL')) return 90;
-  if (p.includes('180 DIAS') || p.includes('SEMESTRAL')) return 180;
-  if (p.includes('SEMANAL')) return 7;
-  if (p.includes('QUINZENAL')) return 15;
+  // Regra unificada: 1 visita por mês (30 dias), ignorando a coluna período legada
   return 30;
 }
 

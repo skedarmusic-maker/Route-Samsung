@@ -621,14 +621,8 @@ function distribuirLojasNoDias(
 }
 
 function parsePeriodoToDays(periodo: string): number {
-  if (!periodo) return 0;
-  const p = periodo.toUpperCase().trim();
-  if (p.includes('60 DIAS') || p.includes('BIMESTRAL')) return 60;
-  if (p.includes('45 DIAS')) return 45;
-  if (p.includes('MENSAL')) return 30;
-  if (p.includes('90 DIAS') || p.includes('TRIMESTRAL')) return 90;
-  if (p.includes('180 DIAS') || p.includes('SEMESTRAL')) return 180;
-  return 0; // SEMANAL e QUINZENAL sempre entram
+  // Regra unificada: 1 visita por mês (30 dias)
+  return 30;
 }
 
 export async function POST(request: Request) {
