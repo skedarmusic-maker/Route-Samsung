@@ -18,6 +18,7 @@ import EfficiencyAnalysis from '@/components/EfficiencyAnalysis';
 import ConsolidatedDashboard from '@/components/ConsolidatedDashboard';
 import FlightSelector from '@/components/FlightSelector';
 import DateRangePicker from '@/components/DateRangePicker';
+import SaveVersionModal from '@/components/SaveVersionModal';
 import cityCoords from '@/lib/city_coords.json';
 import despesasHistoricas from '@/lib/despesas_historicas.json';
 import despesasHistoricasMeses from '@/lib/despesas_historicas_meses.json';
@@ -490,6 +491,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const [viewMode, setViewMode] = useState<'visualizacao' | 'eficiencia'>('visualizacao');
   const [mesComparacao, setMesComparacao] = useState<'03' | '04'>('04');
   const [isSaving, setIsSaving] = useState(false);
+  const [showVersionModal, setShowVersionModal] = useState(false);
 
   // Estados para integração de busca de voos Amadeus
   const [flightModalOpen, setFlightModalOpen] = useState(false);
@@ -787,10 +789,16 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
     xlsx.writeFile(workbook, fileName);
   };
 
-  const handleAprovar = async () => {
+  // Abre o modal de versão antes de salvar
+  const handleAprovar = () => {
+    setShowVersionModal(true);
+  };
+
+  // Chamado quando o usuário confirma a versão no modal
+  const handleConfirmSave = async (versaoId: string, versaoNome: string) => {
+    setShowVersionModal(false);
     setIsSaving(true);
     try {
-      // Adicionar métricas calculadas ao objeto antes de salvar
       const finalResultado = {
         ...resultado,
         totalEstimatedKM: totalEstimatedKM,
@@ -806,6 +814,8 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
           mes: resultado.mes,
           ano: resultado.ano,
           cenario: cenarioNome,
+          versao_id: versaoId,
+          versao_nome: versaoNome,
           dados_roteiro: finalResultado,
           status: 'APROVADO'
         }, {
@@ -813,9 +823,9 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         });
 
       if (error) throw error;
-      
-      alert('Roteiro salvo com sucesso no banco de dados!');
-      onVoltar(); // Volta para a tela inicial
+
+      alert(`Roteiro salvo com sucesso na versão "${versaoNome}"!`);
+      onVoltar();
     } catch (e: any) {
       console.error(e);
       alert('Erro ao salvar roteiro: ' + e.message);
@@ -1061,6 +1071,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         {flightModalOpen && flightTargetLoja && flightTargetDia && (
           <FlightSelector 
             originCity={consultorInfo?.cidade || 'SAO PAULO'}
+            originUF={consultorInfo?.uf_base || ''}
             destinationCity={flightTargetLoja.cidade}
             departureDate={flightTargetDia.data}
             onSelectFlight={(price, details) => {
@@ -1071,6 +1082,14 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
               setFlightModalOpen(false);
             }}
             onClose={() => setFlightModalOpen(false)}
+          />
+        )}
+
+        {showVersionModal && (
+          <SaveVersionModal
+            consultorNome={resultado.consultor}
+            onConfirm={handleConfirmSave}
+            onClose={() => setShowVersionModal(false)}
           />
         )}
 
@@ -1144,7 +1163,45 @@ export default function ConfigurationPanel() {
           .order('nome');
         
         if (errorC) throw errorC;
-        setConsultores(dataC || []);
+        
+        // Enriquecer dados dos consultores com cidade extraída do endereço se necessário
+        const enrichedConsultores = (dataC || []).map((c: any) => {
+          let cidadeFinal = c.cidade_base || c.cidade;
+          const endereco = c.endereco_completo || c.endereco || '';
+          
+          if (!cidadeFinal && endereco) {
+            // Tenta extrair cidade: Rio de Janeiro - RJ ou Porto Alegre/RS usando Regex
+            const parts = endereco.split(',').map((p: string) => p.trim());
+            const cityUFPattern = /(.+)[-/]\s*([A-Z]{2})/;
+            
+            for (const part of parts) {
+              const match = part.match(cityUFPattern);
+              if (match) {
+                cidadeFinal = match[1].trim();
+                break;
+              }
+            }
+            
+            // Heurística 2: UF isolada (ex: ..., Rio de Janeiro, RJ, CEP)
+            if (!cidadeFinal) {
+              const ufIndex = parts.findIndex((p: string) => p.length === 2 && /^[A-Z]{2}$/.test(p));
+              if (ufIndex > 0) {
+                cidadeFinal = parts[ufIndex - 1];
+              }
+            }
+            
+            // Se ainda não achou, tenta pegar o penúltimo antes do que parece ser um CEP
+            if (!cidadeFinal && parts.length >= 2) {
+              const lastPart = parts[parts.length - 1];
+              if (/\d{5}-\d{3}/.test(lastPart) || lastPart.length <= 9) {
+                cidadeFinal = parts[parts.length - 2].trim();
+              }
+            }
+          }
+          return { ...c, cidade: cidadeFinal, uf_base: c.uf_base };
+        });
+        
+        setConsultores(enrichedConsultores);
 
         // 2. Buscar Lojas
         const { data: dataL, error: errorL } = await supabase

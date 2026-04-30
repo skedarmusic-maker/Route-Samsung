@@ -15,78 +15,91 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Parâmetros ausentes' }, { status: 400 });
     }
 
-    const voosApiKey = process.env.VOOS_API_KEY;
+    const duffelToken = process.env.DUFFEL_ACCESS_TOKEN;
 
-    if (!voosApiKey) {
+    if (!duffelToken) {
       return NextResponse.json({
         isMock: true,
         offers: generateMockFlights(origin, destination, date)
       });
     }
 
-    // 1. Chamar a API de Voos providenciada pelo usuário
-    const flightsRes = await fetch('https://app.apidevoos.dev/api/v1/flights/search', {
+    // 1. Chamar a API da Duffel
+    const duffelRes = await fetch('https://api.duffel.com/air/offer_requests?return_offers=true', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${voosApiKey}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${duffelToken}`,
+        'Duffel-Version': 'v2',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
-        type: 'one_way',
-        slices: [
-          {
-            origin: origin,
-            destination: destination,
-            departureDate: date
-          }
-        ],
-        passengers: [
-          { type: 'adult', count: 1 }
-        ],
-        cabinClass: 'economy',
-        maxConnections: 2,
-        suppliers: ["latam", "gol", "azul"],
-        enableDeduplication: true,
-        searchType: "pagante"
+        data: {
+          slices: [
+            {
+              origin: origin,
+              destination: destination,
+              departure_date: date
+            }
+          ],
+          passengers: [
+            { type: 'adult' }
+          ],
+          cabin_class: 'economy'
+        }
       })
     });
 
-    if (!flightsRes.ok) {
-      console.error('[API-DE-VOOS Error]', flightsRes.status);
+    if (!duffelRes.ok) {
+      const errorData = await duffelRes.json().catch(() => ({}));
+      console.error('[Duffel API Error]', duffelRes.status, errorData);
       return NextResponse.json({
         isMock: true,
         offers: generateMockFlights(origin, destination, date)
       });
     }
 
-    const flightsData = await flightsRes.json();
-    
-    // Tentativa de parsear o formato da resposta
-    let rawOffers = flightsData.results || flightsData.data || flightsData.offers || [];
+    const duffelData = await duffelRes.json();
+    const rawOffers = duffelData.data?.offers || [];
 
-    // Suporte ao formato "flightGroups" da nova API
-    if (flightsData.flightGroups && Array.isArray(flightsData.flightGroups)) {
-      flightsData.flightGroups.forEach((group: any) => {
-        if (group.flights && Array.isArray(group.flights)) {
-          rawOffers.push(...group.flights);
-        }
-      });
-    }
+    const offers = rawOffers.map((offer: any, index: number) => {
+      const slice = offer.slices[0];
+      const segment = slice.segments[0];
+      
+      // Formatar horários (ISO -> HH:mm)
+      const depDate = new Date(segment.departing_at);
+      const arrDate = new Date(segment.arriving_at);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      
+      const depTime = `${pad(depDate.getHours())}:${pad(depDate.getMinutes())}`;
+      const arrTime = `${pad(arrDate.getHours())}:${pad(arrDate.getMinutes())}`;
 
-    const offers = Array.isArray(rawOffers) ? rawOffers.map((offer: any, index: number) => {
+      // Formatar duração (ISO 8601 PT2H30M -> 2h 30m)
+      const durationStr = segment.duration.replace('PT', '').replace('H', 'h ').replace('M', 'm').toLowerCase();
+
+      let price = parseFloat(offer.total_amount);
+      const currency = offer.total_currency;
+
+      // Se for ambiente de teste da Duffel (token começa com duffel_test), os valores costumam vir em USD/GBP baixos.
+      // Vamos aplicar uma conversão simbólica apenas para o teste ficar mais realista.
+      if (duffelToken.startsWith('duffel_test_') && (currency === 'USD' || currency === 'GBP' || currency === 'EUR')) {
+        price = price * 5.65; // Câmbio simbólico
+      }
+
       return {
-        id: offer.id || `api-${index}`,
-        airline: offer.airline || offer.carrier || 'Companhia Aérea',
-        flightNumber: offer.flightNumber || offer.number || `Voo ${index + 101}`,
-        departureTime: offer.departureTime || '08:00',
-        arrivalTime: offer.arrivalTime || '10:30',
-        duration: offer.duration || '2h 30m',
-        price: parseFloat(offer.price?.total || offer.price || '600'),
-        stops: offer.stops || 0
+        id: offer.id,
+        airline: segment.marketing_carrier.name,
+        flightNumber: `${segment.marketing_carrier.iata_code} ${segment.marketing_carrier_flight_number}`,
+        departureTime: depTime,
+        arrivalTime: arrTime,
+        duration: durationStr,
+        price: price,
+        currency: currency === 'USD' || currency === 'GBP' || currency === 'EUR' ? 'BRL' : currency,
+        stops: slice.segments.length - 1
       };
-    }) : [];
+    });
 
-    // Se a API externa retornar vazio, caímos no Mock
+    // Se a Duffel retornar vazio, caímos no Mock
     if (offers.length === 0) {
       return NextResponse.json({
         isMock: true,
@@ -94,9 +107,13 @@ export async function GET(req: Request) {
       });
     }
 
+    // Ordenar por preço
+    offers.sort((a: any, b: any) => a.price - b.price);
+
     return NextResponse.json({ isMock: false, offers });
 
   } catch (error: any) {
+    console.error('[Flights Route Error]', error);
     if (!origin || !destination || !date) {
       return NextResponse.json({ error: 'Erro interno ou parâmetros ausentes' }, { status: 400 });
     }

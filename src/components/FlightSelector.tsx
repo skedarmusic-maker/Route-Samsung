@@ -7,13 +7,14 @@ import { normalize } from '@/lib/utils';
 
 interface FlightSelectorProps {
   originCity: string;
+  originUF?: string;
   destinationCity: string;
   departureDate: string;
   onSelectFlight: (price: number, flightDetails: any) => void;
   onClose: () => void;
 }
 
-export default function FlightSelector({ originCity, destinationCity, departureDate, onSelectFlight, onClose }: FlightSelectorProps) {
+export default function FlightSelector({ originCity, originUF, destinationCity, departureDate, onSelectFlight, onClose }: FlightSelectorProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [flights, setFlights] = useState<any[]>([]);
@@ -21,14 +22,20 @@ export default function FlightSelector({ originCity, destinationCity, departureD
   const [isMock, setIsMock] = useState(false);
 
   // Mapear cidades para IATA
-  const originIATA = (airports as Record<string, string>)[normalize(originCity)] || 'GRU';
-  const destinationIATA = (airports as Record<string, string>)[normalize(destinationCity)] || 'SSA';
+  const originIATA = (airports as Record<string, string>)[normalize(originCity)] || 
+                    (airports as Record<string, string>)[normalize(originUF || '')] || '';
+  const destinationIATA = (airports as Record<string, string>)[normalize(destinationCity)] || '';
 
   useEffect(() => {
     async function fetchFlights() {
       setLoading(true);
       setError(null);
       try {
+        if (!originIATA || !destinationIATA) {
+           setError(`Não foi possível identificar o código do aeroporto para: ${!originIATA ? originCity : destinationCity}. Verifique o cadastro.`);
+           setLoading(false);
+           return;
+        }
         const res = await fetch(`/api/voos?origin=${originIATA}&destination=${destinationIATA}&date=${departureDate}`);
         const data = await res.json();
         
@@ -146,7 +153,7 @@ export default function FlightSelector({ originCity, destinationCity, departureD
                 </div>
                 <div className="text-right">
                   <p className="text-base font-black text-gray-900">
-                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(flight.price)}
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: flight.currency || 'BRL' }).format(flight.price)}
                   </p>
                   <span className="text-[9px] text-gray-400 uppercase font-black">Por Adulto</span>
                 </div>
