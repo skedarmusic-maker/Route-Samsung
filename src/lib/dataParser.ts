@@ -13,6 +13,7 @@ export interface ConsultorLocal {
   lat: number;
   lng: number;
   cidade?: string;
+  uf_base?: string;
 }
 
 export interface Loja {

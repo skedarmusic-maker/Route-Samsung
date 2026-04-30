@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 import {
   Calendar, Map as MapLucide, CheckCircle, Users, Loader2, AlertCircle,
   Clock, MapPin, Building2, Tag, Plane, ArrowLeft, Navigation, Save, Download,
-  Activity, TrendingUp, TrendingDown, CheckSquare
+  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search
 } from 'lucide-react';
 import SugestaoJourney from '@/components/SugestaoJourney';
 import RoteirosSalvos from '@/components/RoteirosSalvos';
@@ -78,25 +78,37 @@ function CheckboxList({ title, options, selected, onChange }: {
 // ─────────────────────────────────────────────────────────
 // Card de loja individual
 // ─────────────────────────────────────────────────────────
-function LojaCard({ loja, index, onBuscarVoo, chosenFlight }: { 
+function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove }: { 
   loja: LojaVisita; 
   index: number; 
   onBuscarVoo?: () => void;
   chosenFlight?: any;
+  onRemove?: () => void;
 }) {
   const isViagem = loja.tipo === 'viagem';
   return (
-    <div className={`rounded-lg border p-3 text-sm ${isViagem ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}`}>
+    <div className={`group rounded-lg border p-3 text-sm transition-all ${isViagem ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200'}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 font-semibold text-gray-800 flex-1 min-w-0">
           <span className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white ${isViagem ? 'bg-orange-500' : 'bg-blue-600'}`}>{index + 1}</span>
           <span className="truncate" title={loja.nome_pdv}>{loja.nome_pdv}</span>
         </div>
-        {isViagem && (
-          <span className="shrink-0 flex items-center gap-1 text-xs text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">
-            <Plane className="w-3 h-3" /> Viagem
-          </span>
-        )}
+        <div className="flex items-center gap-1">
+          {onRemove && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); onRemove(); }}
+              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded text-red-400 hover:text-red-600 transition-all"
+              title="Remover esta visita"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {isViagem && (
+            <span className="shrink-0 flex items-center gap-1 text-xs text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">
+              <Plane className="w-3 h-3" /> Viagem
+            </span>
+          )}
+        </div>
       </div>
       <div className="mt-2 grid grid-cols-2 gap-1 text-xs text-gray-600">
         <span className="flex items-center gap-1"><Building2 className="w-3 h-3 shrink-0" />{loja.cliente}</span>
@@ -150,7 +162,9 @@ function DiaCard({
   onBuscarVoo, 
   chosenFlights,
   onSwapDays,
-  outrosDias
+  outrosDias,
+  onRemoveLoja,
+  onAddStore
 }: {
   dia: RoteiroDia;
   selected: boolean;
@@ -160,6 +174,8 @@ function DiaCard({
   chosenFlights?: Record<string, any>;
   onSwapDays?: (dataA: string, dataB: string) => void;
   outrosDias?: { data: string; diaSemana: string }[];
+  onRemoveLoja?: (data: string, lojaNome: string) => void;
+  onAddStore?: (dia: RoteiroDia) => void;
 }) {
   const [dataObj] = useState(() => {
     const [y, m, d] = dia.data.split('-').map(Number);
@@ -221,16 +237,27 @@ function DiaCard({
         {isFeriado && (
           <span className="text-[10px] text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-medium max-w-[130px] text-right leading-tight">{dia.feriado}</span>
         )}
-        {!isFeriado && !semLojas && (
+        {!isFeriado && (
           <div className="flex items-center gap-1.5">
-            {distancia !== undefined && (
+            {onAddStore && dia.lojas.length < 3 && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onAddStore(dia); }}
+                className="p-1.5 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all flex items-center gap-1 text-[10px] font-bold shadow-sm"
+                title="Adicionar Loja Extra"
+              >
+                <PlusCircle className="w-3 h-3" /> Add Loja
+              </button>
+            )}
+            {!semLojas && distancia !== undefined && (
               <span className="text-[10px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1">
                 <Navigation className="w-2.5 h-2.5" /> {Math.round(distancia)} km
               </span>
             )}
-            <span className="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full font-medium">
-              {dia.lojas.length} loja{dia.lojas.length > 1 ? 's' : ''}
-            </span>
+            {!semLojas && (
+              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full font-medium">
+                {dia.lojas.length} loja{dia.lojas.length > 1 ? 's' : ''}
+              </span>
+            )}
           </div>
         )}
         {semLojas && !isFeriado && (
@@ -261,6 +288,7 @@ function DiaCard({
               index={i} 
               onBuscarVoo={onBuscarVoo ? () => onBuscarVoo(loja, dia) : undefined}
               chosenFlight={chosenFlights?.[`${dia.data}-${loja.nome_pdv}`]}
+              onRemove={onRemoveLoja ? () => onRemoveLoja(dia.data, loja.nome_pdv) : undefined}
             />
           ))}
         </div>
@@ -270,11 +298,120 @@ function DiaCard({
 }
 
 // ─────────────────────────────────────────────────────────
+// Modal para adicionar loja extra
+// ─────────────────────────────────────────────────────────
+function AddStoreModal({ 
+  dia, 
+  lojasBase, 
+  alreadyVisitedNames,
+  onSelect, 
+  onClose 
+}: { 
+  dia: RoteiroDia; 
+  lojasBase: Loja[]; 
+  alreadyVisitedNames: Set<string>;
+  onSelect: (loja: Loja) => void; 
+  onClose: () => void;
+}) {
+  const [search, setSearch] = useState('');
+  
+  // Coordenadas de referência do dia (primeira loja)
+  const refStore = dia.lojas[0];
+  const refCoords = refStore ? { lat: refStore.lat || 0, lng: refStore.lng || 0 } : null;
+
+  const candidates = useMemo(() => {
+    return lojasBase
+      .filter(l => !alreadyVisitedNames.has(l.nome_pdv_novo))
+      .map(l => {
+        const dist = refCoords && l.lat && l.lng 
+          ? computeDistance(refCoords, { lat: l.lat, lng: l.lng }) 
+          : 9999;
+        return { ...l, dist };
+      })
+      .filter(l => {
+        const s = normalize(search);
+        if (!s) return l.dist < 100; // Mostrar próximas por padrão (até 100km)
+        return normalize(l.nome_pdv_novo).includes(s) || normalize(l.cidade).includes(s) || normalize(l.cliente || '').includes(s);
+      })
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 15);
+  }, [lojasBase, alreadyVisitedNames, refCoords, search]);
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-200">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-blue-50/50">
+          <div>
+            <h3 className="text-xl font-bold text-blue-900 flex items-center gap-2">
+              <PlusCircle className="w-6 h-6 text-blue-600" /> Adicionar Loja Extra
+            </h3>
+            <p className="text-sm text-blue-600/70 mt-1">Dia {dia.data.split('-').reverse().slice(0,2).join('/')} · Sugerindo lojas próximas a {refStore?.cidade || 'Base'}</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600">
+            <Activity className="w-6 h-6 rotate-90" />
+          </button>
+        </div>
+
+        <div className="p-4 border-b border-gray-50 bg-white">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar por nome, cidade ou rede..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+              autoFocus
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar min-h-[300px] max-h-[500px]">
+          <div className="grid grid-cols-1 gap-2">
+            {candidates.map((l, idx) => (
+              <button 
+                key={idx}
+                onClick={() => onSelect(l)}
+                className="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:border-blue-300 hover:bg-blue-50/50 transition-all text-left group"
+              >
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-gray-800 text-sm group-hover:text-blue-700 transition-colors">{l.nome_pdv_novo}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{l.cliente} · {l.cidade} - {l.uf}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${l.dist < 20 ? 'bg-green-100 text-green-700' : l.dist < 50 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
+                    {l.dist >= 9999 ? '-- km' : `${Math.round(l.dist)} km`}
+                  </span>
+                  <p className="text-[9px] text-gray-400 mt-1 font-bold">CLUSTER {l.cluster}</p>
+                </div>
+              </button>
+            ))}
+            {candidates.length === 0 && (
+              <div className="py-12 text-center text-gray-400">
+                <Search className="w-8 h-8 mx-auto mb-3 opacity-20" />
+                <p className="text-sm">Nenhuma loja disponível encontrada.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+          <button onClick={onClose} className="px-8 py-2.5 bg-white text-gray-600 font-bold border border-gray-200 rounded-xl hover:bg-gray-100 transition-all active:scale-95">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────
 // Tela de Prévia do Roteiro (com mapa integrado)
 // ─────────────────────────────────────────────────────────
-function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: {
+function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, onVoltar }: {
   resultado: any;
   consultorInfo: ConsultorLocal | undefined;
+  lojasBase: Loja[];
   initialCenario?: string;
   onVoltar: () => void;
 }) {
@@ -310,6 +447,86 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
 
   // Nome do Cenário
   const [cenarioNome, setCenarioNome] = useState(initialCenario || 'Cenário Principal');
+
+  // Estado para modal de adicionar loja
+  const [addStoreDia, setAddStoreDia] = useState<RoteiroDia | null>(null);
+
+  const handleRemoveLoja = (data: string, lojaNome: string) => {
+    if (!window.confirm(`Deseja remover a visita à loja "${lojaNome}"?`)) return;
+    
+    setRoteiroState(prev => prev.map(dia => {
+      if (dia.data === data) {
+        return { ...dia, lojas: dia.lojas.filter(l => l.nome_pdv !== lojaNome) };
+      }
+      return dia;
+    }));
+    
+    setDistancias(prev => {
+      const next = { ...prev };
+      delete next[data];
+      return next;
+    });
+
+    if (diaSelecionado?.data === data) {
+      setTimeout(() => {
+        setDiaSelecionado(prev => prev ? { ...prev, lojas: prev.lojas.filter(l => l.nome_pdv !== lojaNome) } : null);
+      }, 0);
+    }
+  };
+
+  const handleAddLojaToDia = (loja: Loja) => {
+    if (!addStoreDia) return;
+    
+    const count = addStoreDia.lojas.length;
+    const times = [
+      { in: "09:00", out: "12:00" },
+      { in: "13:30", out: "16:00" },
+      { in: "16:30", out: "18:30" }
+    ];
+    const t = times[count] || times[2];
+
+    const novaVisita: LojaVisita = {
+      nome_pdv: loja.nome_pdv_novo,
+      cliente: loja.cliente,
+      endereco: loja.endereco || '',
+      cidade: loja.cidade,
+      uf: loja.uf,
+      cluster: loja.cluster,
+      tipo: normalize(loja.uf) !== normalize(consultorInfo?.uf_base || '') ? 'viagem' : 'local',
+      checkIn: t.in,
+      checkOut: t.out,
+      lat: loja.lat,
+      lng: loja.lng,
+      estadoViagem: normalize(loja.uf) !== normalize(consultorInfo?.uf_base || '') ? 'EXTERNO' : undefined
+    };
+
+    setRoteiroState(prev => prev.map(dia => {
+      if (dia.data === addStoreDia.data) {
+        return { ...dia, lojas: [...dia.lojas, novaVisita] };
+      }
+      return dia;
+    }));
+    
+    setDistancias(prev => {
+      const next = { ...prev };
+      delete next[addStoreDia.data];
+      return next;
+    });
+    
+    if (diaSelecionado?.data === addStoreDia.data) {
+       setTimeout(() => {
+         setDiaSelecionado(prev => prev ? { ...prev, lojas: [...prev.lojas, novaVisita] } : null);
+       }, 0);
+    }
+
+    setAddStoreDia(null);
+  };
+
+  const alreadyVisitedNames = useMemo(() => {
+    const names = new Set<string>();
+    roteiroState.forEach(d => d.lojas.forEach(l => names.add(l.nome_pdv)));
+    return names;
+  }, [roteiroState]);
 
   const handleSwapDays = (dataA: string, dataB: string) => {
     setRoteiroState(prev => {
@@ -729,6 +946,8 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
                   chosenFlights={chosenFlights}
                   onSwapDays={handleSwapDays}
                   outrosDias={roteiroState.map(d => ({ data: d.data, diaSemana: d.diaSemana }))}
+                  onRemoveLoja={handleRemoveLoja}
+                  onAddStore={setAddStoreDia}
                 />
               ))}
             </div>
@@ -773,6 +992,16 @@ function PreviewRoteiro({ resultado, consultorInfo, initialCenario, onVoltar }: 
               setFlightModalOpen(false);
             }}
             onClose={() => setFlightModalOpen(false)}
+          />
+        )}
+
+        {addStoreDia && (
+          <AddStoreModal 
+            dia={addStoreDia}
+            lojasBase={lojasBase}
+            alreadyVisitedNames={alreadyVisitedNames}
+            onSelect={handleAddLojaToDia}
+            onClose={() => setAddStoreDia(null)}
           />
         )}
       </div>
@@ -1162,7 +1391,7 @@ export default function ConfigurationPanel() {
 
   // Mostrar prévia se roteiro foi gerado
   if (resultado) {
-    return <PreviewRoteiro resultado={resultado} consultorInfo={consultorInfo} initialCenario={cenarioNome} onVoltar={() => setResultado(null)} />;
+    return <PreviewRoteiro resultado={resultado} consultorInfo={consultorInfo} lojasBase={lojas} initialCenario={cenarioNome} onVoltar={() => setResultado(null)} />;
   }
 
   // Mostrar Dashboard Consolidado
