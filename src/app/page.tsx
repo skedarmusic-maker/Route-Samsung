@@ -118,7 +118,10 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChan
         
         <div className="flex items-center gap-1 col-span-2 mt-0.5">
           <Clock className="w-3 h-3 shrink-0" />
-          <div className="flex items-center gap-0.5 bg-white/50 border border-gray-200 rounded px-1 px-1.5 py-0.5">
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-0.5 bg-white/50 border border-gray-200 rounded px-1 px-1.5 py-0.5"
+          >
             <input 
               type="text" 
               value={loja.checkIn} 
