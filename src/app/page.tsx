@@ -78,12 +78,13 @@ function CheckboxList({ title, options, selected, onChange }: {
 // ─────────────────────────────────────────────────────────
 // Card de loja individual
 // ─────────────────────────────────────────────────────────
-function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove }: { 
+function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChange }: { 
   loja: LojaVisita; 
   index: number; 
   onBuscarVoo?: () => void;
   chosenFlight?: any;
   onRemove?: () => void;
+  onTimeChange?: (checkIn: string, checkOut: string) => void;
 }) {
   const isViagem = loja.tipo === 'viagem';
   return (
@@ -110,11 +111,31 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove }: {
           )}
         </div>
       </div>
-      <div className="mt-2 grid grid-cols-2 gap-1 text-xs text-gray-600">
+      <div className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-gray-600">
         <span className="flex items-center gap-1"><Building2 className="w-3 h-3 shrink-0" />{loja.cliente}</span>
         <span className="flex items-center gap-1"><Tag className="w-3 h-3 shrink-0" />Cluster: {loja.cluster}</span>
         <span className="flex items-center gap-1 col-span-2"><MapPin className="w-3 h-3 shrink-0" />{loja.cidade} - {loja.uf}</span>
-        <span className="flex items-center gap-1 col-span-2"><Clock className="w-3 h-3 shrink-0" />{loja.checkIn} → {loja.checkOut}</span>
+        
+        <div className="flex items-center gap-1 col-span-2 mt-0.5">
+          <Clock className="w-3 h-3 shrink-0" />
+          <div className="flex items-center gap-0.5 bg-white/50 border border-gray-200 rounded px-1 px-1.5 py-0.5">
+            <input 
+              type="text" 
+              value={loja.checkIn} 
+              onChange={(e) => onTimeChange?.(e.target.value, loja.checkOut)}
+              className="w-9 bg-transparent border-none outline-none text-[11px] font-bold text-gray-700 text-center focus:ring-0 p-0"
+              maxLength={5}
+            />
+            <span className="text-gray-400">→</span>
+            <input 
+              type="text" 
+              value={loja.checkOut} 
+              onChange={(e) => onTimeChange?.(loja.checkIn, e.target.value)}
+              className="w-9 bg-transparent border-none outline-none text-[11px] font-bold text-gray-700 text-center focus:ring-0 p-0"
+              maxLength={5}
+            />
+          </div>
+        </div>
       </div>
 
       {isViagem && onBuscarVoo && (
@@ -164,7 +185,8 @@ function DiaCard({
   onSwapDays,
   outrosDias,
   onRemoveLoja,
-  onAddStore
+  onAddStore,
+  onTimeChange
 }: {
   dia: RoteiroDia;
   selected: boolean;
@@ -176,6 +198,7 @@ function DiaCard({
   outrosDias?: { data: string; diaSemana: string }[];
   onRemoveLoja?: (data: string, lojaNome: string) => void;
   onAddStore?: (dia: RoteiroDia) => void;
+  onTimeChange?: (data: string, lojaNome: string, checkIn: string, checkOut: string) => void;
 }) {
   const [dataObj] = useState(() => {
     const [y, m, d] = dia.data.split('-').map(Number);
@@ -289,6 +312,7 @@ function DiaCard({
               onBuscarVoo={onBuscarVoo ? () => onBuscarVoo(loja, dia) : undefined}
               chosenFlight={chosenFlights?.[`${dia.data}-${loja.nome_pdv}`]}
               onRemove={onRemoveLoja ? () => onRemoveLoja(dia.data, loja.nome_pdv) : undefined}
+              onTimeChange={onTimeChange ? (cin, cout) => onTimeChange(dia.data, loja.nome_pdv, cin, cout) : undefined}
             />
           ))}
         </div>
@@ -303,12 +327,14 @@ function DiaCard({
 function AddStoreModal({ 
   dia, 
   lojasBase, 
+  consultorNome,
   alreadyVisitedNames,
   onSelect, 
   onClose 
 }: { 
   dia: RoteiroDia; 
   lojasBase: Loja[]; 
+  consultorNome: string;
   alreadyVisitedNames: Set<string>;
   onSelect: (loja: Loja) => void; 
   onClose: () => void;
@@ -317,25 +343,48 @@ function AddStoreModal({
   
   // Coordenadas de referência do dia (primeira loja)
   const refStore = dia.lojas[0];
-  const refCoords = refStore ? { lat: refStore.lat || 0, lng: refStore.lng || 0 } : null;
+  const refCoords = useMemo(() => {
+    if (!refStore) return null;
+    if (refStore.lat && refStore.lng) return { lat: refStore.lat, lng: refStore.lng };
+    const key = normalize(`${refStore.cidade}-${refStore.uf}`);
+    return (cityCoords as Record<string, any>)[key] || null;
+  }, [refStore]);
 
   const candidates = useMemo(() => {
     return lojasBase
       .filter(l => !alreadyVisitedNames.has(l.nome_pdv_novo))
+      .filter(l => normalize(l.consultor) === normalize(consultorNome)) // Filtra pela base do consultor
       .map(l => {
-        const dist = refCoords && l.lat && l.lng 
-          ? computeDistance(refCoords, { lat: l.lat, lng: l.lng }) 
-          : 9999;
+        const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
+        let lat = l.lat;
+        let lng = l.lng;
+        if (!lat || !lng) {
+          const key = normalize(`${l.cidade}-${l.uf}`);
+          const coords = (cityCoords as Record<string, any>)[key];
+          if (coords) { lat = coords.lat; lng = coords.lng; }
+        }
+        
+        let dist = 9999;
+        if (mesmaCidade) {
+          dist = 0; // Se for na mesma cidade, distância é 0 (otimizado)
+        } else if (refCoords && lat && lng) {
+          dist = computeDistance(refCoords, { lat, lng });
+        }
+
         return { ...l, dist };
       })
       .filter(l => {
         const s = normalize(search);
-        if (!s) return l.dist < 100; // Mostrar próximas por padrão (até 100km)
+        if (!s) {
+          // Se não houver busca, mostrar lojas da mesma cidade ou raio de 100km
+          const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
+          return mesmaCidade || l.dist < 100;
+        }
         return normalize(l.nome_pdv_novo).includes(s) || normalize(l.cidade).includes(s) || normalize(l.cliente || '').includes(s);
       })
       .sort((a, b) => a.dist - b.dist)
-      .slice(0, 15);
-  }, [lojasBase, alreadyVisitedNames, refCoords, search]);
+      .slice(0, 25);
+  }, [lojasBase, alreadyVisitedNames, refCoords, refStore, search, consultorNome]);
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
@@ -520,6 +569,32 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
     }
 
     setAddStoreDia(null);
+  };
+
+  const handleTimeChange = (data: string, lojaNome: string, checkIn: string, checkOut: string) => {
+    setRoteiroState(prev => prev.map(dia => {
+      if (dia.data === data) {
+        return {
+          ...dia,
+          lojas: dia.lojas.map(l => {
+            if (l.nome_pdv === lojaNome) {
+              return { ...l, checkIn, checkOut };
+            }
+            return l;
+          })
+        };
+      }
+      return dia;
+    }));
+
+    if (diaSelecionado?.data === data) {
+       setTimeout(() => {
+         setDiaSelecionado(prev => prev ? {
+           ...prev,
+           lojas: prev.lojas.map(l => l.nome_pdv === lojaNome ? { ...l, checkIn, checkOut } : l)
+         } : null);
+       }, 0);
+    }
   };
 
   const alreadyVisitedNames = useMemo(() => {
@@ -948,6 +1023,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
                   outrosDias={roteiroState.map(d => ({ data: d.data, diaSemana: d.diaSemana }))}
                   onRemoveLoja={handleRemoveLoja}
                   onAddStore={setAddStoreDia}
+                  onTimeChange={handleTimeChange}
                 />
               ))}
             </div>
@@ -999,6 +1075,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
           <AddStoreModal 
             dia={addStoreDia}
             lojasBase={lojasBase}
+            consultorNome={resultado.consultor}
             alreadyVisitedNames={alreadyVisitedNames}
             onSelect={handleAddLojaToDia}
             onClose={() => setAddStoreDia(null)}
