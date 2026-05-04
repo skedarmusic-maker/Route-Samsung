@@ -21,6 +21,7 @@ interface ConsultorDistancia {
     hospedagem: number;
     tipo: 'Aéreo' | 'Terrestre';
     isRealPrice?: boolean;
+    isRealHotel?: boolean;
   };
 }
 
@@ -76,9 +77,9 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
           <label className="text-xs font-bold text-indigo-900/60 uppercase tracking-wider flex items-center gap-2">
             Estado (UF)
           </label>
-          <select 
-            value={selectedUF} 
-            onChange={e => { setSelectedUF(e.target.value); setSelectedCidade(''); }} 
+          <select
+            value={selectedUF}
+            onChange={e => { setSelectedUF(e.target.value); setSelectedCidade(''); }}
             className="w-full p-2.5 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-sm font-medium"
           >
             <option value="">UF</option>
@@ -92,9 +93,9 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
           <label className="text-xs font-bold text-indigo-900/60 uppercase tracking-wider flex items-center gap-2">
             Cidade / Região
           </label>
-          <select 
-            value={selectedCidade} 
-            onChange={e => setSelectedCidade(e.target.value)} 
+          <select
+            value={selectedCidade}
+            onChange={e => setSelectedCidade(e.target.value)}
             disabled={!selectedUF}
             className="w-full p-2.5 border border-indigo-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white text-sm font-medium disabled:opacity-50"
           >
@@ -105,7 +106,7 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
           </select>
         </div>
 
-        <button 
+        <button
           onClick={handleBuscar}
           disabled={!selectedCidade || loading}
           className="w-full md:w-auto px-8 py-2.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 shadow-md shadow-indigo-200"
@@ -183,7 +184,7 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
                 </div>
 
                 <p className="text-[10px] text-gray-400 italic mb-1">Base: {s.endereco?.split(',')[1] || 'Cidade Base'}</p>
-                
+
                 {idx === 0 && (
                   <div className="mt-4 pt-3 border-t border-indigo-100 flex items-center justify-between">
                     <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">✨ Opção mais barata</span>

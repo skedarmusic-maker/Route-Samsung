@@ -3,6 +3,7 @@ import { Loja, ConsultorLocal } from '@/lib/dataParser';
 import { format, getDaysInMonth, getDay, startOfMonth } from 'date-fns';
 import cityCoords from '@/lib/city_coords.json';
 import { supabase } from '@/lib/supabase';
+import { isInsideRodizio, getRodizioDayForConsultor } from '@/lib/rodizioSP';
 
 // Helper para normalizar strings (remover acentos e colocar em caps)
 function normalize(str: string): string {
@@ -467,9 +468,16 @@ function distribuirLojasNoDias(
   const ultimasVisitas = new Map<string, number>();
   const MIN_GAP = 3;
 
+  const rodizioDayForConsultor = getRodizioDayForConsultor(consultor.nome);
+
   for (let dayIdx = 0; dayIdx < diasParaLocais.length; dayIdx++) {
     const dia = diasParaLocais[dayIdx];
     const roteiroDia = roteiroMap[dia.data];
+    
+    // Obter o dia da semana atual (0 = Domingo, ..., 6 = Sábado)
+    const currentDayOfWeek = getDay(new Date(dia.data + 'T00:00:00'));
+    const isRodizioDay = rodizioDayForConsultor !== null && currentDayOfWeek === rodizioDayForConsultor;
+
     if (cidadesDisponiveis.length === 0) {
       const reforco = lojasLocais.filter(l => ['B', 'C'].includes(l.cluster?.toUpperCase()));
       if (reforco.length > 0) {
@@ -499,6 +507,12 @@ function distribuirLojasNoDias(
       while (lojasAgendadasNoDia.length < 2 && lojasNaCidade.length > 0) {
         const index = lojasNaCidade.findIndex(l => {
           if (pdvsVisitadosNoDia.has(l.nome_pdv_novo)) return false;
+          
+          if (isRodizioDay) {
+            const coords = getLojaCoords(l);
+            if (coords && isInsideRodizio(coords.lat, coords.lng)) return false;
+          }
+
           const lastV = ultimasVisitas.get(l.nome_pdv_novo);
           return lastV === undefined || (dayIdx - lastV) >= MIN_GAP;
         });
@@ -521,6 +535,12 @@ function distribuirLojasNoDias(
       for (const l of extras) {
         if (lojasAgendadasNoDia.length >= 2) break;
         if (pdvsVisitadosNoDia.has(l.nome_pdv_novo)) continue;
+
+        if (isRodizioDay) {
+          const coords = getLojaCoords(l);
+          if (coords && isInsideRodizio(coords.lat, coords.lng)) continue;
+        }
+
         const lastV = ultimasVisitas.get(l.nome_pdv_novo);
         if (lastV === undefined || (dayIdx - lastV) >= MIN_GAP) {
           pdvsVisitadosNoDia.add(l.nome_pdv_novo);
@@ -538,6 +558,12 @@ function distribuirLojasNoDias(
         let prox = lojasLocais
           .filter(l => {
             if (pdvsVisitadosNoDia.has(l.nome_pdv_novo)) return false;
+            
+            if (isRodizioDay) {
+              const coords = getLojaCoords(l);
+              if (coords && isInsideRodizio(coords.lat, coords.lng)) return false;
+            }
+
             const lastV = ultimasVisitas.get(l.nome_pdv_novo);
             return lastV === undefined || (dayIdx - lastV) >= MIN_GAP;
           })
@@ -551,7 +577,14 @@ function distribuirLojasNoDias(
         // Fallback: se não encontrou loja por causa do MIN_GAP, ignora a regra para não deixar o dia com 1 loja só
         if (prox.length === 0) {
           prox = lojasLocais
-            .filter(l => !pdvsVisitadosNoDia.has(l.nome_pdv_novo))
+            .filter(l => {
+              if (pdvsVisitadosNoDia.has(l.nome_pdv_novo)) return false;
+              if (isRodizioDay) {
+                const coords = getLojaCoords(l);
+                if (coords && isInsideRodizio(coords.lat, coords.lng)) return false;
+              }
+              return true;
+            })
             .map(l => {
               const cL = getLojaCoords(l) || { lat: 0, lng: 0 };
               return { loja: l, dist: cL.lat !== 0 ? computeDistance(coordsP, cL) : 999 };

@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 import {
   Calendar, Map as MapLucide, CheckCircle, Users, Loader2, AlertCircle,
   Clock, MapPin, Building2, Tag, Plane, ArrowLeft, Navigation, Save, Download,
-  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search
+  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe
 } from 'lucide-react';
 import SugestaoJourney from '@/components/SugestaoJourney';
 import RoteirosSalvos from '@/components/RoteirosSalvos';
@@ -344,6 +344,7 @@ function AddStoreModal({
   onClose: () => void;
 }) {
   const [search, setSearch] = useState('');
+  const [searchAll, setSearchAll] = useState(false);
   
   // Coordenadas de referência do dia (primeira loja)
   const refStore = dia.lojas[0];
@@ -357,7 +358,7 @@ function AddStoreModal({
   const candidates = useMemo(() => {
     return lojasBase
       .filter(l => !alreadyVisitedNames.has(l.nome_pdv_novo))
-      .filter(l => normalize(l.consultor) === normalize(consultorNome)) // Filtra pela base do consultor
+      .filter(l => searchAll ? true : normalize(l.consultor) === normalize(consultorNome)) // Filtra pela base do consultor SE não estiver em modo 'searchAll'
       .map(l => {
         const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
         let lat = l.lat;
@@ -380,6 +381,7 @@ function AddStoreModal({
       .filter(l => {
         const s = normalize(search);
         if (!s) {
+          if (searchAll) return true; // No modo 'searchAll', sem busca, mostra as primeiras (geralmente por ordem alfabética ou original)
           // Se não houver busca, mostrar lojas da mesma cidade ou raio de 100km
           const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
           return mesmaCidade || l.dist < 100;
@@ -387,22 +389,39 @@ function AddStoreModal({
         return normalize(l.nome_pdv_novo).includes(s) || normalize(l.cidade).includes(s) || normalize(l.cliente || '').includes(s);
       })
       .sort((a, b) => a.dist - b.dist)
-      .slice(0, 25);
-  }, [lojasBase, alreadyVisitedNames, refCoords, refStore, search, consultorNome]);
+      .slice(0, searchAll && !search ? 50 : 25);
+  }, [lojasBase, alreadyVisitedNames, refCoords, refStore, search, consultorNome, searchAll]);
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl w-full max-w-2xl flex flex-col shadow-2xl overflow-hidden border border-gray-200 animate-in zoom-in-95 duration-200">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-blue-50/50">
+        <div className={`p-6 border-b border-gray-100 flex items-center justify-between transition-colors ${searchAll ? 'bg-purple-50/50' : 'bg-blue-50/50'}`}>
           <div>
-            <h3 className="text-xl font-bold text-blue-900 flex items-center gap-2">
-              <PlusCircle className="w-6 h-6 text-blue-600" /> Adicionar Loja Extra
+            <h3 className={`text-xl font-bold flex items-center gap-2 ${searchAll ? 'text-purple-900' : 'text-blue-900'}`}>
+              <PlusCircle className={`w-6 h-6 ${searchAll ? 'text-purple-600' : 'text-blue-600'}`} /> {searchAll ? 'Buscar em Toda a Base' : 'Adicionar Loja Extra'}
             </h3>
-            <p className="text-sm text-blue-600/70 mt-1">Dia {dia.data.split('-').reverse().slice(0,2).join('/')} · Sugerindo lojas próximas a {refStore?.cidade || 'Base'}</p>
+            <p className={`text-sm mt-1 ${searchAll ? 'text-purple-600/70' : 'text-blue-600/70'}`}>
+              {searchAll 
+                ? 'Pesquisando em todas as lojas cadastradas no sistema'
+                : `Dia ${dia.data.split('-').reverse().slice(0,2).join('/')} · Sugerindo lojas próximas a ${refStore?.cidade || 'Base'}`
+              }
+            </p>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600">
-            <Activity className="w-6 h-6 rotate-90" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setSearchAll(!searchAll)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-sm ${searchAll ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-purple-600 text-white shadow-purple-200'}`}
+            >
+              {searchAll ? (
+                <> <Navigation className="w-3 h-3" /> Ver Sugestões Próximas </>
+              ) : (
+                <> <Globe className="w-3 h-3" /> Buscar Toda a Base </>
+              )}
+            </button>
+            <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600">
+              <Activity className="w-6 h-6 rotate-90" />
+            </button>
+          </div>
         </div>
 
         <div className="p-4 border-b border-gray-50 bg-white">
