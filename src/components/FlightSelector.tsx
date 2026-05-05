@@ -10,16 +10,18 @@ interface FlightSelectorProps {
   originUF?: string;
   destinationCity: string;
   departureDate: string;
+  flightRole?: 'ida' | 'volta';
   onSelectFlight: (price: number, flightDetails: any) => void;
   onClose: () => void;
 }
 
-export default function FlightSelector({ originCity, originUF, destinationCity, departureDate, onSelectFlight, onClose }: FlightSelectorProps) {
+export default function FlightSelector({ originCity, originUF, destinationCity, departureDate, flightRole = 'ida', onSelectFlight, onClose }: FlightSelectorProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [flights, setFlights] = useState<any[]>([]);
   const [selectedFlight, setSelectedFlight] = useState<any | null>(null);
   const [isMock, setIsMock] = useState(false);
+  const [mockReason, setMockReason] = useState<string | null>(null);
 
   // Mapear cidades para IATA
   const originIATA = (airports as Record<string, string>)[normalize(originCity)] || 
@@ -43,6 +45,7 @@ export default function FlightSelector({ originCity, originUF, destinationCity, 
 
         setFlights(data.offers || []);
         setIsMock(data.isMock);
+        setMockReason(data.reason || null);
       } catch (err: any) {
         setError(err.message || 'Falha ao obter voos');
       } finally {
@@ -66,12 +69,18 @@ export default function FlightSelector({ originCity, originUF, destinationCity, 
       <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden max-h-[90vh]">
         
         {/* Header */}
-        <div className="bg-[#1428A0] text-white p-5 flex items-center justify-between">
+        <div className={`text-white p-5 flex items-center justify-between ${
+          flightRole === 'ida' ? 'bg-[#1428A0]' : 'bg-emerald-700'
+        }`}>
           <div className="flex items-center gap-3">
-            <Plane className="w-6 h-6 animate-pulse" />
+            <Plane className={`w-6 h-6 animate-pulse ${flightRole === 'volta' ? 'scale-x-[-1]' : ''}`} />
             <div>
-              <h3 className="font-black text-lg">Busca de Voos Inteligente</h3>
-              <p className="text-xs text-blue-200 font-medium">Conectando aeroportos locais e regionais</p>
+              <h3 className="font-black text-lg">
+                {flightRole === 'ida' ? '✈️ Voo de Ida' : '↩️ Voo de Volta'}
+              </h3>
+              <p className="text-xs opacity-75 font-medium">
+                {flightRole === 'ida' ? 'Partindo da base do consultor' : 'Retorno para a base do consultor'}
+              </p>
             </div>
           </div>
           <button onClick={onClose} className="text-white/80 hover:text-white font-bold text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition-all">
@@ -96,9 +105,14 @@ export default function FlightSelector({ originCity, originUF, destinationCity, 
         {/* Flight Options Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {isMock && (
-            <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 p-3 rounded-xl text-[11px] text-amber-800 font-medium mb-2">
-              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>Usando ambiente de simulação. Verifique as chaves e cota da API de Voos em <code>.env.local</code> para obter dados reais.</span>
+            <div className="flex flex-col gap-1 bg-amber-50 border border-amber-200 p-3 rounded-xl text-[11px] text-amber-800 font-medium mb-2">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Usando ambiente de simulação. Verifique as chaves e cota da API de Voos em <code>.env.local</code> para obter dados reais.</span>
+              </div>
+              {mockReason && (
+                <p className="ml-6 text-[10px] opacity-75 font-bold">Motivo: {mockReason}</p>
+              )}
             </div>
           )}
 

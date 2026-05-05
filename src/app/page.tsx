@@ -79,13 +79,14 @@ function CheckboxList({ title, options, selected, onChange }: {
 // ─────────────────────────────────────────────────────────
 // Card de loja individual
 // ─────────────────────────────────────────────────────────
-function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChange }: { 
+function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChange, flightRole }: { 
   loja: LojaVisita; 
   index: number; 
   onBuscarVoo?: () => void;
   chosenFlight?: any;
   onRemove?: () => void;
   onTimeChange?: (checkIn: string, checkOut: string) => void;
+  flightRole?: 'ida' | 'volta';
 }) {
   const isViagem = loja.tipo === 'viagem';
   return (
@@ -142,20 +143,37 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChan
         </div>
       </div>
 
-      {isViagem && onBuscarVoo && (
-        <div className="mt-3 pt-2 border-t border-orange-200/50 flex items-center justify-between">
-          {chosenFlight ? (
-            <div className="text-[10px] text-orange-800 font-bold">
-              ✈️ {chosenFlight.airline} ({chosenFlight.departureTime}) - {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(chosenFlight.price)}
-            </div>
-          ) : (
-            <span className="text-[10px] text-orange-600 font-medium italic">Nenhum voo vinculado</span>
-          )}
+      {isViagem && onBuscarVoo && flightRole && (
+        <div className={`mt-3 pt-2 flex items-center justify-between border-t ${
+          flightRole === 'ida' ? 'border-blue-200/50' : 'border-green-200/50'
+        }`}>
+          <div className="flex items-center gap-1.5">
+            {flightRole === 'ida' ? (
+              <span className="text-[9px] font-black uppercase tracking-wider text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded flex items-center gap-1">
+                <Plane className="w-2.5 h-2.5" /> IDA
+              </span>
+            ) : (
+              <span className="text-[9px] font-black uppercase tracking-wider text-green-700 bg-green-100 px-1.5 py-0.5 rounded flex items-center gap-1">
+                <Plane className="w-2.5 h-2.5 scale-x-[-1]" /> VOLTA
+              </span>
+            )}
+            {chosenFlight ? (
+              <span className="text-[10px] text-gray-700 font-bold">
+                {chosenFlight.airline} ({chosenFlight.departureTime}) · {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(chosenFlight.price)}
+              </span>
+            ) : (
+              <span className="text-[10px] text-gray-400 font-medium italic">Nenhum voo vinculado</span>
+            )}
+          </div>
           <button 
             onClick={onBuscarVoo} 
-            className="text-[10px] font-bold text-orange-700 hover:text-orange-900 bg-orange-200/50 hover:bg-orange-200 px-2.5 py-1 rounded-md transition-all flex items-center gap-1"
+            className={`text-[10px] font-bold px-2.5 py-1 rounded-md transition-all flex items-center gap-1 ${
+              flightRole === 'ida'
+                ? 'text-blue-700 hover:text-blue-900 bg-blue-100 hover:bg-blue-200'
+                : 'text-green-700 hover:text-green-900 bg-green-100 hover:bg-green-200'
+            }`}
           >
-            <Plane className="w-3 h-3" /> {chosenFlight ? 'Alterar Voo' : 'Buscar Voos'}
+            <Plane className="w-3 h-3" /> {chosenFlight ? 'Alterar' : `Buscar Voo`}
           </button>
         </div>
       )}
@@ -190,7 +208,8 @@ function DiaCard({
   outrosDias,
   onRemoveLoja,
   onAddStore,
-  onTimeChange
+  onTimeChange,
+  flightPoints
 }: {
   dia: RoteiroDia;
   selected: boolean;
@@ -203,6 +222,8 @@ function DiaCard({
   onRemoveLoja?: (data: string, lojaNome: string) => void;
   onAddStore?: (dia: RoteiroDia) => void;
   onTimeChange?: (data: string, lojaNome: string, checkIn: string, checkOut: string) => void;
+  // Mapa: "data-nomePdv" => 'ida' | 'volta' — apenas os pontos de embarque/desembarque
+  flightPoints?: Record<string, 'ida' | 'volta'>;
 }) {
   const [dataObj] = useState(() => {
     const [y, m, d] = dia.data.split('-').map(Number);
@@ -308,17 +329,23 @@ function DiaCard({
 
       {dia.lojas.length > 0 && (
         <div className="space-y-1.5">
-          {dia.lojas.map((loja, i) => (
-            <LojaCard 
-              key={i} 
-              loja={loja} 
-              index={i} 
-              onBuscarVoo={onBuscarVoo ? () => onBuscarVoo(loja, dia) : undefined}
-              chosenFlight={chosenFlights?.[`${dia.data}-${loja.nome_pdv}`]}
-              onRemove={onRemoveLoja ? () => onRemoveLoja(dia.data, loja.nome_pdv) : undefined}
-              onTimeChange={onTimeChange ? (cin, cout) => onTimeChange(dia.data, loja.nome_pdv, cin, cout) : undefined}
-            />
-          ))}
+          {dia.lojas.map((loja, i) => {
+            const flightKey = `${dia.data}-${loja.nome_pdv}`;
+            const role = flightPoints?.[flightKey];
+            return (
+              <LojaCard 
+                key={i} 
+                loja={loja} 
+                index={i} 
+                // Só passa onBuscarVoo se esta loja for ponto de ida ou volta
+                onBuscarVoo={(onBuscarVoo && role) ? () => onBuscarVoo(loja, dia) : undefined}
+                chosenFlight={chosenFlights?.[flightKey]}
+                onRemove={onRemoveLoja ? () => onRemoveLoja(dia.data, loja.nome_pdv) : undefined}
+                onTimeChange={onTimeChange ? (cin, cout) => onTimeChange(dia.data, loja.nome_pdv, cin, cout) : undefined}
+                flightRole={role}
+              />
+            );
+          })}
         </div>
       )}
     </div>
@@ -512,11 +539,77 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const [isSaving, setIsSaving] = useState(false);
   const [showVersionModal, setShowVersionModal] = useState(false);
 
-  // Estados para integração de busca de voos Amadeus
+  // Estados para integração de busca de voos
   const [flightModalOpen, setFlightModalOpen] = useState(false);
   const [flightTargetLoja, setFlightTargetLoja] = useState<any | null>(null);
   const [flightTargetDia, setFlightTargetDia] = useState<any | null>(null);
+  const [flightTargetRole, setFlightTargetRole] = useState<'ida' | 'volta'>('ida');
   const [chosenFlights, setChosenFlights] = useState<Record<string, any>>({});
+
+  // ─── Blocos de viagem: identifica IDA e VOLTA por bloco (>500km da base) ───
+  // Retorna mapa: "data-nomePdv" => 'ida' | 'volta'
+  const flightPoints = useMemo(() => {
+    const points: Record<string, 'ida' | 'volta'> = {};
+    
+    // Agrupa dias consecutivos com lojas do tipo 'viagem' na mesma cidade-UF
+    // e calcula distância para confirmar >500km
+    const diasComViagem = roteiroState.filter(d =>
+      d.lojas.some(l => l.tipo === 'viagem')
+    );
+
+    if (diasComViagem.length === 0) return points;
+
+    // Agrupa em blocos por cidade-UF contínuos
+    const blocos: RoteiroDia[][] = [];
+    let blocoAtual: RoteiroDia[] = [];
+    let cidadeAtual = '';
+
+    roteiroState.forEach(dia => {
+      const lojasViagem = dia.lojas.filter(l => l.tipo === 'viagem');
+      if (lojasViagem.length === 0) {
+        // Dia sem viagem — fecha bloco se estiver aberto
+        if (blocoAtual.length > 0) {
+          blocos.push(blocoAtual);
+          blocoAtual = [];
+          cidadeAtual = '';
+        }
+        return;
+      }
+      const cidadeDia = `${lojasViagem[0].cidade}-${lojasViagem[0].uf}`;
+      if (cidadeDia !== cidadeAtual && blocoAtual.length > 0) {
+        // Mudou a cidade destino — fecha bloco anterior
+        blocos.push(blocoAtual);
+        blocoAtual = [];
+      }
+      cidadeAtual = cidadeDia;
+      blocoAtual.push(dia);
+    });
+    if (blocoAtual.length > 0) blocos.push(blocoAtual);
+
+    // Para cada bloco, confirma distância >500km e marca ida/volta
+    blocos.forEach(bloco => {
+      const primeiroDia = bloco[0];
+      const ultimoDia = bloco[bloco.length - 1];
+      const primeiraLoja = primeiroDia.lojas.find(l => l.tipo === 'viagem');
+      const ultimaLoja = [...ultimoDia.lojas].reverse().find(l => l.tipo === 'viagem');
+
+      if (!primeiraLoja || !ultimaLoja) return;
+
+      // Verificar distância Haversine
+      const destKey = Object.keys(cityCoords as Record<string, any>).find(k =>
+        k.includes(primeiraLoja.cidade.toUpperCase())
+      );
+      const destCoords = destKey ? (cityCoords as Record<string, any>)[destKey] : null;
+      const dist = destCoords ? computeDistance(consultorCoords, destCoords) : 999;
+
+      if (dist < 500) return; // Não é viagem aérea — ignora
+
+      points[`${primeiroDia.data}-${primeiraLoja.nome_pdv}`] = 'ida';
+      points[`${ultimoDia.data}-${ultimaLoja.nome_pdv}`] = 'volta';
+    });
+
+    return points;
+  }, [roteiroState, consultorCoords]);
 
   // Nome do Cenário
   const [cenarioNome, setCenarioNome] = useState(initialCenario || 'Cenário Principal');
@@ -1046,8 +1139,11 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
                   onClick={() => setDiaSelecionado(dia)}
                   distancia={distancias[dia.data]}
                   onBuscarVoo={(loja, d) => {
+                    const key = `${d.data}-${loja.nome_pdv}`;
+                    const role = flightPoints[key] || 'ida';
                     setFlightTargetLoja(loja);
                     setFlightTargetDia(d);
+                    setFlightTargetRole(role);
                     setFlightModalOpen(true);
                   }}
                   chosenFlights={chosenFlights}
@@ -1056,6 +1152,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
                   onRemoveLoja={handleRemoveLoja}
                   onAddStore={setAddStoreDia}
                   onTimeChange={handleTimeChange}
+                  flightPoints={flightPoints}
                 />
               ))}
             </div>
@@ -1089,14 +1186,16 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         )}
         {flightModalOpen && flightTargetLoja && flightTargetDia && (
           <FlightSelector 
-            originCity={consultorInfo?.cidade || 'SAO PAULO'}
-            originUF={consultorInfo?.uf_base || ''}
-            destinationCity={flightTargetLoja.cidade}
+            // Na IDA: consultor -> destino. Na VOLTA: destino -> base do consultor
+            originCity={flightTargetRole === 'ida' ? (consultorInfo?.cidade || 'SAO PAULO') : flightTargetLoja.cidade}
+            originUF={flightTargetRole === 'ida' ? (consultorInfo?.uf_base || '') : flightTargetLoja.uf}
+            destinationCity={flightTargetRole === 'ida' ? flightTargetLoja.cidade : (consultorInfo?.cidade || 'SAO PAULO')}
             departureDate={flightTargetDia.data}
+            flightRole={flightTargetRole}
             onSelectFlight={(price, details) => {
               setChosenFlights(prev => ({
                 ...prev,
-                [`${flightTargetDia.data}-${flightTargetLoja.nome_pdv}`]: details
+                [`${flightTargetDia.data}-${flightTargetLoja.nome_pdv}`]: { ...details, role: flightTargetRole }
               }));
               setFlightModalOpen(false);
             }}

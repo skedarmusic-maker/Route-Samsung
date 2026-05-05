@@ -124,21 +124,30 @@ async function fetchRealFlightPrice(originUf: string, destUf: string, destCidade
         outbound_date: dateStr,
         currency: 'BRL',
         travel_class: 'ECONOMY',
-        adults: '1'
+        adults: '1',
+        show_hidden: '1',
+        language_code: 'pt-BR',
+        country_code: 'BR',
+        search_type: 'best'
       },
       headers: {
         'x-rapidapi-key': process.env.RAPIDAPI_KEY,
         'x-rapidapi-host': process.env.RAPIDAPI_HOST
       },
-      timeout: 10000 
+      timeout: 15000 
     };
 
     const response = await axios.request(options);
-    const data = response.data?.data || {};
-    const bestPrice = data.bestFlights?.[0]?.price || data.priceHistory?.summary?.current;
+    const itineraries = response.data?.data?.itineraries || {};
+    const allFlights = [
+      ...(itineraries.topFlights || []),
+      ...(itineraries.otherFlights || []),
+    ];
+    
+    const bestPrice = allFlights[0]?.price || response.data?.data?.priceHistory?.summary?.current;
     
     if (!bestPrice) {
-      return { error: `No price found. Sub-keys: ${Object.keys(data).join(',')}` };
+      return { error: `No price found. Structure: ${Object.keys(response.data?.data || {}).join(',')}` };
     }
     return { price: Math.round(bestPrice), source: 'Google Flights' };
   } catch (error: any) {

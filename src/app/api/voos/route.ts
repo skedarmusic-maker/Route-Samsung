@@ -27,7 +27,8 @@ export async function GET(req: Request) {
       });
     }
 
-    // 1. Chamar a API do Google Flights (RapidAPI)
+    console.log(`[Google Flights] Chamando API: ${origin} -> ${destination} em ${date}`);
+
     const options = {
       method: 'GET',
       url: `https://${rapidApiHost}/api/v1/searchFlights`,
@@ -50,17 +51,13 @@ export async function GET(req: Request) {
     };
 
     const res = await axios.request(options);
+    console.log(`[Google Flights] Resposta status: ${res.status}`);
     
-    if (!res.data || !res.data.status) {
-      console.error('[Google Flights API Error]', res.data);
-      return NextResponse.json({
-        isMock: true,
-        offers: generateMockFlights(origin, destination, date)
-      });
-    }
-
-    // itineraries é um OBJETO com topFlights e otherFlights (não um array)
-    const itinData = res.data.data?.itineraries || {};
+    // Algumas versões da API retornam {status: true, data: {...}} 
+    // outras retornam direto o objeto com {itineraries: ...}
+    const rawData = res.data?.data || res.data || {};
+    const itinData = rawData.itineraries || {};
+    
     const allFlights = [
       ...(itinData.topFlights || []),
       ...(itinData.otherFlights || []),
@@ -70,7 +67,11 @@ export async function GET(req: Request) {
 
     if (allFlights.length === 0) {
       console.warn('[Google Flights] Nenhum voo retornado, usando mock');
-      return NextResponse.json({ isMock: true, offers: generateMockFlights(origin, destination, date) });
+      return NextResponse.json({ 
+        isMock: true, 
+        reason: 'API returned no itineraries',
+        offers: generateMockFlights(origin, destination, date) 
+      });
     }
 
     const offers = allFlights.map((flight: any, index: number) => {
@@ -109,7 +110,11 @@ export async function GET(req: Request) {
 
     if (validOffers.length === 0) {
       console.warn('[Google Flights] Sem preços válidos, usando mock');
-      return NextResponse.json({ isMock: true, offers: generateMockFlights(origin, destination, date) });
+      return NextResponse.json({ 
+        isMock: true, 
+        reason: 'No flights with price > 0',
+        offers: generateMockFlights(origin, destination, date) 
+      });
     }
 
     validOffers.sort((a: any, b: any) => a.price - b.price);
@@ -120,6 +125,8 @@ export async function GET(req: Request) {
     console.error('[Flights Route Error]', error);
     return NextResponse.json({
       isMock: true,
+      debugError: error.message,
+      debugResponse: error.response?.data,
       offers: generateMockFlights(origin!, destination!, date!)
     });
   }
