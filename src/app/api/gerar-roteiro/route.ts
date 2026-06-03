@@ -181,22 +181,18 @@ function distribuirLojasNoDias(
   });
 
   const getFrequencia = (periodo: string): number => {
-    return 1;
+    const freq = parseInt(periodo, 10);
+    return isNaN(freq) ? 1 : freq;
   };
 
   const lojasComDistancia = lojas.map(l => {
-    const coords = getLojaCoords(l);
-    if (coords && consultor.lat && consultor.lng) {
-      const dist = computeDistance({ lat: consultor.lat, lng: consultor.lng }, coords);
-      if (dist > 250) return { ...l, forcarViagem: true, distanciaEstimada: dist };
-    }
     return { ...l, forcarViagem: false };
   });
 
   const lojasLocais = lojasComDistancia
-    .filter(l => !l.forcarViagem && (l.uf === ufConsultor || !l.uf))
+    .filter(l => !l.forcarViagem && (!viagem || l.uf === ufConsultor || !l.uf))
     .filter(l => !excludedLojasIds.includes(`${l.nome_pdv_novo}-${l.cidade}`));
-  const lojasViagemPre = lojasComDistancia.filter(l => l.forcarViagem || (l.uf && l.uf !== ufConsultor))
+  const lojasViagemPre = lojasComDistancia.filter(l => l.forcarViagem || (viagem && l.uf && l.uf !== ufConsultor))
     .filter(l => !excludedLojasIds.includes(`${l.nome_pdv_novo}-${l.cidade}`));
   const lojasViagem = viagem ? lojasViagemPre : [];
 
@@ -439,8 +435,16 @@ function distribuirLojasNoDias(
   const totalVisitasNec = diasParaLocais.length * 2;
   let totalNoPool = poolVisitas.length;
   if (totalNoPool < totalVisitasNec) {
-    // Reforço mantendo prioridade de cluster
-    const backup = [...lojasLocaisOrdenadas];
+    // Tapa-buraco Inteligente: Reforço apenas com lojas a <= 150km da base do consultor
+    let backup = lojasLocaisOrdenadas.filter(l => {
+      const cL = getLojaCoords(l);
+      if (!cL || !consultor.lat) return true;
+      return computeDistance({ lat: consultor.lat, lng: consultor.lng! }, cL) <= 150;
+    });
+    // Fallback garantido: se nenhuma loja no raio de 150km, usa todas para não deixar dia vazio
+    if (backup.length === 0) {
+      backup = [...lojasLocaisOrdenadas];
+    }
     let attempts = 0;
     while (totalNoPool < totalVisitasNec && backup.length > 0 && attempts < 500) {
       for (const loja of backup) {
@@ -682,7 +686,8 @@ export async function POST(request: Request) {
     if (errorC || !dataC) return NextResponse.json({ error: `Consultor "${consultor}" não encontrado.` }, { status: 404 });
 
     const consultorData: ConsultorLocal = { nome: dataC.nome, endereco: dataC.endereco_completo, lat: dataC.lat, lng: dataC.lng };
-    let query = supabase.from('lojas').select('*');
+    const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas';
+    let query = supabase.from(lojasTable).select('*');
     
     const rotasToFetch = [consultor, ...selectedRotasBase];
     const orCondition = rotasToFetch.map(r => `consultor_vinculado.eq."${r}"`).join(',');
@@ -699,9 +704,7 @@ export async function POST(request: Request) {
       });
     }
 
-    const forbiddenClients = ['A.DIAS', 'DUFRIO', 'UNIAR'];
     const todasLojas: Loja[] = (dataL || [])
-      .filter(l => !l.cliente || !forbiddenClients.includes(l.cliente.toUpperCase().trim()))
       .map(l => ({
         trader: '', cliente: l.cliente, bandeira: '', nome_pdv_novo: l.nome_pdv, cnpj: l.codigo_sap, endereco: l.endereco, canal: '', consultor: l.consultor_vinculado, cidade: l.cidade, uf: l.uf, status: l.status, cluster: l.cluster, periodo: l.periodo, lat: l.lat, lng: l.lng
       }));

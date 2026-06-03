@@ -49,6 +49,7 @@ interface Props {
   data: string;
   diaSemana: string;
   onDistanceCalculated?: (distance: number) => void;
+  isManualFlight?: boolean;
 }
 
 async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
@@ -74,7 +75,7 @@ function computeDistance(p1: { lat: number; lng: number }, p2: { lat: number; ln
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-export default function MapPreview({ lojas, consultorEndereco, consultorCoords, data, diaSemana, onDistanceCalculated }: Props) {
+export default function MapPreview({ lojas, consultorEndereco, consultorCoords, data, diaSemana, onDistanceCalculated, isManualFlight }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -191,7 +192,7 @@ export default function MapPreview({ lojas, consultorEndereco, consultorCoords, 
         // 5. Obter Distância Real e Rota via Google APIs
         if (pontos.length > 1) {
           const distToFirst = computeDistance(pontos[0], pontos[1]);
-          const goesByPlane = distToFirst > 350;
+          const goesByPlane = isManualFlight || distToFirst > 350;
 
           const directionsService = new google.maps.DirectionsService();
           const directionsRenderer = new google.maps.DirectionsRenderer({
@@ -244,6 +245,11 @@ export default function MapPreview({ lojas, consultorEndereco, consultorCoords, 
                 if (leg.distance) totalRealDist += leg.distance.value;
               });
               
+              if (goesByPlane) {
+                 // 5km ida + 5km volta = 10km fixo (representando hotel -> primeira loja, e ultima loja -> hotel)
+                 totalRealDist += 10000;
+              }
+
               if (onDistanceCalculated) {
                 onDistanceCalculated(totalRealDist / 1000); // Converte metros para KM
               }
@@ -288,7 +294,7 @@ export default function MapPreview({ lojas, consultorEndereco, consultorCoords, 
       isMounted = false;
       markersRef.forEach(m => m.setMap(null));
     };
-  }, [lojas, consultorCoords, consultorEndereco]);
+  }, [lojas, consultorCoords, consultorEndereco, isManualFlight]);
 
   return (
     <div className="flex flex-col h-full">

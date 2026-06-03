@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 import {
   Calendar, Map as MapLucide, CheckCircle, Users, Loader2, AlertCircle,
   Clock, MapPin, Building2, Tag, Plane, ArrowLeft, Navigation, Save, Download,
-  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe
+  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe, Hotel
 } from 'lucide-react';
 import SugestaoJourney from '@/components/SugestaoJourney';
 import RoteirosSalvos from '@/components/RoteirosSalvos';
@@ -19,6 +19,7 @@ import ConsolidatedDashboard from '@/components/ConsolidatedDashboard';
 import FlightSelector from '@/components/FlightSelector';
 import DateRangePicker from '@/components/DateRangePicker';
 import SaveVersionModal from '@/components/SaveVersionModal';
+import HotelSelector from '@/components/HotelSelector';
 import cityCoords from '@/lib/city_coords.json';
 import despesasHistoricas from '@/lib/despesas_historicas.json';
 import despesasHistoricasMeses from '@/lib/despesas_historicas_meses.json';
@@ -79,7 +80,7 @@ function CheckboxList({ title, options, selected, onChange }: {
 // ─────────────────────────────────────────────────────────
 // Card de loja individual
 // ─────────────────────────────────────────────────────────
-function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChange, flightRole }: { 
+function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChange, flightRole, onBuscarHotel, chosenHotel }: { 
   loja: LojaVisita; 
   index: number; 
   onBuscarVoo?: () => void;
@@ -87,6 +88,8 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChan
   onRemove?: () => void;
   onTimeChange?: (checkIn: string, checkOut: string) => void;
   flightRole?: 'ida' | 'volta';
+  onBuscarHotel?: () => void;
+  chosenHotel?: any;
 }) {
   const isViagem = loja.tipo === 'viagem';
   return (
@@ -177,6 +180,29 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChan
           </button>
         </div>
       )}
+
+      {onBuscarHotel && (
+        <div className="mt-3 pt-2 flex items-center justify-between border-t border-indigo-100">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded flex items-center gap-1">
+              <Hotel className="w-2.5 h-2.5" /> HOTEL
+            </span>
+            {chosenHotel ? (
+              <span className="text-[10px] text-gray-700 font-bold truncate max-w-[150px]">
+                {chosenHotel.name} · {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(chosenHotel.price)}
+              </span>
+            ) : (
+              <span className="text-[10px] text-gray-400 font-medium italic">Nenhuma hospedagem</span>
+            )}
+          </div>
+          <button 
+            onClick={onBuscarHotel} 
+            className="text-[10px] font-bold px-2.5 py-1 rounded-md transition-all flex items-center gap-1 text-indigo-700 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100"
+          >
+            <Hotel className="w-3 h-3" /> {chosenHotel ? 'Alterar' : `Buscar Hotel`}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -209,7 +235,12 @@ function DiaCard({
   onRemoveLoja,
   onAddStore,
   onTimeChange,
-  flightPoints
+  flightPoints,
+  hotelPoints,
+  onBuscarHotel,
+  chosenHotels,
+  isManualFlight,
+  onToggleManualFlight
 }: {
   dia: RoteiroDia;
   selected: boolean;
@@ -222,8 +253,12 @@ function DiaCard({
   onRemoveLoja?: (data: string, lojaNome: string) => void;
   onAddStore?: (dia: RoteiroDia) => void;
   onTimeChange?: (data: string, lojaNome: string, checkIn: string, checkOut: string) => void;
-  // Mapa: "data-nomePdv" => 'ida' | 'volta' — apenas os pontos de embarque/desembarque
   flightPoints?: Record<string, 'ida' | 'volta'>;
+  hotelPoints?: Record<string, { checkout: string }>;
+  onBuscarHotel?: (loja: LojaVisita, dia: RoteiroDia, checkout: string) => void;
+  chosenHotels?: Record<string, any>;
+  isManualFlight?: boolean;
+  onToggleManualFlight?: () => void;
 }) {
   const [dataObj] = useState(() => {
     const [y, m, d] = dia.data.split('-').map(Number);
@@ -287,6 +322,17 @@ function DiaCard({
         )}
         {!isFeriado && (
           <div className="flex items-center gap-1.5">
+            {onToggleManualFlight && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onToggleManualFlight(); }}
+                className={`p-1.5 rounded-lg transition-all flex items-center gap-1 text-[10px] font-bold shadow-sm ${
+                  isManualFlight ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+                title={isManualFlight ? "Modo Viagem/Hotel ATIVADO (Calcula distância a partir do Hotel)" : "Ativar Modo Viagem/Hotel (Calcula distância a partir do Hotel)"}
+              >
+                ✈️
+              </button>
+            )}
             {onAddStore && dia.lojas.length < 3 && (
               <button 
                 onClick={(e) => { e.stopPropagation(); onAddStore(dia); }}
@@ -340,6 +386,8 @@ function DiaCard({
                 // Só passa onBuscarVoo se esta loja for ponto de ida ou volta
                 onBuscarVoo={(onBuscarVoo && role) ? () => onBuscarVoo(loja, dia) : undefined}
                 chosenFlight={chosenFlights?.[flightKey]}
+                onBuscarHotel={(onBuscarHotel && hotelPoints?.[flightKey]) ? () => onBuscarHotel(loja, dia, hotelPoints![flightKey].checkout) : undefined}
+                chosenHotel={chosenHotels?.[flightKey]}
                 onRemove={onRemoveLoja ? () => onRemoveLoja(dia.data, loja.nome_pdv) : undefined}
                 onTimeChange={onTimeChange ? (cin, cout) => onTimeChange(dia.data, loja.nome_pdv, cin, cout) : undefined}
                 flightRole={role}
@@ -534,6 +582,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
 
   // Estado para armazenar as distâncias calculadas por dia (cache)
   const [distancias, setDistancias] = useState<Record<string, number>>({});
+  const [manualFlights, setManualFlights] = useState<Record<string, boolean>>({});
   const [viewMode, setViewMode] = useState<'visualizacao' | 'eficiencia'>('visualizacao');
   const [mesComparacao, setMesComparacao] = useState<'03' | '04'>('04');
   const [isSaving, setIsSaving] = useState(false);
@@ -546,10 +595,19 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const [flightTargetRole, setFlightTargetRole] = useState<'ida' | 'volta'>('ida');
   const [chosenFlights, setChosenFlights] = useState<Record<string, any>>({});
 
+  // Estados para integração de busca de hotéis
+  const [hotelModalOpen, setHotelModalOpen] = useState(false);
+  const [hotelTargetLoja, setHotelTargetLoja] = useState<any | null>(null);
+  const [hotelTargetDia, setHotelTargetDia] = useState<any | null>(null);
+  const [hotelTargetCheckout, setHotelTargetCheckout] = useState<string>('');
+  const [chosenHotels, setChosenHotels] = useState<Record<string, any>>({});
+
   // ─── Blocos de viagem: identifica IDA e VOLTA por bloco (>500km da base) ───
   // Retorna mapa: "data-nomePdv" => 'ida' | 'volta'
-  const flightPoints = useMemo(() => {
-    const points: Record<string, 'ida' | 'volta'> = {};
+  // Retorna mapa: "data-nomePdv" => 'ida' | 'volta'
+  const travelLogistics = useMemo(() => {
+    const flightPts: Record<string, 'ida' | 'volta'> = {};
+    const hotelPts: Record<string, { checkout: string }> = {};
     
     // Agrupa dias consecutivos com lojas do tipo 'viagem' na mesma cidade-UF
     // e calcula distância para confirmar >500km
@@ -557,7 +615,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
       d.lojas.some(l => l.tipo === 'viagem')
     );
 
-    if (diasComViagem.length === 0) return points;
+    if (diasComViagem.length === 0) return { flightPts: {}, hotelPts: {} };
 
     // Agrupa em blocos por cidade-UF contínuos
     const blocos: RoteiroDia[][] = [];
@@ -604,12 +662,21 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
 
       if (dist < 500) return; // Não é viagem aérea — ignora
 
-      points[`${primeiroDia.data}-${primeiraLoja.nome_pdv}`] = 'ida';
-      points[`${ultimoDia.data}-${ultimaLoja.nome_pdv}`] = 'volta';
+      flightPts[`${primeiroDia.data}-${primeiraLoja.nome_pdv}`] = 'ida';
+      flightPts[`${ultimoDia.data}-${ultimaLoja.nome_pdv}`] = 'volta';
+
+      // Hotel: sugerido apenas na primeira loja do primeiro dia do bloco
+      // Checkout é o dia da volta (último dia do bloco)
+      hotelPts[`${primeiroDia.data}-${primeiraLoja.nome_pdv}`] = { 
+        checkout: ultimoDia.data 
+      };
     });
 
-    return points;
+    return { flightPts, hotelPts };
   }, [roteiroState, consultorCoords]);
+
+  const flightPoints = travelLogistics.flightPts;
+  const hotelPoints = travelLogistics.hotelPts;
 
   // Nome do Cenário
   const [cenarioNome, setCenarioNome] = useState(initialCenario || 'Cenário Principal');
@@ -830,6 +897,11 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
     return total;
   }, [roteiroState, consultorCoords, distancias]);
 
+  // Totalizar custos extras
+  const flightCosts = Object.values(chosenFlights).reduce((acc: number, f: any) => acc + (f?.price || 0), 0);
+  const hotelCosts = Object.values(chosenHotels).reduce((acc: number, h: any) => acc + (h?.price || 0), 0);
+  const extraCostsTotal = flightCosts + hotelCosts;
+
   // Inteligência Financeira e de Desempenho
   const despesasMes = (despesasHistoricasMeses as any)[mesComparacao] || {};
   const hist = Object.entries(despesasMes as Record<string, any>).find(
@@ -857,8 +929,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const economizouKM = variacaoKM ? variacaoKM < 0 : false;
   
   const costPerKm = 0.80; // Reembolso fixado em R$ 0,80 por KM rodado
-  const flightCosts = Object.values(chosenFlights).reduce((acc: number, f: any) => acc + (f?.price || 0), 0);
-  const estimatedCost = (totalEstimatedKM * costPerKm) + flightCosts;
+  const estimatedCost = (totalEstimatedKM * costPerKm) + extraCostsTotal;
   const variacaoCusto = histValor ? estimatedCost - histValor : null;
   const economizouCusto = variacaoCusto ? variacaoCusto < 0 : false;
 
@@ -915,6 +986,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         ...resultado,
         totalEstimatedKM: totalEstimatedKM,
         estimatedCost: estimatedCost,
+        extraCosts: { flights: chosenFlights, hotels: chosenHotels },
         totalLojas: resultado.totalLojas || roteiroState.reduce((acc: number, dia: any) => acc + (dia.lojas?.length || 0), 0),
         roteiro: roteiroState
       };
@@ -1147,12 +1219,27 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
                     setFlightModalOpen(true);
                   }}
                   chosenFlights={chosenFlights}
-                  onSwapDays={handleSwapDays}
+                   onSwapDays={handleSwapDays}
                   outrosDias={roteiroState.map(d => ({ data: d.data, diaSemana: d.diaSemana }))}
                   onRemoveLoja={handleRemoveLoja}
                   onAddStore={setAddStoreDia}
                   onTimeChange={handleTimeChange}
                   flightPoints={flightPoints}
+                  hotelPoints={hotelPoints}
+                  onBuscarHotel={(loja, dia, checkout) => {
+                    setHotelTargetLoja(loja);
+                    setHotelTargetDia(dia);
+                    setHotelTargetCheckout(checkout);
+                    setHotelModalOpen(true);
+                  }}
+                  chosenHotels={chosenHotels}
+                  isManualFlight={manualFlights[dia.data] || false}
+                  onToggleManualFlight={() => {
+                    setManualFlights(prev => ({
+                      ...prev,
+                      [dia.data]: !prev[dia.data]
+                    }));
+                  }}
                 />
               ))}
             </div>
@@ -1170,6 +1257,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
                   onDistanceCalculated={(dist) => {
                     setDistancias(prev => ({ ...prev, [diaSelecionado.data]: dist }));
                   }}
+                  isManualFlight={manualFlights[diaSelecionado.data] || false}
                 />
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-3">
@@ -1322,8 +1410,9 @@ export default function ConfigurationPanel() {
         setConsultores(enrichedConsultores);
 
         // 2. Buscar Lojas
+        const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas';
         const { data: dataL, error: errorL } = await supabase
-          .from('lojas')
+          .from(lojasTable)
           .select('*')
           .order('nome_pdv');
         

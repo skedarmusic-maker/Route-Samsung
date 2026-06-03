@@ -21,7 +21,8 @@ export async function GET(request: Request) {
     const canais = searchParams.get('canais')?.split(',').filter(Boolean);
 
     // 1. Buscar lojas (filtrar por consultor se informado)
-    let query = supabase.from('lojas').select('nome_pdv, cliente, cluster, periodo, status, consultor_vinculado, canal');
+    const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas';
+    let query = supabase.from(lojasTable).select('nome_pdv, cliente, cluster, periodo, status, consultor_vinculado, canal');
     
     if (consultor) query = query.eq('consultor_vinculado', consultor);
     if (status) query = query.ilike('status', status);

@@ -97,7 +97,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
     let totalKM = 0;
     let totalLojas = 0;
     let totalVisitas = 0;
-    const consultorStats: Record<string, { km: number, visitas: number, lojas: number }> = {};
+    const consultorStats: Record<string, { km: number, visitas: number, lojas: number, custo: number }> = {};
 
     roteiros.forEach(r => {
       const d = r.dados_roteiro;
@@ -158,19 +158,26 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
       });
       totalVisitas += visitas;
 
+      // Se já temos o custo total salvo (incluindo voos), usamos ele. 
+      // Caso contrário, calculamos apenas KM.
+      const custoRoteiro = d.estimatedCost || (km * 0.80);
+
       consultorStats[r.consultor] = {
         km: (consultorStats[r.consultor]?.km || 0) + km,
         visitas: (consultorStats[r.consultor]?.visitas || 0) + visitas,
-        lojas: (consultorStats[r.consultor]?.lojas || 0) + (d.totalLojas || 0)
+        lojas: (consultorStats[r.consultor]?.lojas || 0) + (d.totalLojas || 0),
+        custo: (consultorStats[r.consultor]?.custo || 0) + custoRoteiro
       };
     });
+
+    const totalCost = Object.values(consultorStats).reduce((acc, c) => acc + (c as any).custo, 0);
 
     return {
       totalKM,
       totalLojas,
       totalVisitas,
       consultorStats,
-      totalCost: totalKM * 0.80
+      totalCost
     };
   }, [roteiros, consultores]);
 
@@ -356,7 +363,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                         <td className="px-6 py-4 text-center text-gray-600 font-medium">{c.visitas}</td>
                         <td className="px-6 py-4 text-center font-black text-blue-600">{Math.round(c.km)} km</td>
                         <td className="px-6 py-4 text-right font-black text-gray-900">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(c.km * 0.80)}
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(c.custo)}
                         </td>
                       </tr>
                     );

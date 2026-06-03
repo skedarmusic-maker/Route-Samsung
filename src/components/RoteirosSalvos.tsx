@@ -201,7 +201,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => onViewConsolidated?.(selecionados.length > 0 ? selecionados.map((r: RoteiroSalvo) => r.dados_roteiro) : rots.map((r: RoteiroSalvo) => r.dados_roteiro))} disabled={rots.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
+            <button onClick={() => onViewConsolidated?.(selecionados.length > 0 ? selecionados : rots)} disabled={rots.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
               <Activity className="w-4 h-4" /> Dashboard {selecionados.length > 0 && `(${selecionados.length})`}
             </button>
             <button onClick={() => handleExportVersao(rots, versaoAtivaObj?.nome || '')} disabled={rots.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-medium transition-colors disabled:opacity-50">

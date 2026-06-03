@@ -26,8 +26,8 @@ export async function GET(request: Request) {
     const data = await res.json();
 
     if (data.status !== 'OK' || !data.results?.[0]) {
-      console.warn(`Geocodificação sem resultado para: "${address}" — status: ${data.status}`);
-      return NextResponse.json({ error: `Endereço não encontrado: ${address}`, status: data.status }, { status: 404 });
+      console.warn(`Geocodificação sem resultado para: "${address}" — status: ${data.status}, error_message: ${data.error_message || 'Nenhuma mensagem'}`);
+      return NextResponse.json({ error: `Endereço não encontrado: ${address}`, status: data.status, message: data.error_message }, { status: 404 });
     }
 
     const { lat, lng } = data.results[0].geometry.location;
