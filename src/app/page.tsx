@@ -420,6 +420,8 @@ function AddStoreModal({
 }) {
   const [search, setSearch] = useState('');
   const [searchAll, setSearchAll] = useState(false);
+  const [supabaseLojas, setSupabaseLojas] = useState<Loja[]>([]);
+  const [loadingSupabase, setLoadingSupabase] = useState(false);
   
   // Coordenadas de referência do dia (primeira loja)
   const refStore = dia.lojas[0];
@@ -430,10 +432,66 @@ function AddStoreModal({
     return (cityCoords as Record<string, any>)[key] || null;
   }, [refStore]);
 
+  // Efeito de busca dinâmica na tabela geral 'lojas' do Supabase com debounce de 400ms
+  useEffect(() => {
+    if (!searchAll) {
+      setSupabaseLojas([]);
+      return;
+    }
+
+    const trimmed = search.trim();
+    if (trimmed.length < 2) {
+      setSupabaseLojas([]);
+      return;
+    }
+
+    const delayDebounce = setTimeout(async () => {
+      setLoadingSupabase(true);
+      try {
+        const { data, error } = await supabase
+          .from('lojas')
+          .select('*')
+          .or(`nome_pdv.ilike.%${trimmed}%,cidade.ilike.%${trimmed}%,cliente.ilike.%${trimmed}%`)
+          .limit(50);
+
+        if (error) throw error;
+
+        const mapped: Loja[] = (data || []).map(l => ({
+          trader: '',
+          cliente: l.cliente,
+          bandeira: '',
+          nome_pdv_novo: l.nome_pdv,
+          cnpj: l.codigo_sap || '',
+          endereco: l.endereco,
+          cidade: l.cidade,
+          uf: l.uf,
+          cluster: l.cluster,
+          canal: l.canal,
+          periodo: l.periodo || '1',
+          status: l.status,
+          consultor: l.consultor_vinculado,
+          lat: l.lat,
+          lng: l.lng
+        }));
+
+        setSupabaseLojas(mapped);
+      } catch (err) {
+        console.error('Erro na busca dinamica do Supabase:', err);
+      } finally {
+        setLoadingSupabase(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(delayDebounce);
+  }, [search, searchAll]);
+
   const candidates = useMemo(() => {
-    return lojasBase
-      .filter(l => !alreadyVisitedNames.has(l.nome_pdv_novo))
-      .filter(l => searchAll ? true : normalize(l.consultor) === normalize(consultorNome)) // Filtra pela base do consultor SE não estiver em modo 'searchAll'
+    // Escolhe a lista ativa: se estiver buscando na base geral e tiver resultados do banco, usa eles
+    const activeList = (searchAll && supabaseLojas.length > 0) ? supabaseLojas : lojasBase;
+
+    return activeList
+      .filter(l => searchAll ? true : !alreadyVisitedNames.has(l.nome_pdv_novo)) // Permite duplicar lojas se searchAll for true
+      .filter(l => searchAll ? true : normalize(l.consultor) === normalize(consultorNome)) // Permite buscar de outros consultores se searchAll for true
       .map(l => {
         const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
         let lat = l.lat;
@@ -456,16 +514,18 @@ function AddStoreModal({
       .filter(l => {
         const s = normalize(search);
         if (!s) {
-          if (searchAll) return true; // No modo 'searchAll', sem busca, mostra as primeiras (geralmente por ordem alfabética ou original)
+          if (searchAll) return true; // No modo 'searchAll' sem busca, mostra o conteúdo
           // Se não houver busca, mostrar lojas da mesma cidade ou raio de 100km
           const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
           return mesmaCidade || l.dist < 100;
         }
+        // Se a lista ativa já veio filtrada do Supabase, não refiltrar por texto aqui
+        if (searchAll && supabaseLojas.length > 0) return true;
         return normalize(l.nome_pdv_novo).includes(s) || normalize(l.cidade).includes(s) || normalize(l.cliente || '').includes(s);
       })
       .sort((a, b) => a.dist - b.dist)
       .slice(0, searchAll && !search ? 50 : 25);
-  }, [lojasBase, alreadyVisitedNames, refCoords, refStore, search, consultorNome, searchAll]);
+  }, [lojasBase, supabaseLojas, alreadyVisitedNames, refCoords, refStore, search, consultorNome, searchAll]);
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
@@ -484,7 +544,10 @@ function AddStoreModal({
           </div>
           <div className="flex items-center gap-2">
             <button 
-              onClick={() => setSearchAll(!searchAll)}
+              onClick={() => {
+                setSearchAll(!searchAll);
+                setSupabaseLojas([]);
+              }}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-sm ${searchAll ? 'bg-blue-600 text-white shadow-blue-200' : 'bg-purple-600 text-white shadow-purple-200'}`}
             >
               {searchAll ? (
@@ -514,32 +577,39 @@ function AddStoreModal({
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar min-h-[300px] max-h-[500px]">
-          <div className="grid grid-cols-1 gap-2">
-            {candidates.map((l, idx) => (
-              <button 
-                key={idx}
-                onClick={() => onSelect(l)}
-                className="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:border-blue-300 hover:bg-blue-50/50 transition-all text-left group"
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-gray-800 text-sm group-hover:text-blue-700 transition-colors">{l.nome_pdv_novo}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{l.cliente} · {l.cidade} - {l.uf}</p>
+          {loadingSupabase ? (
+            <div className="py-12 text-center text-gray-400">
+              <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin text-purple-600" />
+              <p className="text-sm font-medium">Buscando na base geral do Supabase...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-2">
+              {candidates.map((l, idx) => (
+                <button 
+                  key={idx}
+                  onClick={() => onSelect(l)}
+                  className="flex items-center gap-4 p-4 rounded-2xl border border-gray-100 bg-white hover:border-blue-300 hover:bg-blue-50/50 transition-all text-left group"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-800 text-sm group-hover:text-blue-700 transition-colors">{l.nome_pdv_novo}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{l.cliente} · {l.cidade} - {l.uf}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${l.dist < 20 ? 'bg-green-100 text-green-700' : l.dist < 50 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
+                      {l.dist >= 9999 ? '-- km' : `${Math.round(l.dist)} km`}
+                    </span>
+                    <p className="text-[9px] text-gray-400 mt-1 font-bold">CLUSTER {l.cluster}</p>
+                  </div>
+                </button>
+              ))}
+              {candidates.length === 0 && (
+                <div className="py-12 text-center text-gray-400">
+                  <Search className="w-8 h-8 mx-auto mb-3 opacity-20" />
+                  <p className="text-sm">Nenhuma loja disponível encontrada.</p>
                 </div>
-                <div className="text-right shrink-0">
-                  <span className={`text-[10px] font-black px-2 py-1 rounded-lg uppercase ${l.dist < 20 ? 'bg-green-100 text-green-700' : l.dist < 50 ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
-                    {l.dist >= 9999 ? '-- km' : `${Math.round(l.dist)} km`}
-                  </span>
-                  <p className="text-[9px] text-gray-400 mt-1 font-bold">CLUSTER {l.cluster}</p>
-                </div>
-              </button>
-            ))}
-            {candidates.length === 0 && (
-              <div className="py-12 text-center text-gray-400">
-                <Search className="w-8 h-8 mx-auto mb-3 opacity-20" />
-                <p className="text-sm">Nenhuma loja disponível encontrada.</p>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
