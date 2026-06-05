@@ -644,6 +644,22 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const [showAuditPanel, setShowAuditPanel] = useState(true);
   const [auditSearch, setAuditSearch] = useState('');
 
+  // Traduz frequências textuais ou numéricas para número de visitas esperadas
+  const parsePeriodoToEsperado = (periodo: string): number => {
+    if (!periodo) return 1;
+    const clean = normalize(periodo);
+    
+    const num = parseInt(clean, 10);
+    if (!isNaN(num)) return num;
+    
+    if (clean.includes('semanal') && clean.includes('quinzenal')) return 2;
+    if (clean.includes('quinzenal')) return 2;
+    if (clean.includes('semanal')) return 4;
+    if (clean.includes('mensal')) return 1;
+    
+    return 1;
+  };
+
   const lojasConsultor = useMemo(() => {
     return lojasBase.filter(l => normalize(l.consultor) === normalize(resultado.consultor));
   }, [lojasBase, resultado.consultor]);
@@ -671,7 +687,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
 
     // Lojas da base do consultor
     lojasConsultor.forEach(l => {
-      const esperado = parseInt(l.periodo) || 1; // Fallback para 1 se vazio
+      const esperado = parsePeriodoToEsperado(l.periodo);
       auditMap.set(l.nome_pdv_novo, {
         nome_pdv: l.nome_pdv_novo,
         cliente: l.cliente,
@@ -692,7 +708,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         let entry = auditMap.get(loja.nome_pdv);
         if (!entry) {
           const matchingBase = lojasBase.find(lb => lb.nome_pdv_novo === loja.nome_pdv);
-          const esperado = matchingBase ? (parseInt(matchingBase.periodo) || 1) : 0;
+          const esperado = matchingBase ? parsePeriodoToEsperado(matchingBase.periodo) : 0;
           entry = {
             nome_pdv: loja.nome_pdv,
             cliente: loja.cliente || matchingBase?.cliente || 'Loja Externa',
