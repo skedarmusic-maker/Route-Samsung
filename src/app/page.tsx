@@ -270,6 +270,7 @@ function DiaCard({
 
   return (
     <div
+      id={`dia-${dia.data}`}
       onClick={clickable ? onClick : undefined}
       className={`rounded-xl border p-3 transition-all ${
         selected
@@ -485,11 +486,16 @@ function AddStoreModal({
     return () => clearTimeout(delayDebounce);
   }, [search, searchAll]);
 
+  const alreadyVisitedInDayNames = useMemo(() => {
+    return new Set(dia.lojas.map(l => l.nome_pdv));
+  }, [dia.lojas]);
+
   const candidates = useMemo(() => {
     // Escolhe a lista ativa: se estiver buscando na base geral e tiver resultados do banco, usa eles
     const activeList = (searchAll && supabaseLojas.length > 0) ? supabaseLojas : lojasBase;
 
     return activeList
+      .filter(l => !alreadyVisitedInDayNames.has(l.nome_pdv_novo)) // Nunca permite duplicar no mesmo dia
       .filter(l => searchAll ? true : !alreadyVisitedNames.has(l.nome_pdv_novo)) // Permite duplicar lojas se searchAll for true
       .filter(l => searchAll ? true : normalize(l.consultor) === normalize(consultorNome)) // Permite buscar de outros consultores se searchAll for true
       .map(l => {
@@ -633,6 +639,102 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   onVoltar: () => void;
 }) {
   const [roteiroState, setRoteiroState] = useState<RoteiroDia[]>(resultado.roteiro);
+
+  // Estados para Auditoria de Frequência de Visitas
+  const [showAuditPanel, setShowAuditPanel] = useState(true);
+  const [auditSearch, setAuditSearch] = useState('');
+
+  const lojasConsultor = useMemo(() => {
+    return lojasBase.filter(l => normalize(l.consultor) === normalize(resultado.consultor));
+  }, [lojasBase, resultado.consultor]);
+
+  const frequencyAudit = useMemo(() => {
+    const counts: Record<string, number> = {};
+    roteiroState.forEach(dia => {
+      if (dia.feriado && !dia.feriado.startsWith('__viagem')) return;
+      dia.lojas.forEach(loja => {
+        counts[loja.nome_pdv] = (counts[loja.nome_pdv] || 0) + 1;
+      });
+    });
+
+    const auditMap = new Map<string, { 
+      nome_pdv: string;
+      cliente: string;
+      cidade: string;
+      uf: string;
+      cluster: string;
+      atual: number; 
+      esperado: number; 
+      status: 'ok' | 'excesso' | 'falta';
+      dias: { data: string; diaSemana: string }[];
+    }>();
+
+    // Lojas da base do consultor
+    lojasConsultor.forEach(l => {
+      const esperado = parseInt(l.periodo) || 1; // Fallback para 1 se vazio
+      auditMap.set(l.nome_pdv_novo, {
+        nome_pdv: l.nome_pdv_novo,
+        cliente: l.cliente,
+        cidade: l.cidade,
+        uf: l.uf,
+        cluster: l.cluster,
+        atual: 0,
+        esperado,
+        status: 'falta',
+        dias: []
+      });
+    });
+
+    // Lojas no roteiro ativo
+    roteiroState.forEach(dia => {
+      if (dia.feriado && !dia.feriado.startsWith('__viagem')) return;
+      dia.lojas.forEach(loja => {
+        let entry = auditMap.get(loja.nome_pdv);
+        if (!entry) {
+          const matchingBase = lojasBase.find(lb => lb.nome_pdv_novo === loja.nome_pdv);
+          const esperado = matchingBase ? (parseInt(matchingBase.periodo) || 1) : 0;
+          entry = {
+            nome_pdv: loja.nome_pdv,
+            cliente: loja.cliente || matchingBase?.cliente || 'Loja Externa',
+            cidade: loja.cidade || matchingBase?.cidade || 'Outra',
+            uf: loja.uf || matchingBase?.uf || '',
+            cluster: loja.cluster || matchingBase?.cluster || '',
+            atual: 0,
+            esperado,
+            status: 'falta',
+            dias: []
+          };
+          auditMap.set(loja.nome_pdv, entry);
+        }
+        
+        entry.atual += 1;
+        // Evita duplicar o mesmo dia no array de dias (embora agora tenhamos impedido isso no mesmo dia, é seguro)
+        if (!entry.dias.some(d => d.data === dia.data)) {
+          entry.dias.push({ data: dia.data, diaSemana: dia.diaSemana });
+        }
+      });
+    });
+
+    const list = Array.from(auditMap.values()).map(item => {
+      let status: 'ok' | 'excesso' | 'falta' = 'ok';
+      if (item.atual > item.esperado) status = 'excesso';
+      else if (item.atual < item.esperado) status = 'falta';
+
+      return {
+        ...item,
+        status
+      };
+    });
+
+    return list.sort((a, b) => {
+      const order = { excesso: 0, falta: 1, ok: 2 };
+      return order[a.status] - order[b.status];
+    });
+  }, [lojasConsultor, lojasBase, roteiroState]);
+
+  const alertCount = useMemo(() => {
+    return frequencyAudit.filter(item => item.status !== 'ok').length;
+  }, [frequencyAudit]);
 
   const totalVisitas = roteiroState.reduce((acc: number, d: RoteiroDia) => acc + d.lojas.length, 0);
   const diasComVisitas = roteiroState.filter((d: RoteiroDia) => d.lojas.length > 0);
@@ -1158,6 +1260,25 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         </div>
 
         <div className="flex items-center gap-3">
+          {viewMode === 'visualizacao' && (
+            <button
+              onClick={() => setShowAuditPanel(!showAuditPanel)}
+              className={`flex items-center gap-2 px-4 py-2 font-semibold rounded-xl transition-all shadow-sm active:scale-95 border ${
+                showAuditPanel
+                  ? 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'
+                  : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              <CheckSquare className="w-5 h-5" />
+              {showAuditPanel ? 'Ocultar Auditoria' : 'Auditar Frequências'}
+              {alertCount > 0 && (
+                <span className="flex items-center justify-center w-5 h-5 text-[10px] font-black bg-red-600 text-white rounded-full animate-pulse">
+                  {alertCount}
+                </span>
+              )}
+            </button>
+          )}
+
           <button 
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-all shadow-sm active:scale-95"
@@ -1336,6 +1457,180 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
                 </div>
               )}
             </div>
+
+            {/* ── PAINEL DE AUDITORIA DE FREQUÊNCIA DE VISITAS ── */}
+            {showAuditPanel && (
+              <div className="w-[340px] shrink-0 border-l border-gray-200 bg-white flex flex-col overflow-hidden animate-in slide-in-from-right duration-250">
+                {/* Cabeçalho */}
+                <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50 shrink-0">
+                  <div className="flex items-center gap-2">
+                    <CheckSquare className="w-5 h-5 text-amber-600" />
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-xs">Frequência de Visitas</h3>
+                      <p className="text-[9px] text-gray-500 uppercase tracking-widest font-semibold">Coluna F vs Roteiro</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowAuditPanel(false)}
+                    className="p-1 hover:bg-gray-200 rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4 rotate-180" />
+                  </button>
+                </div>
+
+                {/* Resumo Rápido */}
+                <div className="p-3 bg-gray-100/50 border-b border-gray-100 grid grid-cols-3 gap-1.5 shrink-0 text-center text-[9px] font-bold">
+                  <div className="bg-white p-1.5 rounded-lg border border-gray-200">
+                    <p className="text-gray-500">CONFORME</p>
+                    <p className="text-sm text-green-600 font-black">
+                      {frequencyAudit.filter(f => f.status === 'ok').length}
+                    </p>
+                  </div>
+                  <div className="bg-white p-1.5 rounded-lg border border-gray-200">
+                    <p className="text-gray-500">EXCESSO</p>
+                    <p className="text-sm text-red-600 font-black">
+                      {frequencyAudit.filter(f => f.status === 'excesso').length}
+                    </p>
+                  </div>
+                  <div className="bg-white p-1.5 rounded-lg border border-gray-200">
+                    <p className="text-gray-500">PENDENTE</p>
+                    <p className="text-sm text-amber-600 font-black">
+                      {frequencyAudit.filter(f => f.status === 'falta').length}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Pesquisa */}
+                <div className="p-3 border-b border-gray-100 shrink-0">
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                    <input 
+                      type="text"
+                      placeholder="Pesquisar loja ou cidade..."
+                      value={auditSearch}
+                      onChange={(e) => setAuditSearch(e.target.value)}
+                      className="w-full pl-8 pr-8 py-1.5 bg-gray-50 border border-gray-200 rounded-lg outline-none focus:border-amber-400 text-xs focus:ring-1 focus:ring-amber-200 transition-all font-medium"
+                    />
+                    {auditSearch && (
+                      <button 
+                        onClick={() => setAuditSearch('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs font-bold"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Lista de Lojas */}
+                <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+                  {(() => {
+                    const filtered = frequencyAudit.filter(item => {
+                      const s = normalize(auditSearch);
+                      if (!s) return true;
+                      return normalize(item.nome_pdv).includes(s) || normalize(item.cidade).includes(s) || normalize(item.cliente).includes(s);
+                    });
+
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="py-8 text-center text-gray-400 text-xs font-semibold">
+                          Nenhuma loja correspondente.
+                        </div>
+                      );
+                    }
+
+                    return filtered.map((item, idx) => {
+                      const isExcesso = item.status === 'excesso';
+                      const isFalta = item.status === 'falta';
+                      const isOk = item.status === 'ok';
+
+                      let badgeClass = "bg-green-50 text-green-700 border-green-200";
+                      if (isExcesso) badgeClass = "bg-red-50 text-red-700 border-red-200";
+                      if (isFalta) badgeClass = "bg-amber-50 text-amber-700 border-amber-200";
+
+                      const codeMatch = item.nome_pdv.match(/^(S\d+)/);
+                      const displayCode = codeMatch ? codeMatch[1] : '';
+                      const displayCleanName = item.nome_pdv.replace(/^(S\d+\s*-\s*)/, '').replace(/(\s*-\s*\d+)?\s*-\s*[^-]+-[^-]+$/, '');
+
+                      return (
+                        <div 
+                          key={idx}
+                          className={`p-3 rounded-xl border transition-all text-xs flex flex-col gap-2 ${
+                            isOk 
+                              ? 'bg-white border-gray-200 hover:border-green-300' 
+                              : isExcesso 
+                              ? 'bg-red-50/20 border-red-200 hover:bg-red-50/30' 
+                              : 'bg-amber-50/20 border-amber-200 hover:bg-amber-50/30'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {displayCode && (
+                                  <span className="font-mono font-bold bg-gray-100 text-gray-700 px-1 py-0.5 rounded text-[10px] shrink-0 border border-gray-200">
+                                    {displayCode}
+                                  </span>
+                                )}
+                                <span className="font-bold text-gray-800 truncate" title={item.nome_pdv}>
+                                  {displayCleanName}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-gray-500 mt-0.5">{item.cliente} · {item.cidade} - {item.uf}</p>
+                            </div>
+
+                            {/* Badge contadora */}
+                            <div className={`px-2 py-0.5 rounded-lg border text-center font-bold shrink-0 flex flex-col justify-center leading-tight ${badgeClass}`}>
+                              <p className="text-xs">{item.atual} / {item.esperado}</p>
+                              <p className="text-[7px] font-black uppercase tracking-widest mt-0.5">Visitas</p>
+                            </div>
+                          </div>
+
+                          {/* Seção das datas agendadas */}
+                          {item.dias.length > 0 && (
+                            <div className="flex items-center gap-1 flex-wrap border-t border-gray-100 pt-2">
+                              <span className="text-[9px] text-gray-400 font-semibold uppercase tracking-wider mr-1">Visitas em:</span>
+                              {item.dias.map((d, dIdx) => {
+                                const diaNum = d.data.split('-').reverse().slice(0, 2).join('/');
+                                return (
+                                  <button
+                                    key={dIdx}
+                                    onClick={() => {
+                                      const target = roteiroState.find(day => day.data === d.data);
+                                      if (target) {
+                                        setDiaSelecionado(target);
+                                        const el = document.getElementById(`dia-${d.data}`);
+                                        if (el) {
+                                          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        }
+                                      }
+                                    }}
+                                    className={`px-2 py-0.5 text-[10px] font-bold rounded-lg border transition-all active:scale-95 flex items-center gap-0.5 ${
+                                      diaSelecionado?.data === d.data
+                                        ? 'bg-blue-600 text-white border-blue-700 shadow-sm'
+                                        : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-200'
+                                    }`}
+                                    title={`Ir para ${d.diaSemana}`}
+                                  >
+                                    <Calendar className="w-2.5 h-2.5 shrink-0" />
+                                    {diaNum}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {item.dias.length === 0 && (
+                            <p className="text-[10px] text-amber-600 font-semibold italic border-t border-gray-100 pt-2">
+                              Nenhuma visita agendada
+                            </p>
+                          )}
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto">
