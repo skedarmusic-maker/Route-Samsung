@@ -688,7 +688,7 @@ export async function POST(request: Request) {
     if (errorC || !dataC) return NextResponse.json({ error: `Consultor "${consultor}" não encontrado.` }, { status: 404 });
 
     const consultorData: ConsultorLocal = { nome: dataC.nome, endereco: dataC.endereco_completo, lat: dataC.lat, lng: dataC.lng };
-    const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas';
+    const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_junho';
     let query = supabase.from(lojasTable).select('*');
     
     const rotasToFetch = [consultor, ...selectedRotasBase];
