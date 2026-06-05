@@ -496,7 +496,6 @@ function AddStoreModal({
 
     return activeList
       .filter(l => !alreadyVisitedInDayNames.has(l.nome_pdv_novo)) // Nunca permite duplicar no mesmo dia
-      .filter(l => searchAll ? true : !alreadyVisitedNames.has(l.nome_pdv_novo)) // Permite duplicar lojas se searchAll for true
       .filter(l => searchAll ? true : normalize(l.consultor) === normalize(consultorNome)) // Permite buscar de outros consultores se searchAll for true
       .map(l => {
         const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
