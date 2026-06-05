@@ -228,10 +228,12 @@ function distribuirLojasNoDias(
 
     // Filtrar por polos selecionados: se selectedPolos não está vazio, só incluir hubs cuja cidade principal está na lista.
     // TAMBÉM filtrar lojas individuais dentro de cada hub que pertençam a cidades não selecionadas.
+    // FIX: normalizar ambos os lados para evitar mismatch de capitalização/acento (ex: "Bauru" vs "BAURU")
+    const selectedPolosNorm = selectedPolos.map((p: string) => normalize(p));
     const hubsFiltrados = hubs.map(h => {
       if (selectedPolos.length > 0) {
-        // Filtrar lojas do hub: só incluir lojas cuja cidade está nos polos selecionados
-        const lojasFiltradas = h.lojas.filter((l: Loja) => selectedPolos.includes(l.cidade));
+        // Filtrar lojas do hub: só incluir lojas cuja cidade está nos polos selecionados (comparação normalizada)
+        const lojasFiltradas = h.lojas.filter((l: Loja) => selectedPolosNorm.includes(normalize(l.cidade || '')));
         return { ...h, lojas: lojasFiltradas };
       }
       return h;
