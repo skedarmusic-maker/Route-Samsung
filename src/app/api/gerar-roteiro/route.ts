@@ -585,8 +585,7 @@ function distribuirLojasNoDias(
 
           // Regra de período estrita
           const pref = getPreferenciaPeriodo(l, config);
-          if (slot === 0 && pref === 'tarde') return false;
-          if (slot === 1 && pref === 'manha') return false;
+          if ((slot === 0 && pref === 'tarde') || (slot === 1 && pref === 'manha')) return false;
 
           // Regra de cooldown (com bypass para matrizes do Márcio)
           const isMatrizRepetivel = config?.regrasExtras?.matrizesRepetiveis && 
@@ -670,8 +669,7 @@ function distribuirLojasNoDias(
 
         // Período estrito
         const pref = getPreferenciaPeriodo(l, config);
-        if (slot === 0 && pref === 'tarde') continue;
-        if (slot === 1 && pref === 'manha') continue;
+        if ((slot === 0 && pref === 'tarde') || (slot === 1 && pref === 'manha')) continue;
 
         // Cooldown
         const isMatrizRepetivel = config?.regrasExtras?.matrizesRepetiveis && 
