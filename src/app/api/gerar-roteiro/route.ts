@@ -558,7 +558,7 @@ function distribuirLojasNoDias(
       lojasNaCidade = visitasPorCidade[cidadeAtual];
 
       while (lojasAgendadasNoDia.length < 2 && lojasNaCidade.length > 0) {
-        const slot = lojasAgendadasNoDia.length; // 0 = manhã, 1 = tarde
+        const slot: number = lojasAgendadasNoDia.length; // 0 = manhã, 1 = tarde
         
         let index = lojasNaCidade.findIndex(l => {
           if (pdvsVisitadosNoDia.has(l.nome_pdv_novo)) return false;
@@ -641,7 +641,7 @@ function distribuirLojasNoDias(
 
     // Reforço se não completou 2 lojas na mesma cidade
     if (lojasAgendadasNoDia.length > 0 && lojasAgendadasNoDia.length < 2) {
-      const slot = lojasAgendadasNoDia.length;
+      const slot: number = lojasAgendadasNoDia.length;
       const extras = lojasLocais.filter(l => normalize(l.cidade) === cidadeAtual);
       for (const l of extras) {
         if (lojasAgendadasNoDia.length >= 2) break;
