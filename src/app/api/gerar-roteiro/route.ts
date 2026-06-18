@@ -4,6 +4,7 @@ import { format, getDaysInMonth, getDay, startOfMonth } from 'date-fns';
 import cityCoords from '@/lib/city_coords.json';
 import { supabase } from '@/lib/supabase';
 import { isInsideRodizio, getRodizioDayForConsultor } from '@/lib/rodizioSP';
+import { CONFIG_CONSULTORES, matchesKeywords, ConsultorConfig } from '@/lib/configConsultores';
 
 // Helper para normalizar strings (remover acentos e colocar em caps)
 function normalize(str: string): string {
@@ -42,6 +43,32 @@ function getLojaCoords(loja: Loja): { lat: number; lng: number } | null {
   const key = `${normalize(loja.cidade || '')}-${normalize(loja.uf || '')}`;
   return (cityCoords as any)[key] || null;
 }
+
+function getPreferenciaPeriodo(loja: Loja, config: ConsultorConfig | null): 'manha' | 'tarde' | 'livre' {
+  if (!config) return 'livre';
+
+  // 1. Verificar preferências explícitas de período
+  if (config.preferenciaPeriodo) {
+    if (config.preferenciaPeriodo.manha && matchesKeywords(loja.nome_pdv_novo, loja.cidade, config.preferenciaPeriodo.manha)) {
+      return 'manha';
+    }
+    if (config.preferenciaPeriodo.tarde && matchesKeywords(loja.nome_pdv_novo, loja.cidade, config.preferenciaPeriodo.tarde)) {
+      return 'tarde';
+    }
+  }
+
+  // 2. Verificar regras extras de preferência de rede
+  if (config.regrasExtras?.preferenciaRede) {
+    for (const pref of config.regrasExtras.preferenciaRede) {
+      if (matchesKeywords(loja.nome_pdv_novo, loja.cidade, pref.keywords)) {
+        return pref.periodo;
+      }
+    }
+  }
+
+  return 'livre';
+}
+
 
 export interface VisitaGerada {
   data: string;           // YYYY-MM-DD
@@ -175,6 +202,20 @@ function distribuirLojasNoDias(
   selectedPolos: string[],
   excludedLojasIds: string[]
 ): RoteiroDia[] {
+  const normNome = consultor.nome.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+  const config = CONFIG_CONSULTORES[normNome] || null;
+
+  // Aplicar exames e feriados específicos por consultor
+  diasDisponiveis = diasDisponiveis.map(d => {
+    let feriado = d.feriado;
+    if (config?.indisponibilidades && config.indisponibilidades[d.data]) {
+      feriado = config.indisponibilidades[d.data];
+    } else if (config?.feriadosLocais && config.feriadosLocais[d.data]) {
+      feriado = config.feriadosLocais[d.data];
+    }
+    return { ...d, feriado };
+  });
+
   const roteiroMap: Record<string, RoteiroDia> = {};
   diasDisponiveis.forEach(d => {
     roteiroMap[d.data] = { ...d, lojas: [] };
@@ -249,6 +290,11 @@ function distribuirLojasNoDias(
 
     const diasLivres = diasDisponiveis.filter(d => !d.feriado);
     let diaIdx = 0;
+    const dataAlvoViagem = '2026-07-27';
+    const temDiaAlvo = diasLivres.some(d => d.data >= dataAlvoViagem);
+    if (temDiaAlvo) {
+      diaIdx = diasLivres.findIndex(d => d.data >= dataAlvoViagem);
+    }
 
     // Ordenar Hubs de Viagem usando Nearest Neighbor (Caixeiro Viajante) para criar uma rota lógica
     // Isso evita que o consultor "teleporte" de DF para ES de um dia para o outro.
@@ -472,6 +518,7 @@ function distribuirLojasNoDias(
     return visitasPorCidade[b].length - visitasPorCidade[a].length;
   });
   const ultimasVisitas = new Map<string, number>();
+  const totalVisitasPorPdv = new Map<string, number>();
   const MIN_GAP = 3;
 
   const rodizioDayForConsultor = getRodizioDayForConsultor(consultor.nome);
@@ -511,7 +558,9 @@ function distribuirLojasNoDias(
       lojasNaCidade = visitasPorCidade[cidadeAtual];
 
       while (lojasAgendadasNoDia.length < 2 && lojasNaCidade.length > 0) {
-        const index = lojasNaCidade.findIndex(l => {
+        const slot = lojasAgendadasNoDia.length; // 0 = manhã, 1 = tarde
+        
+        let index = lojasNaCidade.findIndex(l => {
           if (pdvsVisitadosNoDia.has(l.nome_pdv_novo)) return false;
           
           if (isRodizioDay) {
@@ -519,13 +568,69 @@ function distribuirLojasNoDias(
             if (coords && isInsideRodizio(coords.lat, coords.lng)) return false;
           }
 
+          // Regra de limite de visitas mensais
+          if (config?.regrasExtras?.limiteMensal) {
+            let atingiuLimite = false;
+            for (const lim of config.regrasExtras.limiteMensal) {
+              if (matchesKeywords(l.nome_pdv_novo, l.cidade, lim.keywords)) {
+                const visitasAtuais = totalVisitasPorPdv.get(l.nome_pdv_novo) || 0;
+                if (visitasAtuais >= lim.limite) {
+                  atingiuLimite = true;
+                  break;
+                }
+              }
+            }
+            if (atingiuLimite) return false;
+          }
+
+          // Regra de período estrita
+          const pref = getPreferenciaPeriodo(l, config);
+          if (slot === 0 && pref === 'tarde') return false;
+          if (slot === 1 && pref === 'manha') return false;
+
+          // Regra de cooldown (com bypass para matrizes do Márcio)
+          const isMatrizRepetivel = config?.regrasExtras?.matrizesRepetiveis && 
+            matchesKeywords(l.nome_pdv_novo, l.cidade, config.regrasExtras.matrizesRepetiveis);
           const lastV = ultimasVisitas.get(l.nome_pdv_novo);
-          return lastV === undefined || (dayIdx - lastV) >= MIN_GAP;
+          return lastV === undefined || isMatrizRepetivel || (dayIdx - lastV) >= MIN_GAP;
         });
+
+        // Fallback: se não achar nenhuma loja com o período estrito, tenta sem o filtro de período
+        if (index === -1) {
+          index = lojasNaCidade.findIndex(l => {
+            if (pdvsVisitadosNoDia.has(l.nome_pdv_novo)) return false;
+            
+            if (isRodizioDay) {
+              const coords = getLojaCoords(l);
+              if (coords && isInsideRodizio(coords.lat, coords.lng)) return false;
+            }
+
+            if (config?.regrasExtras?.limiteMensal) {
+              let atingiuLimite = false;
+              for (const lim of config.regrasExtras.limiteMensal) {
+                if (matchesKeywords(l.nome_pdv_novo, l.cidade, lim.keywords)) {
+                  const visitasAtuais = totalVisitasPorPdv.get(l.nome_pdv_novo) || 0;
+                  if (visitasAtuais >= lim.limite) {
+                    atingiuLimite = true;
+                    break;
+                  }
+                }
+              }
+              if (atingiuLimite) return false;
+            }
+
+            const isMatrizRepetivel = config?.regrasExtras?.matrizesRepetiveis && 
+              matchesKeywords(l.nome_pdv_novo, l.cidade, config.regrasExtras.matrizesRepetiveis);
+            const lastV = ultimasVisitas.get(l.nome_pdv_novo);
+            return lastV === undefined || isMatrizRepetivel || (dayIdx - lastV) >= MIN_GAP;
+          });
+        }
+
         if (index !== -1) {
           const loja = lojasNaCidade.splice(index, 1)[0];
           pdvsVisitadosNoDia.add(loja.nome_pdv_novo);
           ultimasVisitas.set(loja.nome_pdv_novo, dayIdx);
+          totalVisitasPorPdv.set(loja.nome_pdv_novo, (totalVisitasPorPdv.get(loja.nome_pdv_novo) || 0) + 1);
           lojasAgendadasNoDia.push(loja);
         } else break; // Todas as lojas restantes nesta cidade estão em cooldown
       }
@@ -537,6 +642,7 @@ function distribuirLojasNoDias(
 
     // Reforço se não completou 2 lojas na mesma cidade
     if (lojasAgendadasNoDia.length > 0 && lojasAgendadasNoDia.length < 2) {
+      const slot = lojasAgendadasNoDia.length;
       const extras = lojasLocais.filter(l => normalize(l.cidade) === cidadeAtual);
       for (const l of extras) {
         if (lojasAgendadasNoDia.length >= 2) break;
@@ -547,11 +653,72 @@ function distribuirLojasNoDias(
           if (coords && isInsideRodizio(coords.lat, coords.lng)) continue;
         }
 
+        // Limite mensal
+        if (config?.regrasExtras?.limiteMensal) {
+          let atingiuLimite = false;
+          for (const lim of config.regrasExtras.limiteMensal) {
+            if (matchesKeywords(l.nome_pdv_novo, l.cidade, lim.keywords)) {
+              const visitasAtuais = totalVisitasPorPdv.get(l.nome_pdv_novo) || 0;
+              if (visitasAtuais >= lim.limite) {
+                atingiuLimite = true;
+                break;
+              }
+            }
+          }
+          if (atingiuLimite) continue;
+        }
+
+        // Período estrito
+        const pref = getPreferenciaPeriodo(l, config);
+        if (slot === 0 && pref === 'tarde') continue;
+        if (slot === 1 && pref === 'manha') continue;
+
+        // Cooldown
+        const isMatrizRepetivel = config?.regrasExtras?.matrizesRepetiveis && 
+          matchesKeywords(l.nome_pdv_novo, l.cidade, config.regrasExtras.matrizesRepetiveis);
         const lastV = ultimasVisitas.get(l.nome_pdv_novo);
-        if (lastV === undefined || (dayIdx - lastV) >= MIN_GAP) {
+        if (lastV === undefined || isMatrizRepetivel || (dayIdx - lastV) >= MIN_GAP) {
           pdvsVisitadosNoDia.add(l.nome_pdv_novo);
           ultimasVisitas.set(l.nome_pdv_novo, dayIdx);
+          totalVisitasPorPdv.set(l.nome_pdv_novo, (totalVisitasPorPdv.get(l.nome_pdv_novo) || 0) + 1);
           lojasAgendadasNoDia.push(l);
+        }
+      }
+
+      // Fallback para o reforço (ignora período se ainda tiver slot livre)
+      if (lojasAgendadasNoDia.length < 2) {
+        for (const l of extras) {
+          if (lojasAgendadasNoDia.length >= 2) break;
+          if (pdvsVisitadosNoDia.has(l.nome_pdv_novo)) continue;
+
+          if (isRodizioDay) {
+            const coords = getLojaCoords(l);
+            if (coords && isInsideRodizio(coords.lat, coords.lng)) continue;
+          }
+
+          if (config?.regrasExtras?.limiteMensal) {
+            let atingiuLimite = false;
+            for (const lim of config.regrasExtras.limiteMensal) {
+              if (matchesKeywords(l.nome_pdv_novo, l.cidade, lim.keywords)) {
+                const visitasAtuais = totalVisitasPorPdv.get(l.nome_pdv_novo) || 0;
+                if (visitasAtuais >= lim.limite) {
+                  atingiuLimite = true;
+                  break;
+                }
+              }
+            }
+            if (atingiuLimite) continue;
+          }
+
+          const isMatrizRepetivel = config?.regrasExtras?.matrizesRepetiveis && 
+            matchesKeywords(l.nome_pdv_novo, l.cidade, config.regrasExtras.matrizesRepetiveis);
+          const lastV = ultimasVisitas.get(l.nome_pdv_novo);
+          if (lastV === undefined || isMatrizRepetivel || (dayIdx - lastV) >= MIN_GAP) {
+            pdvsVisitadosNoDia.add(l.nome_pdv_novo);
+            ultimasVisitas.set(l.nome_pdv_novo, dayIdx);
+            totalVisitasPorPdv.set(l.nome_pdv_novo, (totalVisitasPorPdv.get(l.nome_pdv_novo) || 0) + 1);
+            lojasAgendadasNoDia.push(l);
+          }
         }
       }
     }
@@ -570,8 +737,28 @@ function distribuirLojasNoDias(
               if (coords && isInsideRodizio(coords.lat, coords.lng)) return false;
             }
 
+            if (config?.regrasExtras?.limiteMensal) {
+              let atingiuLimite = false;
+              for (const lim of config.regrasExtras.limiteMensal) {
+                if (matchesKeywords(l.nome_pdv_novo, l.cidade, lim.keywords)) {
+                  const visitasAtuais = totalVisitasPorPdv.get(l.nome_pdv_novo) || 0;
+                  if (visitasAtuais >= lim.limite) {
+                    atingiuLimite = true;
+                    break;
+                  }
+                }
+              }
+              if (atingiuLimite) return false;
+            }
+
+            // Filtro de período estrito: slot 1 (tarde) -> não agenda se preferência for manhã
+            const pref = getPreferenciaPeriodo(l, config);
+            if (pref === 'manha') return false;
+
+            const isMatrizRepetivel = config?.regrasExtras?.matrizesRepetiveis && 
+              matchesKeywords(l.nome_pdv_novo, l.cidade, config.regrasExtras.matrizesRepetiveis);
             const lastV = ultimasVisitas.get(l.nome_pdv_novo);
-            return lastV === undefined || (dayIdx - lastV) >= MIN_GAP;
+            return lastV === undefined || isMatrizRepetivel || (dayIdx - lastV) >= MIN_GAP;
           })
           .map(l => {
             const cL = getLojaCoords(l) || { lat: 0, lng: 0 };
@@ -580,7 +767,7 @@ function distribuirLojasNoDias(
           .filter(c => c.dist <= 50)
           .sort((a, b) => a.dist - b.dist);
 
-        // Fallback: se não encontrou loja por causa do MIN_GAP, ignora a regra para não deixar o dia com 1 loja só
+        // Fallback: se não encontrou com período estrito/cooldown, ignora período e cooldown estrito
         if (prox.length === 0) {
           prox = lojasLocais
             .filter(l => {
@@ -589,6 +776,21 @@ function distribuirLojasNoDias(
                 const coords = getLojaCoords(l);
                 if (coords && isInsideRodizio(coords.lat, coords.lng)) return false;
               }
+
+              if (config?.regrasExtras?.limiteMensal) {
+                let atingiuLimite = false;
+                for (const lim of config.regrasExtras.limiteMensal) {
+                  if (matchesKeywords(l.nome_pdv_novo, l.cidade, lim.keywords)) {
+                    const visitasAtuais = totalVisitasPorPdv.get(l.nome_pdv_novo) || 0;
+                    if (visitasAtuais >= lim.limite) {
+                      atingiuLimite = true;
+                      break;
+                    }
+                  }
+                }
+                if (atingiuLimite) return false;
+              }
+
               return true;
             })
             .map(l => {
@@ -603,6 +805,7 @@ function distribuirLojasNoDias(
           const l = prox[0].loja;
           pdvsVisitadosNoDia.add(l.nome_pdv_novo);
           ultimasVisitas.set(l.nome_pdv_novo, dayIdx);
+          totalVisitasPorPdv.set(l.nome_pdv_novo, (totalVisitasPorPdv.get(l.nome_pdv_novo) || 0) + 1);
           lojasAgendadasNoDia.push(l);
         }
       }
@@ -619,12 +822,29 @@ function distribuirLojasNoDias(
       if (c1.lat !== 0 && c2.lat !== 0) {
         const d1 = computeDistance(home, c1) + computeDistance(c1, c2);
         const d2 = computeDistance(home, c2) + computeDistance(c2, c1);
-        if (d2 < d1) lojasAgendadasNoDia = [l2, l1];
+        if (d2 < d1) {
+          // Só inverte se não violar a restrição de período estrita
+          const pref1 = getPreferenciaPeriodo(l1, config);
+          const pref2 = getPreferenciaPeriodo(l2, config);
+          
+          // Inverter significa: l2 na manhã (slot 0) e l1 na tarde (slot 1)
+          const violou = (pref2 === 'tarde') || (pref1 === 'manha');
+          if (!violou) {
+            lojasAgendadasNoDia = [l2, l1];
+          }
+        }
       }
     }
 
     // Finalizar agendamento do dia
     lojasAgendadasNoDia.forEach((loja, idx) => {
+      let checkOut = HORARIOS_PADRAO[idx].checkOut;
+      
+      // Regra específica da Tatiane: saída de Feira às 17h00 se for à tarde
+      if (idx === 1 && normNome === "TATIANE SOUZA DOS SANTOS" && matchesKeywords(loja.nome_pdv_novo, loja.cidade, ["FEIRA DE SANTANA"])) {
+        checkOut = "17:00";
+      }
+
       roteiroDia.lojas.push({
         nome_pdv: loja.nome_pdv_novo,
         cliente: loja.cliente,
@@ -633,7 +853,7 @@ function distribuirLojasNoDias(
         uf: loja.uf,
         cluster: loja.cluster,
         checkIn: HORARIOS_PADRAO[idx].checkIn,
-        checkOut: HORARIOS_PADRAO[idx].checkOut,
+        checkOut: checkOut,
         tipo: loja.uf !== ufConsultor ? 'viagem' : 'local',
         rota: ROTA_MAP[loja.consultor] || loja.consultor?.split(' ')[0] || ''
       });

@@ -39,7 +39,7 @@ export function isInsideRodizio(lat: number, lng: number): boolean {
  * 0 = Domingo, 1 = Segunda, 2 = Terça, 3 = Quarta, 4 = Quinta, 5 = Sexta, 6 = Sábado
  */
 export const RODIZIO_CONSULTORES: Record<string, number> = {
-  "LIEDY AQUINO GOMES DOS SANTOS": 4, // Quinta-feira
+  "LIEDY AQUINO GOMES DOS SANTOS": 3, // Quarta-feira
 };
 
 /**
