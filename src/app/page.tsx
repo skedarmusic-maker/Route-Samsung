@@ -1790,7 +1790,7 @@ export default function ConfigurationPanel() {
         setConsultores(enrichedConsultores);
 
         // 2. Buscar Lojas
-        const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_junho';
+        const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_julho';
         const { data: dataL, error: errorL } = await supabase
           .from(lojasTable)
           .select('*')
