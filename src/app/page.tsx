@@ -1800,7 +1800,14 @@ export default function ConfigurationPanel() {
         
         const forbiddenClients = ['A.DIAS', 'DUFRIO', 'UNIAR'];
         const mappedLojas = (dataL || [])
-          .filter(l => !l.cliente || !forbiddenClients.includes(l.cliente.toUpperCase().trim()))
+          .filter(l => {
+            if (l.cliente && forbiddenClients.includes(l.cliente.toUpperCase().trim())) return false;
+            
+            // Ignorar lojas que tem periodo '0', em branco ou nulo para julho
+            const p = String(l.periodo || '').trim();
+            if (p === '0' || p === '') return false;
+            return true;
+          })
           .map(l => ({
             cliente: l.cliente,
             nome_pdv_novo: l.nome_pdv, // Ajustado para bater com a interface do frontend

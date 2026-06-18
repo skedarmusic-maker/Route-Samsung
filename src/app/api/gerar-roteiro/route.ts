@@ -906,7 +906,7 @@ export async function POST(request: Request) {
     if (errorC || !dataC) return NextResponse.json({ error: `Consultor "${consultor}" não encontrado.` }, { status: 404 });
 
     const consultorData: ConsultorLocal = { nome: dataC.nome, endereco: dataC.endereco_completo, lat: dataC.lat, lng: dataC.lng };
-    const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_junho';
+    const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_julho';
     let query = supabase.from(lojasTable).select('*');
     
     const rotasToFetch = [consultor, ...selectedRotasBase];
@@ -925,6 +925,12 @@ export async function POST(request: Request) {
     }
 
     const todasLojas: Loja[] = (dataL || [])
+      .filter(l => {
+        // Ignorar lojas que tem periodo '0', em branco ou nulo para julho
+        const p = String(l.periodo || '').trim();
+        if (p === '0' || p === '') return false;
+        return true;
+      })
       .map(l => ({
         trader: '', cliente: l.cliente, bandeira: '', nome_pdv_novo: l.nome_pdv, cnpj: l.codigo_sap, endereco: l.endereco, canal: '', consultor: l.consultor_vinculado, cidade: l.cidade, uf: l.uf, status: l.status, cluster: l.cluster, periodo: l.periodo, lat: l.lat, lng: l.lng
       }));

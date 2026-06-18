@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     const canais = searchParams.get('canais')?.split(',').filter(Boolean);
 
     // 1. Buscar lojas (filtrar por consultor se informado)
-    const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_junho';
+    const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_julho';
     let query = supabase.from(lojasTable).select('nome_pdv, cliente, cluster, periodo, status, consultor_vinculado, canal');
     
     if (consultor) query = query.eq('consultor_vinculado', consultor);
@@ -34,7 +34,15 @@ export async function GET(request: Request) {
     if (errorL) throw errorL;
 
     const forbiddenClients = ['A.DIAS', 'DUFRIO', 'UNIAR'];
-    const lojas = (lojasRaw || []).filter(l => !l.cliente || !forbiddenClients.includes(l.cliente.toUpperCase().trim()));
+    const lojas = (lojasRaw || [])
+      .filter(l => {
+        if (l.cliente && forbiddenClients.includes(l.cliente.toUpperCase().trim())) return false;
+        
+        // Ignorar lojas que tem periodo '0', em branco ou nulo para julho
+        const p = String(l.periodo || '').trim();
+        if (p === '0' || p === '') return false;
+        return true;
+      });
 
     // 2. Buscar histórico de visitas
     const { data: historico, error: errorH } = await supabase
