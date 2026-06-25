@@ -45,7 +45,7 @@ function getLojaCoords(loja: Loja): { lat: number; lng: number } | null {
 }
 
 function getPreferenciaPeriodo(loja: Loja, config: ConsultorConfig | null): 'manha' | 'tarde' | 'livre' {
-  const pdvNorm = normalize(loja.nome_pdv_novo || loja.nome_pdv || '');
+  const pdvNorm = normalize(loja.nome_pdv_novo || '');
   
   // Regras de negocio globais de turnos especiais
   if (pdvNorm.includes("FERREIRA COSTA")) {
