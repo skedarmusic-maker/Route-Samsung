@@ -23,8 +23,11 @@ if (!url || !key) {
 
 const supabase = createClient(url, key);
 
+// Importa coordenadas das cidades para cálculo de distância
+const cityCoords = require('./src/lib/city_coords.json');
+
 const EXCEL_PATH = path.resolve(__dirname, '../Journey Julho - Versão 2 (1).xlsx');
-const CENARIO   = 'julho v4 final';
+const CENARIO = 'julho v4 final';
 const VERSAO_ID = 'v-julho-v4-final';
 const VERSAO_NOME = 'Julho - V4 Final';
 
@@ -56,6 +59,21 @@ function isTarde(checkIn) {
   if (!checkIn) return false;
   const h = parseInt((checkIn || '').split(':')[0], 10);
   return h >= 13;
+}
+
+// Função Haversine para cálculo de distância
+function computeDistance(p1, p2) {
+  const R = 6371; // Raio da Terra em km
+  const dLat = ((p2.lat - p1.lat) * Math.PI) / 180;
+  const dLng = ((p2.lng - p1.lng) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((p1.lat * Math.PI) / 180) *
+    Math.cos((p2.lat * Math.PI) / 180) *
+    Math.sin(dLng / 2) *
+    Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }
 
 async function salvarNoSupabase(cName, payload, headers) {
@@ -96,6 +114,15 @@ async function main() {
   console.log('=== SUBIR V4 FINAL DO EXCEL ===');
   console.log(`Lendo: ${EXCEL_PATH}\n`);
 
+  // Carrega consultores do Supabase para obter Hub Coordinates
+  console.log('Carregando consultores do banco de dados...');
+  const { data: dbConsultores, error: errC } = await supabase.from('consultores').select('*');
+  if (errC) {
+    console.error('Erro ao carregar consultores do banco:', errC);
+    process.exit(1);
+  }
+  console.log(`${dbConsultores.length} consultores carregados.\n`);
+
   const workbook = xlsx.readFile(EXCEL_PATH);
   const sheet = workbook.Sheets['Roteiros'];
   const rows = xlsx.utils.sheet_to_json(sheet, { defval: '' });
@@ -111,20 +138,20 @@ async function main() {
     const dataStr = excelDateToStr(row['Data']);
     if (!dataStr) continue;
 
-    const nomePdv  = (row['Nome PDV']  || '').toString().trim();
-    const filial   = (row['Filial']    || '').toString().trim();
-    const cliente  = (row['Cliente']   || '').toString().trim();
-    const cidade   = (row['Cidade']    || '').toString().trim();
-    const uf       = (row['UF']        || '').toString().trim();
-    const cluster  = (row['Cluster']   || '').toString().trim();
-    const rota     = (row['Rota']      || '').toString().trim();
-    const tipo     = (row['Tipo']      || 'Local').toString().trim();
-    const diaSem   = (row['Dia da Semana'] || '').toString().trim().toUpperCase();
-    let checkIn    = (row['Check-in']  || row['Check-In'] || '09:00').toString().trim();
-    let checkOut   = (row['Check-out'] || row['Check-Out'] || '12:00').toString().trim();
+    const nomePdv = (row['Nome PDV'] || '').toString().trim();
+    const filial = (row['Filial'] || '').toString().trim();
+    const cliente = (row['Cliente'] || '').toString().trim();
+    const cidade = (row['Cidade'] || '').toString().trim();
+    const uf = (row['UF'] || '').toString().trim();
+    const cluster = (row['Cluster'] || '').toString().trim();
+    const rota = (row['Rota'] || '').toString().trim();
+    const tipo = (row['Tipo'] || 'Local').toString().trim();
+    const diaSem = (row['Dia da Semana'] || '').toString().trim().toUpperCase();
+    let checkIn = (row['Check-in'] || row['Check-In'] || '09:00').toString().trim();
+    let checkOut = (row['Check-out'] || row['Check-Out'] || '12:00').toString().trim();
 
     // Limpar segundos se houver (ex: "09:00:00" → "09:00")
-    if (checkIn.length > 5)  checkIn  = checkIn.substring(0, 5);
+    if (checkIn.length > 5) checkIn = checkIn.substring(0, 5);
     if (checkOut.length > 5) checkOut = checkOut.substring(0, 5);
 
     // ===== ÚNICA CORREÇÃO PERMITIDA =====
@@ -134,10 +161,17 @@ async function main() {
     if ((nomePdvNorm.includes('FERREIRA COSTA') || clienteNorm.includes('FERREIRA COSTA')) && isTarde(checkIn)) {
       console.log(`  [AJUSTE] ${consultor} | ${dataStr} | ${nomePdv}`);
       console.log(`           ${checkIn}-${checkOut} → 09:00-12:00`);
-      checkIn  = '09:00';
+      checkIn = '09:00';
       checkOut = '12:00';
     }
     // =====================================
+
+    const statusVal = (row['Status'] || '').toString().trim().toUpperCase();
+    const filialVal = (row['Filial'] || '').toString().trim().toUpperCase();
+    const cnpjVal = (row['Cnpj'] || '').toString().trim().toUpperCase();
+
+    const isFeriadoOuFolga = statusVal.includes('FERIADO') || statusVal.includes('FOLGA') ||
+      filialVal.includes('FERIADO') || cnpjVal.includes('FERIADO');
 
     if (!porConsultor[consultor]) porConsultor[consultor] = {};
     if (!porConsultor[consultor][dataStr]) {
@@ -148,19 +182,23 @@ async function main() {
       };
     }
 
-    porConsultor[consultor][dataStr].lojas.push({
-      nome_pdv: nomePdv,
-      filial,
-      cliente,
-      cidade,
-      uf,
-      cluster,
-      checkIn,
-      checkOut,
-      tipo: tipo.toLowerCase().includes('viagem') ? 'viagem' : 'local',
-      estadoViagem: tipo.toLowerCase().includes('viagem') ? uf : undefined,
-      rota
-    });
+    if (isFeriadoOuFolga) {
+      porConsultor[consultor][dataStr].feriado = nomePdv || 'Feriado/Folga';
+    } else {
+      porConsultor[consultor][dataStr].lojas.push({
+        nome_pdv: nomePdv,
+        filial,
+        cliente,
+        cidade,
+        uf,
+        cluster,
+        checkIn,
+        checkOut,
+        tipo: tipo.toLowerCase().includes('viagem') ? 'viagem' : 'local',
+        estadoViagem: tipo.toLowerCase().includes('viagem') ? uf : undefined,
+        rota
+      });
+    }
   }
 
   const baseHeaders = { apikey: key, Authorization: `Bearer ${key}` };
@@ -169,7 +207,69 @@ async function main() {
     const roteiro = Object.values(diasMap).sort((a, b) => a.data.localeCompare(b.data));
     const totalLojas = roteiro.reduce((acc, d) => acc + d.lojas.length, 0);
 
-    console.log(`\n[${cName}] ${roteiro.length} dias | ${totalLojas} visitas`);
+    // Encontra o consultor correspondente para obter suas coordenadas de Hub
+    const cDb = dbConsultores.find(c => normalize(c.nome).includes(normalize(cName)));
+    const consultorCoords = cDb ? { lat: cDb.lat, lng: cDb.lng } : { lat: -15.77, lng: -47.92 };
+
+    // --- CÁLCULO DE KM ESTIMADO (IDÊNTICO AO FRONTEND) ---
+    let totalEstimatedKM = 0;
+    roteiro.forEach(dia => {
+      if (dia.lojas.length === 0) return;
+
+      let firstStore = dia.lojas[0];
+      let firstCoords = { lat: firstStore.lat, lng: firstStore.lng };
+      if (!firstCoords.lat || !firstCoords.lng) {
+        const keyCity = normalize(`${firstStore.cidade}-${firstStore.uf}`);
+        const coords = cityCoords[keyCity];
+        if (coords) firstCoords = coords;
+      }
+
+      const distToHub = (firstCoords.lat && firstCoords.lng)
+        ? computeDistance(consultorCoords, firstCoords)
+        : 0;
+
+      const goesByPlane = distToHub > 350;
+
+      let curr = goesByPlane ? firstCoords : consultorCoords;
+      let diaEstimado = 0;
+
+      dia.lojas.forEach((loja, idx) => {
+        let lat = loja.lat;
+        let lng = loja.lng;
+
+        if (!lat || !lng) {
+          const keyCity = normalize(`${loja.cidade}-${loja.uf}`);
+          const coords = cityCoords[keyCity];
+          if (coords) {
+            lat = coords.lat;
+            lng = coords.lng;
+          }
+        }
+
+        if (lat && lng) {
+          if (idx === 0 && goesByPlane) {
+            diaEstimado += 5; // 5km hotel
+            curr = { lat, lng };
+          } else {
+            diaEstimado += computeDistance(curr, { lat, lng });
+            curr = { lat, lng };
+          }
+        }
+      });
+
+      if (!goesByPlane) {
+        diaEstimado += computeDistance(curr, consultorCoords);
+      } else {
+        diaEstimado += 5;
+      }
+
+      totalEstimatedKM += (diaEstimado * 1.3); // fator curvas
+    });
+    // -----------------------------------------------------
+
+    const estimatedCost = totalEstimatedKM * 0.80; // custo fixo
+
+    console.log(`\n[${cName}] ${roteiro.length} dias | ${totalLojas} visitas | KM Estimado: ${totalEstimatedKM.toFixed(1)} km | Custo: R$ ${estimatedCost.toFixed(2)}`);
     roteiro.forEach(d => {
       const fc = d.lojas.filter(l => normalize(l.cliente).includes('FERREIRA COSTA') || normalize(l.nome_pdv).includes('FERREIRA COSTA'));
       const fcInfo = fc.length > 0 ? ` ← ${fc.length} FC (${fc.map(l => l.checkIn).join(', ')})` : '';
@@ -182,6 +282,9 @@ async function main() {
       ano: 2026,
       totalLojas,
       totalDiasUteis: roteiro.length,
+      totalEstimatedKM: totalEstimatedKM,
+      estimatedCost: estimatedCost,
+      extraCosts: { flights: {}, hotels: {} },
       roteiro
     };
 
@@ -199,7 +302,7 @@ async function main() {
     await salvarNoSupabase(cName, payload, baseHeaders);
   }
 
-  console.log('\n=== CONCLUÍDO — Julho V4 Final salvo no Supabase ===');
+  console.log('\n=== CONCLUÍDO — Julho V4 Final salvo no Supabase com KM/Custos ===');
 }
 
 main().catch(err => {

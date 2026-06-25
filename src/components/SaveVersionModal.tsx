@@ -15,9 +15,10 @@ interface SaveVersionModalProps {
   consultorNome: string;
   onConfirm: (versaoId: string, versaoNome: string) => void;
   onClose: () => void;
+  initialVersaoId?: string;
 }
 
-export default function SaveVersionModal({ consultorNome, onConfirm, onClose }: SaveVersionModalProps) {
+export default function SaveVersionModal({ consultorNome, onConfirm, onClose, initialVersaoId }: SaveVersionModalProps) {
   const [versoes, setVersoes] = useState<Versao[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVersaoId, setSelectedVersaoId] = useState<string>('');
@@ -39,10 +40,15 @@ export default function SaveVersionModal({ consultorNome, onConfirm, onClose }: 
         .order('created_at', { ascending: false });
       if (error) throw error;
       setVersoes(data || []);
-      // Pré-seleciona a mais recente (exceto legado)
-      const primeiraValida = (data || []).find(v => v.id !== 'v0-legado');
-      if (primeiraValida) setSelectedVersaoId(primeiraValida.id);
-      else if (data && data.length > 0) setSelectedVersaoId(data[0].id);
+      
+      // Pré-seleciona a inicial se fornecida, ou a mais recente (exceto legado)
+      if (initialVersaoId && (data || []).some(v => v.id === initialVersaoId)) {
+        setSelectedVersaoId(initialVersaoId);
+      } else {
+        const primeiraValida = (data || []).find(v => v.id !== 'v0-legado');
+        if (primeiraValida) setSelectedVersaoId(primeiraValida.id);
+        else if (data && data.length > 0) setSelectedVersaoId(data[0].id);
+      }
     } catch (e) {
       console.error('Erro ao carregar versões:', e);
     } finally {

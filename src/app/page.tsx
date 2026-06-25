@@ -768,8 +768,16 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const consultorEndereco = consultorInfo?.endereco ?? '';
 
   // Estado para armazenar as distâncias calculadas por dia (cache)
-  const [distancias, setDistancias] = useState<Record<string, number>>({});
-  const [manualFlights, setManualFlights] = useState<Record<string, boolean>>({});
+  const [distancias, setDistancias] = useState<Record<string, number>>(() => resultado.distancias || {});
+  const [manualFlights, setManualFlights] = useState<Record<string, boolean>>(() => resultado.manualFlights || {});
+
+  useEffect(() => {
+    if (resultado) {
+      setDistancias(resultado.distancias || {});
+      setManualFlights(resultado.manualFlights || {});
+    }
+  }, [resultado]);
+
   const [viewMode, setViewMode] = useState<'visualizacao' | 'eficiencia'>('visualizacao');
   const [mesComparacao, setMesComparacao] = useState<'03' | '04'>('04');
   const [isSaving, setIsSaving] = useState(false);
@@ -1042,7 +1050,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         : 0;
       
       // Limite de 350km (Haversine) para considerar voo, já que a distância de estrada costuma ser 30% maior.
-      const goesByPlane = distToHub > 350;
+      const goesByPlane = distToHub > 350 || manualFlights[dia.data] === true;
       
       let curr = goesByPlane ? firstCoords : consultorCoords;
       let diaEstimado = 0;
@@ -1082,7 +1090,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
       total += (diaEstimado * 1.3); // Fator de correção de ruas (30%)
     });
     return total;
-  }, [roteiroState, consultorCoords, distancias]);
+  }, [roteiroState, consultorCoords, distancias, manualFlights]);
 
   // Totalizar custos extras
   const flightCosts = Object.values(chosenFlights).reduce((acc: number, f: any) => acc + (f?.price || 0), 0);
@@ -1174,6 +1182,8 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         totalEstimatedKM: totalEstimatedKM,
         estimatedCost: estimatedCost,
         extraCosts: { flights: chosenFlights, hotels: chosenHotels },
+        manualFlights: manualFlights,
+        distancias: distancias,
         totalLojas: resultado.totalLojas || roteiroState.reduce((acc: number, dia: any) => acc + (dia.lojas?.length || 0), 0),
         roteiro: roteiroState
       };
@@ -1301,14 +1311,35 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
             <Download className="w-5 h-5" /> Baixar Preview (Excel)
           </button>
 
-          <button 
-            onClick={handleAprovar}
-            disabled={isSaving}
-            className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all shadow-md shrink-0 active:scale-95 disabled:opacity-50"
-          >
-            {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            {isSaving ? 'Salvando...' : 'Aprovar e Salvar Roteiro'}
-          </button>
+          {resultado.versao_id ? (
+            <>
+              <button 
+                onClick={() => handleConfirmSave(resultado.versao_id, resultado.versao_nome)}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all shadow-md shrink-0 active:scale-95 disabled:opacity-50"
+              >
+                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                {isSaving ? 'Salvando...' : `Salvar na Versão "${resultado.versao_nome}"`}
+              </button>
+              
+              <button 
+                onClick={handleAprovar}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95 disabled:opacity-50"
+              >
+                Salvar como Nova Versão...
+              </button>
+            </>
+          ) : (
+            <button 
+              onClick={handleAprovar}
+              disabled={isSaving}
+              className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all shadow-md shrink-0 active:scale-95 disabled:opacity-50"
+            >
+              {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+              {isSaving ? 'Salvando...' : 'Aprovar e Salvar Roteiro'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -1676,6 +1707,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
             consultorNome={resultado.consultor}
             onConfirm={handleConfirmSave}
             onClose={() => setShowVersionModal(false)}
+            initialVersaoId={resultado.versao_id}
           />
         )}
 
