@@ -419,9 +419,70 @@ async function main() {
     "TATIANE SOUZA DOS SANTOS"
   ];
 
-  const cenario = 'julho v2 final';
-  const versaoId = 'v-1782136427212';
-  const versaoNome = 'Julho - V2 Final';
+  const cenario = 'julho v3 final';
+  const versaoId = 'v-julho-v3-final';
+  const versaoNome = 'Julho - V3 Final';
+  const CENARIO_V2 = 'julho v2 final';
+
+  // Helper para copiar roteiro de outro cenario do Supabase sem modificacoes
+  async function copiarRoteiroDoSupabase(cName, cenarioOrigem, headers) {
+    const encodedConsultor = encodeURIComponent(cName);
+    const encodedCenario = encodeURIComponent(cenarioOrigem);
+    const searchUrl = `${url}/rest/v1/roteiros?consultor=eq.${encodedConsultor}&cenario=eq.${encodedCenario}`;
+    const searchRes = await fetch(searchUrl, { headers });
+    if (!searchRes.ok) {
+      console.error(`  [ERRO] Falha ao buscar roteiro de ${cenarioOrigem} para ${cName}:`, await searchRes.text());
+      return null;
+    }
+    const rows = await searchRes.json();
+    if (!rows || rows.length === 0) {
+      console.error(`  [ERRO] Roteiro '${cenarioOrigem}' nao encontrado para ${cName}.`);
+      return null;
+    }
+    return rows[0];
+  }
+
+  // Helper para salvar payload no Supabase (PATCH ou POST)
+  async function salvarNoSupabase(cName, payload, headers) {
+    const encodedConsultor = encodeURIComponent(cName);
+    const encodedCenario = encodeURIComponent(payload.cenario);
+    const checkUrl = `${url}/rest/v1/roteiros?consultor=eq.${encodedConsultor}&mes=eq.7&ano=eq.2026&cenario=eq.${encodedCenario}`;
+    const checkRes = await fetch(checkUrl, { headers });
+    if (checkRes.ok) {
+      const exist = await checkRes.json();
+      if (exist && exist.length > 0) {
+        const rowId = exist[0].id;
+        const patchRes = await fetch(`${url}/rest/v1/roteiros?id=eq.${rowId}`, {
+          method: 'PATCH',
+          headers: { ...headers, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload)
+        });
+        if (patchRes.ok) {
+          console.log(`  [OK] Roteiro de ${cName} ATUALIZADO no Supabase como '${payload.versao_nome}'.`);
+        } else {
+          console.error(`  [ERRO] Falha ao atualizar ${cName}:`, await patchRes.text());
+        }
+      } else {
+        const postRes = await fetch(`${url}/rest/v1/roteiros`, {
+          method: 'POST',
+          headers: { ...headers, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+          body: JSON.stringify(payload)
+        });
+        if (postRes.ok) {
+          console.log(`  [OK] Roteiro de ${cName} INSERIDO no Supabase como '${payload.versao_nome}'.`);
+        } else {
+          console.error(`  [ERRO] Falha ao inserir ${cName}:`, await postRes.text());
+        }
+      }
+    } else {
+      console.error('Erro na checagem do Supabase:', await checkRes.text());
+    }
+  }
+
+  const baseHeaders = {
+    apikey: key,
+    Authorization: `Bearer ${key}`
+  };
 
   for (const cName of CONSULTORES_ALVO) {
     const cNorm = normalize(cName);
@@ -437,150 +498,36 @@ async function main() {
 
     console.log(`\nProcessando consultor: ${cName} (UF Base: ${ufConsultor})`);
 
-    if (cNorm === "ALEXANDRE RIBEIRO LIMA") {
-      console.log(`  Carregando roteiro validado JULHO V1.00 para Alexandre diretamente do Supabase...`);
-      const searchUrl = `${url}/rest/v1/roteiros?consultor=eq.${encodeURIComponent(cName)}&cenario=eq.JULHO%20V1.00`;
-      const searchHeaders = {
-        apikey: key,
-        Authorization: `Bearer ${key}`
-      };
-      
-      try {
-        const searchRes = await fetch(searchUrl, { headers: searchHeaders });
-        if (searchRes.ok) {
-          const rows = await searchRes.json();
-          if (rows && rows.length > 0) {
-            const originalPayload = rows[0].dados_roteiro;
-            const originalRoteiro = originalPayload.roteiro || [];
-            
-            // Garantir que contenha o dia 2026-08-07 com as duas lojas de SJRP
-            const temDia07 = originalRoteiro.some(d => d.data === '2026-08-07');
-            if (!temDia07) {
-              const lojaFrigelar = dbLojas.find(l => extractSapCode(l.nome_pdv) === 'S08446');
-              const lojaHavan = dbLojas.find(l => extractSapCode(l.nome_pdv) === 'S04766');
-              
-              const lojasDia07 = [];
-              if (lojaFrigelar) {
-                lojasDia07.push({
-                  nome_pdv: lojaFrigelar.nome_pdv,
-                  cliente: lojaFrigelar.cliente,
-                  endereco: lojaFrigelar.endereco || '',
-                  cidade: lojaFrigelar.cidade || '',
-                  uf: lojaFrigelar.uf || '',
-                  cluster: lojaFrigelar.cluster || '',
-                  checkIn: '09:00',
-                  checkOut: '12:00',
-                  tipo: 'local',
-                  rota: ROTA_MAP[cName] || '',
-                  lat: lojaFrigelar.lat ? parseFloat(lojaFrigelar.lat) : 0,
-                  lng: lojaFrigelar.lng ? parseFloat(lojaFrigelar.lng) : 0
-                });
-              }
-              if (lojaHavan) {
-                lojasDia07.push({
-                  nome_pdv: lojaHavan.nome_pdv,
-                  cliente: lojaHavan.cliente,
-                  endereco: lojaHavan.endereco || '',
-                  cidade: lojaHavan.cidade || '',
-                  uf: lojaHavan.uf || '',
-                  cluster: lojaHavan.cluster || '',
-                  checkIn: '13:30',
-                  checkOut: '16:00',
-                  tipo: 'local',
-                  rota: ROTA_MAP[cName] || '',
-                  lat: lojaHavan.lat ? parseFloat(lojaHavan.lat) : 0,
-                  lng: lojaHavan.lng ? parseFloat(lojaHavan.lng) : 0
-                });
-              }
-              
-              originalRoteiro.push({
-                data: '2026-08-07',
-                diaSemana: 'SEXTA-FEIRA',
-                lojas: lojasDia07
-              });
-            }
-            
-            originalRoteiro.sort((a, b) => a.data.localeCompare(b.data));
-            
-            const totalLojasVis = originalRoteiro.reduce((acc, curr) => acc + curr.lojas.length, 0);
-            const totalKm = calcularTotalKM(originalRoteiro, homeCoords);
-            const estimatedCost = totalKm * 0.80;
-            
-            const resultadoPayload = {
-              ...originalPayload,
-              totalLojas: totalLojasVis,
-              totalDiasUteis: originalRoteiro.length,
-              roteiro: originalRoteiro,
-              totalEstimatedKM: totalKm,
-              estimatedCost
-            };
-            
-            console.log(`  Roteiro de Alexandre importado com sucesso. Total visitas: ${totalLojasVis}. KM: ${totalKm.toFixed(1)}`);
-            
-            const payloadSupabase = {
-              consultor: cName,
-              mes: 7,
-              ano: 2026,
-              cenario,
-              versao_id: versaoId,
-              versao_nome: versaoNome,
-              dados_roteiro: resultadoPayload,
-              status: 'APROVADO'
-            };
-
-            const checkUrl = `${url}/rest/v1/roteiros?consultor=eq.${encodeURIComponent(cName)}&mes=eq.7&ano=eq.2026&cenario=eq.${encodeURIComponent(cenario)}`;
-            const checkRes = await fetch(checkUrl, { headers: searchHeaders });
-            if (checkRes.ok) {
-              const exist = await checkRes.json();
-              if (exist && exist.length > 0) {
-                const rowId = exist[0].id;
-                const patchUrl = `${url}/rest/v1/roteiros?id=eq.${rowId}`;
-                const patchRes = await fetch(patchUrl, {
-                  method: 'PATCH',
-                  headers: {
-                    ...searchHeaders,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=representation'
-                  },
-                  body: JSON.stringify(payloadSupabase)
-                });
-                if (patchRes.ok) {
-                  console.log(`  [OK] Roteiro de ${cName} atualizado com sucesso no Supabase (copiado de JULHO V1.00).`);
-                } else {
-                  console.error(`  [ERRO] Falha ao atualizar roteiro de ${cName}:`, await patchRes.text());
-                }
-              } else {
-                const postUrl = `${url}/rest/v1/roteiros`;
-                const postRes = await fetch(postUrl, {
-                  method: 'POST',
-                  headers: {
-                    ...searchHeaders,
-                    'Content-Type': 'application/json',
-                    'Prefer': 'return=representation'
-                  },
-                  body: JSON.stringify(payloadSupabase)
-                });
-                if (postRes.ok) {
-                  console.log(`  [OK] Roteiro de ${cName} cadastrado com sucesso no Supabase (copiado de JULHO V1.00).`);
-                } else {
-                  console.error(`  [ERRO] Falha ao cadastrar roteiro de ${cName}:`, await postRes.text());
-                }
-              }
-            } else {
-              console.error('Erro na checagem do Supabase:', await checkRes.text());
-            }
-            
-            continue;
-          } else {
-            console.error(`  [ERRO] Roteiro JULHO V1.00 não encontrado para Alexandre. Executando geração padrão.`);
-          }
-        } else {
-          console.error(`  [ERRO] Falha ao consultar Supabase para Alexandre:`, await searchRes.text());
-        }
-      } catch (err) {
-        console.error(`  [ERRO] Exceção ao processar Alexandre:`, err);
+    // ALEXANDRE: copia do V2 Final sem modificacoes
+    if (cNorm === normalize("ALEXANDRE RIBEIRO LIMA")) {
+      console.log(`  Copiando roteiro de Alexandre do V2 Final...`);
+      const original = await copiarRoteiroDoSupabase(cName, CENARIO_V2, baseHeaders);
+      if (original) {
+        const payload = {
+          consultor: cName, mes: 7, ano: 2026,
+          cenario, versao_id: versaoId, versao_nome: versaoNome,
+          dados_roteiro: original.dados_roteiro, status: 'APROVADO'
+        };
+        await salvarNoSupabase(cName, payload, baseHeaders);
       }
+      continue;
     }
+
+    // MARCIO: copia identica do V2 Final sem nenhuma modificacao
+    if (cNorm === normalize("MARCIO JOSE FLORES PEREIRA")) {
+      console.log(`  Copiando roteiro do Márcio do V2 Final sem modificações...`);
+      const original = await copiarRoteiroDoSupabase(cName, CENARIO_V2, baseHeaders);
+      if (original) {
+        const payload = {
+          consultor: cName, mes: 7, ano: 2026,
+          cenario, versao_id: versaoId, versao_nome: versaoNome,
+          dados_roteiro: original.dados_roteiro, status: 'APROVADO'
+        };
+        await salvarNoSupabase(cName, payload, baseHeaders);
+      }
+      continue;
+    }
+
 
     // 1. Filtrar lojas do consultor no banco
     const cDbLojas = dbLojas.filter(l => l.consultor_vinculado && normalize(l.consultor_vinculado) === cNorm);
@@ -872,7 +819,7 @@ async function main() {
           return lastV === undefined || isMatriz || (dayIdx - lastV) >= MIN_GAP;
         });
 
-        // Fallback período
+        // Fallback período: relaxa restricao de 'tarde', mas NUNCA coloca loja 'manha' no slot da tarde
         if (chosenIndex === -1) {
           chosenIndex = localPool.findIndex(l => {
             if (isRodizioDay && l.lat && isInsideRodizio(l.lat, l.lng)) return false;
@@ -889,6 +836,9 @@ async function main() {
               }
               if (atingiuLimite) return false;
             }
+            // Mesmo no fallback: loja com preferencia MANHA nunca vai para slot da tarde
+            const pref = getPreferenciaPeriodo(l, config);
+            if (slot === 1 && pref === 'manha') return false;
             const isMatriz = config?.regrasExtras?.matrizesRepetiveis && matchesKeywords(l.nome_pdv, l.cidade, config.regrasExtras.matrizesRepetiveis);
             const lastV = ultimasVisitas.get(l.nome_pdv);
             return lastV === undefined || isMatriz || (dayIdx - lastV) >= MIN_GAP;
@@ -925,7 +875,7 @@ async function main() {
             return lastV === undefined || isMatriz || (dayIdx - lastV) >= MIN_GAP;
           });
 
-          // Fallback backup
+          // Fallback backup: nunca coloca loja 'manha' no slot da tarde
           if (chosenIndex === -1) {
             chosenIndex = backupPool.findIndex(l => {
               if (isRodizioDay && l.lat && isInsideRodizio(l.lat, l.lng)) return false;
@@ -944,6 +894,9 @@ async function main() {
                 if (atingiuLimite) return false;
               }
 
+              // Mesmo no fallback: loja com preferencia MANHA nunca vai para slot da tarde
+              const pref = getPreferenciaPeriodo(l, config);
+              if (slot === 1 && pref === 'manha') return false;
               return true;
             });
           }
