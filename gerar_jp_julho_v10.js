@@ -772,6 +772,18 @@ async function main() {
           }
 
           const horarios = lojasDoDia.length === 3 ? HORARIO_TRES_LOJAS : HORARIOS_PADRAO;
+          
+          // Ordenar por preferência de período antes de aplicar os horários no roteiro de viagem
+          lojasDoDia.sort((a, b) => {
+            const prefA = getPreferenciaPeriodo(a, config);
+            const prefB = getPreferenciaPeriodo(b, config);
+            if (prefA === 'manha' && prefB !== 'manha') return -1;
+            if (prefB === 'manha' && prefA !== 'manha') return 1;
+            if (prefA === 'tarde' && prefB !== 'tarde') return 1;
+            if (prefB === 'tarde' && prefA !== 'tarde') return -1;
+            return 0;
+          });
+
           lojasDoDia.forEach((loja, slotIdx) => {
             roteiroMap[dia.data].lojas.push({
               nome_pdv: loja.nome_pdv,
