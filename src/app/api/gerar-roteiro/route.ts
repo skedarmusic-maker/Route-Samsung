@@ -45,6 +45,19 @@ function getLojaCoords(loja: Loja): { lat: number; lng: number } | null {
 }
 
 function getPreferenciaPeriodo(loja: Loja, config: ConsultorConfig | null): 'manha' | 'tarde' | 'livre' {
+  const pdvNorm = normalize(loja.nome_pdv_novo || loja.nome_pdv || '');
+  
+  // Regras de negocio globais de turnos especiais
+  if (pdvNorm.includes("FERREIRA COSTA")) {
+    return 'manha';
+  }
+  if (pdvNorm.includes("CANOAS")) {
+    return 'manha';
+  }
+  if (pdvNorm.includes("PORTO ALEGRE")) {
+    return 'tarde';
+  }
+
   if (!config) return 'livre';
 
   // 1. Verificar preferências explícitas de período

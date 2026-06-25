@@ -229,6 +229,19 @@ function matchesKeywords(nomePdv, cidade, keywords) {
 }
 
 function getPreferenciaPeriodo(loja, config) {
+  const pdvNorm = normalize(loja.nome_pdv || '');
+  
+  // Regras de negocio globais de turnos especiais
+  if (pdvNorm.includes("FERREIRA COSTA")) {
+    return 'manha';
+  }
+  if (pdvNorm.includes("CANOAS")) {
+    return 'manha';
+  }
+  if (pdvNorm.includes("PORTO ALEGRE")) {
+    return 'tarde';
+  }
+
   if (!config) return 'livre';
   if (config.preferenciaPeriodo) {
     if (config.preferenciaPeriodo.manha && matchesKeywords(loja.nome_pdv, loja.cidade, config.preferenciaPeriodo.manha)) {
@@ -406,9 +419,9 @@ async function main() {
     "TATIANE SOUZA DOS SANTOS"
   ];
 
-  const cenario = 'JP Julho 2026 - V1.0';
-  const versaoId = 'jp-julho-v1.0';
-  const versaoNome = 'JP Julho 2026 - V1.0';
+  const cenario = 'julho v2 final';
+  const versaoId = 'v-1782136427212';
+  const versaoNome = 'Julho - V2 Final';
 
   for (const cName of CONSULTORES_ALVO) {
     const cNorm = normalize(cName);
