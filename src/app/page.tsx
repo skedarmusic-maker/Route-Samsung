@@ -874,7 +874,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const hotelPoints = travelLogistics.hotelPts;
 
   // Nome do Cenário
-  const [cenarioNome, setCenarioNome] = useState(initialCenario || 'Cenário Principal');
+  const [cenarioNome, setCenarioNome] = useState(() => resultado.cenario || initialCenario || 'Cenário Principal');
 
   // Estado para modal de adicionar loja
   const [addStoreDia, setAddStoreDia] = useState<RoteiroDia | null>(null);
@@ -1194,7 +1194,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
           consultor: resultado.consultor,
           mes: resultado.mes,
           ano: resultado.ano,
-          cenario: cenarioNome,
+          cenario: resultado.cenario || cenarioNome,
           versao_id: versaoId,
           versao_nome: versaoNome,
           dados_roteiro: finalResultado,
