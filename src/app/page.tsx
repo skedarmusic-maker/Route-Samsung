@@ -951,16 +951,24 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   };
 
   const handleTimeChange = (data: string, lojaNome: string, checkIn: string, checkOut: string) => {
+    const sortByCheckIn = (lojas: any[]) =>
+      [...lojas].sort((a, b) => {
+        const tA = a.checkIn || '00:00';
+        const tB = b.checkIn || '00:00';
+        return tA.localeCompare(tB);
+      });
+
     setRoteiroState(prev => prev.map(dia => {
       if (dia.data === data) {
+        const updated = dia.lojas.map(l => {
+          if (l.nome_pdv === lojaNome) {
+            return { ...l, checkIn, checkOut };
+          }
+          return l;
+        });
         return {
           ...dia,
-          lojas: dia.lojas.map(l => {
-            if (l.nome_pdv === lojaNome) {
-              return { ...l, checkIn, checkOut };
-            }
-            return l;
-          })
+          lojas: sortByCheckIn(updated)
         };
       }
       return dia;
@@ -968,10 +976,11 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
 
     if (diaSelecionado?.data === data) {
        setTimeout(() => {
-         setDiaSelecionado(prev => prev ? {
-           ...prev,
-           lojas: prev.lojas.map(l => l.nome_pdv === lojaNome ? { ...l, checkIn, checkOut } : l)
-         } : null);
+         setDiaSelecionado(prev => {
+           if (!prev) return null;
+           const updated = prev.lojas.map(l => l.nome_pdv === lojaNome ? { ...l, checkIn, checkOut } : l);
+           return { ...prev, lojas: sortByCheckIn(updated) };
+         });
        }, 0);
     }
   };

@@ -96,6 +96,13 @@ export default function MapPreview({ lojas, consultorEndereco, consultorCoords, 
         return;
       }
 
+      // Ordena lojas por check-in para garantir que o pin 1 = primeira visita do dia
+      const lojasOrdenadas = [...lojas].sort((a, b) => {
+        const tA = a.checkIn || '00:00';
+        const tB = b.checkIn || '00:00';
+        return tA.localeCompare(tB);
+      });
+
       try {
         setGeocodingStatus('Carregando Google Maps...');
 
@@ -131,13 +138,13 @@ export default function MapPreview({ lojas, consultorEndereco, consultorCoords, 
         });
         bounds.extend(consultorCoords);
 
-        // Geocodificar lojas
+        // Geocodificar lojas (na ordem cronológica de check-in)
         const lojaColors = [COLORS.loja1, COLORS.loja2, COLORS.loja3];
-        for (let i = 0; i < lojas.length; i++) {
-          const loja = lojas[i];
+        for (let i = 0; i < lojasOrdenadas.length; i++) {
+          const loja = lojasOrdenadas[i];
           if (!isMounted) return;
 
-          setGeocodingStatus(`Localizando ${i + 1}/${lojas.length}: ${loja.cliente}...`);
+          setGeocodingStatus(`Localizando ${i + 1}/${lojasOrdenadas.length}: ${loja.cliente}...`);
 
           const addr = loja.endereco
             ? `${loja.endereco}, ${loja.cidade} - ${loja.uf}, Brasil`
