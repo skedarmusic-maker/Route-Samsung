@@ -924,6 +924,9 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
     ];
     const t = times[count] || times[2];
 
+    const consultorUF = consultorInfo?.uf_base || (consultorInfo as any)?.uf || '';
+    const isViagem = consultorUF && loja.uf ? normalize(loja.uf) !== normalize(consultorUF) : false;
+
     const novaVisita: LojaVisita = {
       nome_pdv: loja.nome_pdv_novo,
       cliente: loja.cliente,
@@ -931,12 +934,12 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
       cidade: loja.cidade,
       uf: loja.uf,
       cluster: loja.cluster,
-      tipo: normalize(loja.uf) !== normalize(consultorInfo?.uf_base || '') ? 'viagem' : 'local',
+      tipo: isViagem ? 'viagem' : 'local',
       checkIn: t.in,
       checkOut: t.out,
       lat: loja.lat,
       lng: loja.lng,
-      estadoViagem: normalize(loja.uf) !== normalize(consultorInfo?.uf_base || '') ? 'EXTERNO' : undefined
+      estadoViagem: isViagem ? 'EXTERNO' : undefined
     };
 
     setRoteiroState(prev => prev.map(dia => {
@@ -1836,7 +1839,7 @@ export default function ConfigurationPanel() {
               }
             }
           }
-          return { ...c, cidade: cidadeFinal, uf_base: c.uf_base };
+          return { ...c, cidade: cidadeFinal, uf_base: c.uf_base || c.uf || '' };
         });
         
         setConsultores(enrichedConsultores);
