@@ -83,45 +83,53 @@ async function getStoreCoords(loja: LojaVisita): Promise<{ lat: number; lng: num
     return { lat: Number(loja.lat), lng: Number(loja.lng) };
   }
 
-  const cacheKey = loja.nome_pdv || `${loja.cliente}_${loja.cidade}`;
+  const cacheKey = `${loja.nome_pdv}_${loja.cidade}_${loja.uf}`;
   if (storeCoordsCache[cacheKey]) {
     return storeCoordsCache[cacheKey];
   }
 
-  // Extrai o código da loja se existir (ex: "S04991" de "S04991 - CLIMA RIO...")
-  const codeMatch = (loja.nome_pdv || '').match(/S\d{5}/i);
-  const storeCode = codeMatch ? codeMatch[0] : null;
+  const storeCode = ((loja.nome_pdv || '').match(/S\d{5}/i) || [])[0];
 
   try {
     const table = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_julho';
     
-    // 1. Busca por Código da Loja (S04991)
+    // 1. Busca no Supabase filtrando obrigatoriamente por UF e Código ou Cidade (Garante 100% que não pega duplicatas de outros estados!)
+    let query = supabase.from(table).select('lat, lng, nome_pdv, cidade, uf').not('lat', 'is', null);
+
+    if (loja.uf) {
+      query = query.eq('uf', loja.uf);
+    }
+
     if (storeCode) {
-      const { data } = await supabase
+      query = query.ilike('nome_pdv', `%${storeCode}%`);
+    } else if (loja.nome_pdv) {
+      query = query.eq('nome_pdv', loja.nome_pdv);
+    }
+
+    if (loja.cidade) {
+      query = query.ilike('cidade', `%${loja.cidade}%`);
+    }
+
+    const { data } = await query.limit(1);
+
+    if (data && data.length > 0 && data[0].lat && data[0].lng) {
+      const coords = { lat: Number(data[0].lat), lng: Number(data[0].lng) };
+      storeCoordsCache[cacheKey] = coords;
+      return coords;
+    }
+
+    // 2. Fallback: Busca por Código da Loja + UF se cidade variou
+    if (storeCode && loja.uf) {
+      const { data: dataUf } = await supabase
         .from(table)
         .select('lat, lng')
         .ilike('nome_pdv', `%${storeCode}%`)
+        .eq('uf', loja.uf)
         .not('lat', 'is', null)
         .limit(1);
 
-      if (data && data.length > 0 && data[0].lat && data[0].lng) {
-        const coords = { lat: Number(data[0].lat), lng: Number(data[0].lng) };
-        storeCoordsCache[cacheKey] = coords;
-        return coords;
-      }
-    }
-
-    // 2. Busca por nome_pdv exato
-    if (loja.nome_pdv) {
-      const { data } = await supabase
-        .from(table)
-        .select('lat, lng')
-        .eq('nome_pdv', loja.nome_pdv)
-        .not('lat', 'is', null)
-        .limit(1);
-
-      if (data && data.length > 0 && data[0].lat && data[0].lng) {
-        const coords = { lat: Number(data[0].lat), lng: Number(data[0].lng) };
+      if (dataUf && dataUf.length > 0 && dataUf[0].lat && dataUf[0].lng) {
+        const coords = { lat: Number(dataUf[0].lat), lng: Number(dataUf[0].lng) };
         storeCoordsCache[cacheKey] = coords;
         return coords;
       }
@@ -130,9 +138,11 @@ async function getStoreCoords(loja: LojaVisita): Promise<{ lat: number; lng: num
     console.warn('Erro ao buscar lat/lng no Supabase:', err);
   }
 
-  // 3. Geocodificação Nominatim com cidade e UF para garantir a localização correta
+  // 3. Fallback Nominatim (OpenStreetMap) usando o endereço comercial completo
   try {
-    const addr = `${loja.cliente || loja.nome_pdv}, ${loja.cidade} - ${loja.uf}, Brasil`;
+    const addr = loja.endereco
+      ? `${loja.endereco}, ${loja.cidade} - ${loja.uf}, Brasil`
+      : `${loja.cliente || loja.nome_pdv}, ${loja.cidade} - ${loja.uf}, Brasil`;
     const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}`);
     if (res.ok) {
       const items = await res.json();
