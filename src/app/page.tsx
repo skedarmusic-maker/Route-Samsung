@@ -428,10 +428,19 @@ function AddStoreModal({
   const refStore = dia.lojas[0];
   const refCoords = useMemo(() => {
     if (!refStore) return null;
-    if (refStore.lat && refStore.lng) return { lat: refStore.lat, lng: refStore.lng };
+    let lat = (refStore as any).lat;
+    let lng = (refStore as any).lng;
+    if (!lat || !lng) {
+      const baseMatch = lojasBase.find(b => normalize(b.nome_pdv_novo) === normalize(refStore.nome_pdv));
+      if (baseMatch && baseMatch.lat && baseMatch.lng) {
+        lat = baseMatch.lat;
+        lng = baseMatch.lng;
+      }
+    }
+    if (lat && lng) return { lat: Number(lat), lng: Number(lng) };
     const key = normalize(`${refStore.cidade}-${refStore.uf}`);
     return (cityCoords as Record<string, any>)[key] || null;
-  }, [refStore]);
+  }, [refStore, lojasBase]);
 
   // Efeito de busca dinâmica na tabela geral 'lojas' do Supabase com debounce de 400ms
   useEffect(() => {
@@ -498,9 +507,15 @@ function AddStoreModal({
       .filter(l => !alreadyVisitedInDayNames.has(l.nome_pdv_novo)) // Nunca permite duplicar no mesmo dia
       .filter(l => searchAll ? true : normalize(l.consultor) === normalize(consultorNome)) // Permite buscar de outros consultores se searchAll for true
       .map(l => {
-        const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
         let lat = l.lat;
         let lng = l.lng;
+        if (!lat || !lng) {
+          const baseMatch = lojasBase.find(b => normalize(b.nome_pdv_novo) === normalize(l.nome_pdv_novo));
+          if (baseMatch && baseMatch.lat && baseMatch.lng) {
+            lat = baseMatch.lat;
+            lng = baseMatch.lng;
+          }
+        }
         if (!lat || !lng) {
           const key = normalize(`${l.cidade}-${l.uf}`);
           const coords = (cityCoords as Record<string, any>)[key];
@@ -508,10 +523,8 @@ function AddStoreModal({
         }
         
         let dist = 9999;
-        if (mesmaCidade) {
-          dist = 0; // Se for na mesma cidade, distância é 0 (otimizado)
-        } else if (refCoords && lat && lng) {
-          dist = computeDistance(refCoords, { lat, lng });
+        if (refCoords && lat && lng) {
+          dist = computeDistance(refCoords, { lat: Number(lat), lng: Number(lng) });
         }
 
         return { ...l, dist };
@@ -520,17 +533,15 @@ function AddStoreModal({
         const s = normalize(search);
         if (!s) {
           if (searchAll) return true; // No modo 'searchAll' sem busca, mostra o conteúdo
-          // Se não houver busca, mostrar lojas da mesma cidade ou raio de 100km
           const mesmaCidade = refStore && normalize(l.cidade) === normalize(refStore.cidade);
           return mesmaCidade || l.dist < 100;
         }
-        // Se a lista ativa já veio filtrada do Supabase, não refiltrar por texto aqui
         if (searchAll && supabaseLojas.length > 0) return true;
         return normalize(l.nome_pdv_novo).includes(s) || normalize(l.cidade).includes(s) || normalize(l.cliente || '').includes(s);
       })
       .sort((a, b) => a.dist - b.dist)
       .slice(0, searchAll && !search ? 50 : 25);
-  }, [lojasBase, supabaseLojas, alreadyVisitedNames, refCoords, refStore, search, consultorNome, searchAll]);
+  }, [lojasBase, supabaseLojas, alreadyVisitedInDayNames, refCoords, refStore, search, consultorNome, searchAll]);
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
