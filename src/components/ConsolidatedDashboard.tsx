@@ -192,6 +192,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
             Data: dia.data,
             'Dia da Semana': dia.diaSemana,
             Consultor: r.consultor,
+            'Banco de Horas': r.dados_roteiro?.bancoHoras || 'N/A',
             'Nome PDV': dia.feriado,
             'Status': 'FERIADO/FOLGA'
           }];
@@ -201,6 +202,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
           Data: dia.data,
           'Dia da Semana': dia.diaSemana,
           Consultor: r.consultor,
+          'Banco de Horas': r.dados_roteiro?.bancoHoras || 'N/A',
           'Nome PDV': loja.nome_pdv,
           Cliente: loja.cliente,
           Cidade: loja.cidade,
@@ -343,6 +345,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                 <thead className="bg-gray-50 text-gray-500 uppercase text-[10px] font-black tracking-widest">
                   <tr>
                     <th className="px-6 py-4">Consultor</th>
+                    <th className="px-6 py-4 text-center">Banco de Horas</th>
                     <th className="px-6 py-4 text-center">Lojas</th>
                     <th className="px-6 py-4 text-center">Visitas</th>
                     <th className="px-6 py-4 text-center">KM Est.</th>
@@ -359,6 +362,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                         className="hover:bg-blue-50 transition-colors cursor-pointer group"
                       >
                         <td className="px-6 py-4 font-bold text-gray-700 group-hover:text-blue-700">{nome}</td>
+                        <td className="px-6 py-4 text-center font-bold text-orange-600">{roteiroOriginal?.dados_roteiro?.bancoHoras || 'N/A'}</td>
                         <td className="px-6 py-4 text-center text-gray-600 font-medium">{c.lojas}</td>
                         <td className="px-6 py-4 text-center text-gray-600 font-medium">{c.visitas}</td>
                         <td className="px-6 py-4 text-center font-black text-blue-600">{Math.round(c.km)} km</td>

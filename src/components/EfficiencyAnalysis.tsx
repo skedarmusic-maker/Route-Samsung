@@ -195,6 +195,19 @@ export default function EfficiencyAnalysis({ resultado, totalEstimatedKM, histor
 
       {analiseView === 'individual' ? (
         <>
+          <div className="flex items-center justify-between mb-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+            <div>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Consultor Operacional</p>
+              <p className="font-black text-gray-900">{resultado.consultor}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Saldo Banco de Horas</p>
+              <p className={`text-xl font-black ${resultado.bancoHoras?.includes('-') ? 'text-red-600' : 'text-green-600'}`}>
+                {resultado.bancoHoras || 'Não informado'}
+              </p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <MetricCard
               title="Distância Total"
