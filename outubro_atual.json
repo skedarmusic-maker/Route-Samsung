@@ -1,0 +1,3672 @@
+[
+  {
+    "id": "83153a1c-fa98-48b8-a9a6-bc5fda3d0ce5",
+    "consultor": "DIOGO DO NASCIMENTO SANTOS",
+    "mes": 10,
+    "ano": 2026,
+    "status": "Aprovado",
+    "cenario": "Journey Outubro - Aprovado",
+    "versao_id": "v-journey-outubro-aprovado",
+    "versao_nome": "Journey Outubro - Aprovado",
+    "dados_roteiro": {
+      "ano": 2026,
+      "mes": 10,
+      "cenario": "Journey Outubro - Aprovado",
+      "roteiro": [
+        {
+          "data": "2026-10-05",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - BARRA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CENTRAL AR - RECREIO/RJ",
+              "checkIn": "13:30",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-06",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - PENHA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIOPECAS - RAMOS/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-07",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "NITEROI",
+              "filial": "CLIMA RIO - NITEROI/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "ITABORAI",
+              "filial": "CLIMA RIO - ITABORAI/RJ",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03324 - CLIMA RIO - AVENIDA VINTE E DOIS DE MAIO LADO IMPAR - 6493 - ITABORAI - RJ"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-08",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - SAO CRISTOVAO/RJ",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - BARRA/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-09",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - BARRA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CENTRAL AR - RECREIO/RJ",
+              "checkIn": "13:30",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-12",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Nossa Senhora Aparecida",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-13",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - PENHA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIOPECAS - RAMOS/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-14",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "NITEROI",
+              "filial": "CLIMA RIO - NITEROI/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "ITABORAI",
+              "filial": "CLIMA RIO - ITABORAI/RJ",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03324 - CLIMA RIO - AVENIDA VINTE E DOIS DE MAIO LADO IMPAR - 6493 - ITABORAI - RJ"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-15",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - SAO CRISTOVAO/RJ",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - BARRA/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-16",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - BARRA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CENTRAL AR - RECREIO/RJ",
+              "checkIn": "13:30",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-19",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - PENHA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIOPECAS - RAMOS/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-20",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "NITEROI",
+              "filial": "CLIMA RIO - NITEROI/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "ITABORAI",
+              "filial": "CLIMA RIO - ITABORAI/RJ",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03324 - CLIMA RIO - AVENIDA VINTE E DOIS DE MAIO LADO IMPAR - 6493 - ITABORAI - RJ"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-21",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - SAO CRISTOVAO/RJ",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - BARRA/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-22",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - BARRA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CENTRAL AR - RECREIO/RJ",
+              "checkIn": "13:30",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-23",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - PENHA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIOPECAS - RAMOS/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-26",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "NITEROI",
+              "filial": "CLIMA RIO - NITEROI/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "ITABORAI",
+              "filial": "CLIMA RIO - ITABORAI/RJ",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03324 - CLIMA RIO - AVENIDA VINTE E DOIS DE MAIO LADO IMPAR - 6493 - ITABORAI - RJ"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-27",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - SAO CRISTOVAO/RJ",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - BARRA/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-28",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - BARRA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CENTRAL AR - RECREIO/RJ",
+              "checkIn": "13:30",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-29",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - PENHA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIOPECAS - RAMOS/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-30",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "NITEROI",
+              "filial": "CLIMA RIO - NITEROI/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "ITABORAI",
+              "filial": "CLIMA RIO - ITABORAI/RJ",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03324 - CLIMA RIO - AVENIDA VINTE E DOIS DE MAIO LADO IMPAR - 6493 - ITABORAI - RJ"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-11-02",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Finados",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-11-03",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - SAO CRISTOVAO/RJ",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIGELAR - BARRA/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-11-04",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - BARRA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CENTRAL AR - RECREIO/RJ",
+              "checkIn": "13:30",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-11-05",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "CLIMA RIO - PENHA/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "RIO DE JANEIRO",
+              "filial": "FRIOPECAS - RAMOS/RJ",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-11-06",
+          "lojas": [
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "NITEROI",
+              "filial": "CLIMA RIO - NITEROI/RJ",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"
+            },
+            {
+              "uf": "RJ",
+              "rota": "RJ",
+              "tipo": "local",
+              "cidade": "ITABORAI",
+              "filial": "CLIMA RIO - ITABORAI/RJ",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03324 - CLIMA RIO - AVENIDA VINTE E DOIS DE MAIO LADO IMPAR - 6493 - ITABORAI - RJ"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        }
+      ],
+      "consultor": "DIOGO DO NASCIMENTO SANTOS",
+      "versao_id": "v-journey-outubro-aprovado",
+      "extraCosts": {
+        "hotels": {},
+        "flights": {},
+        "parking": 200,
+        "other": 200,
+        "otherDetails": [
+          {
+            "descricao": "Estacionamento Febrava (2 dias x R$ 100,00)",
+            "valor": 200.0,
+            "diarias": 2,
+            "valorDiaria": 100.0
+          }
+        ]
+      },
+      "totalLojas": 46,
+      "versao_nome": "Journey Outubro - Aprovado",
+      "estimatedCost": 659.7893706899031,
+      "totalDiasUteis": 23,
+      "totalEstimatedKM": 574.7367133623789
+    },
+    "created_at": "2026-09-14T19:18:43.377485+00:00",
+    "updated_at": "2026-09-14T19:18:43.377485+00:00"
+  },
+  {
+    "id": "f8896d30-7073-4eea-9de8-aa3d49371d3a",
+    "consultor": "LIEDY AQUINO GOMES DOS SANTOS",
+    "mes": 10,
+    "ano": 2026,
+    "status": "Aprovado",
+    "cenario": "Journey Outubro - Aprovado",
+    "versao_id": "v-journey-outubro-aprovado",
+    "versao_nome": "Journey Outubro - Aprovado",
+    "dados_roteiro": {
+      "ano": 2026,
+      "mes": 10,
+      "cenario": "Journey Outubro - Aprovado",
+      "roteiro": [
+        {
+          "data": "2026-10-05",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIOPECAS - SAO PAULO/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00390 - FRIOPECAS - ALAMEDA GLETE - 812 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - GLETE 771/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00461 - FRIGELAR - ALAMEDA GLETE - 771 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-06",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - GLETE 798/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S01867 - FRIGELAR - ALAMEDA GLETE - 798 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - ALAMEDA 908 SAO PAULO/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S02324 - FRIGELAR - ALAMEDA GLETE - 908 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-07",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SANTOS",
+              "filial": "FRIGELAR - SANTOS/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S05692 - FRIGELAR - AVENIDA WASHINGTON LUIS - 1 - SANTOS - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "PRAIA GRANDE",
+              "filial": "CLIMA RIO - PRAIA GRANDE/SP",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00157 - CLIMA RIO - RUA COMENDADOR JOAO BATISTA GLEREAN - PRAIA GRANDE - SP"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-08",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "CLIMA RIO - IPIRANGA/SP",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02867 - CLIMA RIO - RUA BRIGADEIRO JORDAO - 346 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "CLIMA RIO - VILA GUILHERME/SP",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00813 - CLIMA RIO - RUA AMAZONAS DA SILVA - 205 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-09",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - BARRA FUNDA/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S05935 - FRIGELAR - RUA QUIRINO DOS SANTOS - 167 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "DIS - JARDINS/SP",
+              "checkIn": "13:30",
+              "cliente": "DIS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00170 - DIS - ALAMEDA GABRIEL MONTEIRO DA SILVA - 1717 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-12",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Nossa Senhora Aparecida",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-13",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - MORATO/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S06664 - FRIGELAR - AVENIDA PROF FRANCISCO MORATO - 3200 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - CHACARA SANTO ANTONIO/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S06230 - FRIGELAR - AVENIDA REDIG DE CAMPOS - 105 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-14",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SAO JOSE DOS CAMPOS",
+              "filial": "CLIMA RIO - SAO JOSE DOS CAMPOS/SP",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S01704 - CLIMA RIO - RUA PARAIBUNA - 667 - SAO JOSE DOS CAMPOS - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SAO JOSE DOS CAMPOS",
+              "filial": "FRIGELAR - SAO JOSE DOS CAMPOS/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S04459 - FRIGELAR - RUA DINAMARCA - 225 - SAO JOSE DOS CAMPOS - SP"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-15",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "CAMPINAS",
+              "filial": "CLIMA RIO - CAMPINAS/SP",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03839 - CLIMA RIO - AVENIDA GOVERNADOR PEDRO DE TOLEDO - 1200 - CAMPINAS - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "CAMPINAS",
+              "filial": "FRIGELAR - CAMPINAS/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04297 - FRIGELAR - RUA ROMUALDO ANDREAZZI - 492 - CAMPINAS - SP"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-16",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "CENTRAL AR - OLIMPIA/SP",
+              "checkIn": "09:00",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02005 - CENTRAL AR - R. GOMES DE CARVALHO - 1069 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - TATUAPE/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03487 - FRIGELAR - AVENIDA AIRTON PRETINI - 321 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-19",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIOPECAS - SAO PAULO/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00390 - FRIOPECAS - ALAMEDA GLETE - 812 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - GLETE 771/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00461 - FRIGELAR - ALAMEDA GLETE - 771 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-20",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - GLETE 798/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S01867 - FRIGELAR - ALAMEDA GLETE - 798 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - ALAMEDA 908 SAO PAULO/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S02324 - FRIGELAR - ALAMEDA GLETE - 908 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-21",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SANTOS",
+              "filial": "CENTRAL AR - SANTOS/SP",
+              "checkIn": "09:00",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00160 - CENTRAL AR - SANTOS/SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SANTOS",
+              "filial": "FRIGELAR - SANTOS/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S05692 - FRIGELAR - AVENIDA WASHINGTON LUIS - 1 - SANTOS - SP"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-22",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "CLIMA RIO - IPIRANGA/SP",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02867 - CLIMA RIO - RUA BRIGADEIRO JORDAO - 346 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "CLIMA RIO - VILA GUILHERME/SP",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00813 - CLIMA RIO - RUA AMAZONAS DA SILVA - 205 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-23",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - BARRA FUNDA/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S05935 - FRIGELAR - RUA QUIRINO DOS SANTOS - 167 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "DIS - JARDINS/SP",
+              "checkIn": "13:30",
+              "cliente": "DIS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00170 - DIS - ALAMEDA GABRIEL MONTEIRO DA SILVA - 1717 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-26",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - MORATO/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S06664 - FRIGELAR - AVENIDA PROF FRANCISCO MORATO - 3200 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - CHACARA SANTO ANTONIO/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S06230 - FRIGELAR - AVENIDA REDIG DE CAMPOS - 105 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-27",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "CENTRAL AR - OLIMPIA/SP",
+              "checkIn": "09:00",
+              "cliente": "CENTRAL AR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02005 - CENTRAL AR - R. GOMES DE CARVALHO - 1069 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - TATUAPE/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03487 - FRIGELAR - AVENIDA AIRTON PRETINI - 321 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-28",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SANTOS",
+              "filial": "FRIGELAR - SANTOS/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S05692 - FRIGELAR - AVENIDA WASHINGTON LUIS - 1 - SANTOS - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "PRAIA GRANDE",
+              "filial": "CLIMA RIO - PRAIA GRANDE/SP",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00157 - CLIMA RIO - RUA COMENDADOR JOAO BATISTA GLEREAN - PRAIA GRANDE - SP"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-29",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "CAMPINAS",
+              "filial": "CLIMA RIO - CAMPINAS/SP",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03839 - CLIMA RIO - AVENIDA GOVERNADOR PEDRO DE TOLEDO - 1200 - CAMPINAS - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "CAMPINAS",
+              "filial": "FRIGELAR - CAMPINAS/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04297 - FRIGELAR - RUA ROMUALDO ANDREAZZI - 492 - CAMPINAS - SP"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-30",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIOPECAS - SAO PAULO/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIOPECAS",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00390 - FRIOPECAS - ALAMEDA GLETE - 812 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - GLETE 771/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00461 - FRIGELAR - ALAMEDA GLETE - 771 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-11-02",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Finados",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-11-03",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - GLETE 798/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S01867 - FRIGELAR - ALAMEDA GLETE - 798 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - ALAMEDA 908 SAO PAULO/SP",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S02324 - FRIGELAR - ALAMEDA GLETE - 908 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-11-04",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SANTOS",
+              "filial": "FRIGELAR - SANTOS/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S05692 - FRIGELAR - AVENIDA WASHINGTON LUIS - 1 - SANTOS - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "PRAIA GRANDE",
+              "filial": "CLIMA RIO - PRAIA GRANDE/SP",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00157 - CLIMA RIO - RUA COMENDADOR JOAO BATISTA GLEREAN - PRAIA GRANDE - SP"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-11-05",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "CLIMA RIO - IPIRANGA/SP",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02867 - CLIMA RIO - RUA BRIGADEIRO JORDAO - 346 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "CLIMA RIO - VILA GUILHERME/SP",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00813 - CLIMA RIO - RUA AMAZONAS DA SILVA - 205 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-11-06",
+          "lojas": [
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "FRIGELAR - BARRA FUNDA/SP",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S05935 - FRIGELAR - RUA QUIRINO DOS SANTOS - 167 - SAO PAULO - SP"
+            },
+            {
+              "uf": "SP",
+              "rota": "SPC1",
+              "tipo": "local",
+              "cidade": "SÃO PAULO",
+              "filial": "DIS - JARDINS/SP",
+              "checkIn": "13:30",
+              "cliente": "DIS",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00170 - DIS - ALAMEDA GABRIEL MONTEIRO DA SILVA - 1717 - SAO PAULO - SP"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        }
+      ],
+      "consultor": "LIEDY AQUINO GOMES DOS SANTOS",
+      "versao_id": "v-journey-outubro-aprovado",
+      "extraCosts": {
+        "hotels": {},
+        "flights": {}
+      },
+      "totalLojas": 46,
+      "versao_nome": "Journey Outubro - Aprovado",
+      "estimatedCost": 1014.4833039944883,
+      "totalDiasUteis": 23,
+      "totalEstimatedKM": 1268.1041299931103
+    },
+    "created_at": "2026-09-14T19:18:43.714831+00:00",
+    "updated_at": "2026-09-14T19:18:43.714831+00:00"
+  },
+  {
+    "id": "faeff1a8-5383-471f-b2b6-4bb8ac19febc",
+    "consultor": "LUIZ FALCAO DE SOUZA NETO",
+    "mes": 10,
+    "ano": 2026,
+    "status": "Aprovado",
+    "cenario": "Journey Outubro - Aprovado",
+    "versao_id": "v-journey-outubro-aprovado",
+    "versao_nome": "Journey Outubro - Aprovado",
+    "dados_roteiro": {
+      "ano": 2026,
+      "mes": 10,
+      "cenario": "Journey Outubro - Aprovado",
+      "roteiro": [
+        {
+          "data": "2026-10-05",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-06",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIGELAR - IMBIRIBEIRA/PE",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIOPECAS - IMBIRIBEIRA/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-07",
+          "lojas": [
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "João Pessoa",
+              "filial": "FRIGELAR - DISTRITO INDUSTRIAL/PB",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00976 - FRIGELAR - RUA HORTENCIO RIBEIRO DE LUNA - 1841 - JOAO PESSOA - PB"
+            },
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "JOAO PESSOA",
+              "filial": "CLIMA RIO - JOAO PESSOA/PB",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S04649 - CLIMA RIO - AVENIDA PRESIDENTE EPITACIO PESSOA - 941 - JOAO PESSOA - PB"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-08",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - MASCARENHAS RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S01960 - FERREIRA COSTA - AVENIDA MAL. MASCARENHAS DE MORAES - 2967 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "CLIMA RIO - ARTUR MOURA RECIFE/PE",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-09",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "CLIMA RIO - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03596 - CLIMA RIO - AV. ENG. DOMINGOS FERREIRA - 1274 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-12",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Nossa Senhora Aparecida",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-13",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-14",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIGELAR - IMBIRIBEIRA/PE",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIOPECAS - IMBIRIBEIRA/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-15",
+          "lojas": [
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "João Pessoa",
+              "filial": "FRIGELAR - DISTRITO INDUSTRIAL/PB",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00976 - FRIGELAR - RUA HORTENCIO RIBEIRO DE LUNA - 1841 - JOAO PESSOA - PB"
+            },
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "JOAO PESSOA",
+              "filial": "CLIMA RIO - JOAO PESSOA/PB",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S04649 - CLIMA RIO - AVENIDA PRESIDENTE EPITACIO PESSOA - 941 - JOAO PESSOA - PB"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-16",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - MASCARENHAS RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S01960 - FERREIRA COSTA - AVENIDA MAL. MASCARENHAS DE MORAES - 2967 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "CLIMA RIO - ARTUR MOURA RECIFE/PE",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-19",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "CLIMA RIO - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03596 - CLIMA RIO - AV. ENG. DOMINGOS FERREIRA - 1274 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-20",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-21",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIGELAR - IMBIRIBEIRA/PE",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIOPECAS - IMBIRIBEIRA/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-22",
+          "lojas": [
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "João Pessoa",
+              "filial": "FRIGELAR - DISTRITO INDUSTRIAL/PB",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00976 - FRIGELAR - RUA HORTENCIO RIBEIRO DE LUNA - 1841 - JOAO PESSOA - PB"
+            },
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "JOAO PESSOA",
+              "filial": "CLIMA RIO - JOAO PESSOA/PB",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S04649 - CLIMA RIO - AVENIDA PRESIDENTE EPITACIO PESSOA - 941 - JOAO PESSOA - PB"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-23",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - MASCARENHAS RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S01960 - FERREIRA COSTA - AVENIDA MAL. MASCARENHAS DE MORAES - 2967 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "CLIMA RIO - ARTUR MOURA RECIFE/PE",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-26",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "CLIMA RIO - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03596 - CLIMA RIO - AV. ENG. DOMINGOS FERREIRA - 1274 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-27",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-28",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIGELAR - IMBIRIBEIRA/PE",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIOPECAS - IMBIRIBEIRA/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-29",
+          "lojas": [
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "João Pessoa",
+              "filial": "FRIGELAR - DISTRITO INDUSTRIAL/PB",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00976 - FRIGELAR - RUA HORTENCIO RIBEIRO DE LUNA - 1841 - JOAO PESSOA - PB"
+            },
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "JOAO PESSOA",
+              "filial": "CLIMA RIO - JOAO PESSOA/PB",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S04649 - CLIMA RIO - AVENIDA PRESIDENTE EPITACIO PESSOA - 941 - JOAO PESSOA - PB"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-30",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - MASCARENHAS RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S01960 - FERREIRA COSTA - AVENIDA MAL. MASCARENHAS DE MORAES - 2967 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "CLIMA RIO - ARTUR MOURA RECIFE/PE",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-11-02",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Finados",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-11-03",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "CLIMA RIO - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03596 - CLIMA RIO - AV. ENG. DOMINGOS FERREIRA - 1274 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-11-04",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "Recife",
+              "filial": "FERREIRA COSTA - RECIFE/PE",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "RECIFE",
+              "filial": "FRIGELAR - BOA VIAGEM/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-11-05",
+          "lojas": [
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIGELAR - IMBIRIBEIRA/PE",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"
+            },
+            {
+              "uf": "PE",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "IMBIRIBEIRA",
+              "filial": "FRIOPECAS - IMBIRIBEIRA/PE",
+              "checkIn": "13:30",
+              "cliente": "FRIOPECAS",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-11-06",
+          "lojas": [
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "João Pessoa",
+              "filial": "FRIGELAR - DISTRITO INDUSTRIAL/PB",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "B",
+              "checkOut": "12:00",
+              "nome_pdv": "S00976 - FRIGELAR - RUA HORTENCIO RIBEIRO DE LUNA - 1841 - JOAO PESSOA - PB"
+            },
+            {
+              "uf": "PB",
+              "rota": "NE_2",
+              "tipo": "local",
+              "cidade": "JOAO PESSOA",
+              "filial": "CLIMA RIO - JOAO PESSOA/PB",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "B",
+              "checkOut": "18:00",
+              "nome_pdv": "S04649 - CLIMA RIO - AVENIDA PRESIDENTE EPITACIO PESSOA - 941 - JOAO PESSOA - PB"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        }
+      ],
+      "consultor": "LUIZ FALCAO DE SOUZA NETO",
+      "versao_id": "v-journey-outubro-aprovado",
+      "extraCosts": {
+        "hotels": {},
+        "flights": {}
+      },
+      "totalLojas": 46,
+      "versao_nome": "Journey Outubro - Aprovado",
+      "estimatedCost": 1190.8259015903154,
+      "totalDiasUteis": 23,
+      "totalEstimatedKM": 1488.5323769878942
+    },
+    "created_at": "2026-09-14T19:18:44.074055+00:00",
+    "updated_at": "2026-09-14T19:18:44.074055+00:00"
+  },
+  {
+    "id": "a09f836f-a5c1-4f87-bfee-b1f051e2b756",
+    "consultor": "MARCIO JOSE FLORES PEREIRA",
+    "mes": 10,
+    "ano": 2026,
+    "status": "Aprovado",
+    "cenario": "Journey Outubro - Aprovado",
+    "versao_id": "v-journey-outubro-aprovado",
+    "versao_nome": "Journey Outubro - Aprovado",
+    "dados_roteiro": {
+      "ano": 2026,
+      "mes": 10,
+      "cenario": "Journey Outubro - Aprovado",
+      "roteiro": [
+        {
+          "data": "2026-10-05",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "CLIMA RIO - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-06",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "FRIGELAR - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "WEBCONTINENTAL",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-07",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "NOVO HAMBURGO",
+              "filial": "FRIGELAR - NOVO HAMBURGO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO 2273/RS",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-08",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "HAVAN - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "HAVAN",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S19798 - HAVAN - AV FARROUPILHA - 4707 - CANOAS - RS"
+            },
+            {
+              "uf": "SC",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "SAO JOSE",
+              "filial": "FRIGELAR - SAO JOSE/SC",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03304 - FRIGELAR - RUA ARNOLDO SILVEIRA DE SOUZA - 296 - SAO JOSE - SC"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-09",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "CLIMA RIO - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-12",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Nossa Senhora Aparecida",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-13",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "FRIGELAR - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "WEBCONTINENTAL",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-14",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "NOVO HAMBURGO",
+              "filial": "FRIGELAR - NOVO HAMBURGO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO 2273/RS",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-15",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "HAVAN - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "HAVAN",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S19798 - HAVAN - AV FARROUPILHA - 4707 - CANOAS - RS"
+            },
+            {
+              "uf": "SC",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "SAO JOSE",
+              "filial": "FRIGELAR - SAO JOSE/SC",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03304 - FRIGELAR - RUA ARNOLDO SILVEIRA DE SOUZA - 296 - SAO JOSE - SC"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-16",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "CLIMA RIO - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-19",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "FRIGELAR - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "WEBCONTINENTAL",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-20",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "NOVO HAMBURGO",
+              "filial": "FRIGELAR - NOVO HAMBURGO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO 2273/RS",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-21",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "HAVAN - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "HAVAN",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S19798 - HAVAN - AV FARROUPILHA - 4707 - CANOAS - RS"
+            },
+            {
+              "uf": "SC",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "SAO JOSE",
+              "filial": "FRIGELAR - SAO JOSE/SC",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03304 - FRIGELAR - RUA ARNOLDO SILVEIRA DE SOUZA - 296 - SAO JOSE - SC"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-22",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "CLIMA RIO - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-23",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "FRIGELAR - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "WEBCONTINENTAL",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-26",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "NOVO HAMBURGO",
+              "filial": "FRIGELAR - NOVO HAMBURGO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO 2273/RS",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-27",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "HAVAN - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "HAVAN",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S19798 - HAVAN - AV FARROUPILHA - 4707 - CANOAS - RS"
+            },
+            {
+              "uf": "SC",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "SAO JOSE",
+              "filial": "FRIGELAR - SAO JOSE/SC",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03304 - FRIGELAR - RUA ARNOLDO SILVEIRA DE SOUZA - 296 - SAO JOSE - SC"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-28",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "CLIMA RIO - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-29",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "FRIGELAR - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "WEBCONTINENTAL",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-30",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "NOVO HAMBURGO",
+              "filial": "FRIGELAR - NOVO HAMBURGO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO 2273/RS",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-11-02",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Finados",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-11-03",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "HAVAN - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "HAVAN",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S19798 - HAVAN - AV FARROUPILHA - 4707 - CANOAS - RS"
+            },
+            {
+              "uf": "SC",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "SAO JOSE",
+              "filial": "FRIGELAR - SAO JOSE/SC",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03304 - FRIGELAR - RUA ARNOLDO SILVEIRA DE SOUZA - 296 - SAO JOSE - SC"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-11-04",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "CLIMA RIO - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-11-05",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "CANOAS",
+              "filial": "FRIGELAR - CANOAS/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS",
+              "checkIn": "13:30",
+              "cliente": "WEBCONTINENTAL",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-11-06",
+          "lojas": [
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "NOVO HAMBURGO",
+              "filial": "FRIGELAR - NOVO HAMBURGO/RS",
+              "checkIn": "09:00",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"
+            },
+            {
+              "uf": "RS",
+              "rota": "SUL_1",
+              "tipo": "local",
+              "cidade": "PORTO ALEGRE",
+              "filial": "FRIGELAR - SAO GERALDO 2273/RS",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        }
+      ],
+      "consultor": "MARCIO JOSE FLORES PEREIRA",
+      "versao_id": "v-journey-outubro-aprovado",
+      "extraCosts": {
+        "hotels": {},
+        "flights": {}
+      },
+      "totalLojas": 46,
+      "versao_nome": "Journey Outubro - Aprovado",
+      "estimatedCost": 4574.339403004376,
+      "totalDiasUteis": 23,
+      "totalEstimatedKM": 5717.92425375547
+    },
+    "created_at": "2026-09-14T19:18:44.445772+00:00",
+    "updated_at": "2026-09-14T19:18:44.445772+00:00"
+  },
+  {
+    "id": "fb23fb45-7499-498f-b91e-8ea048393607",
+    "consultor": "TATIANE SOUZA DOS SANTOS",
+    "mes": 10,
+    "ano": 2026,
+    "status": "Aprovado",
+    "cenario": "Journey Outubro - Aprovado",
+    "versao_id": "v-journey-outubro-aprovado",
+    "versao_nome": "Journey Outubro - Aprovado",
+    "dados_roteiro": {
+      "ano": 2026,
+      "mes": 10,
+      "cenario": "Journey Outubro - Aprovado",
+      "roteiro": [
+        {
+          "data": "2026-10-05",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "FRIGELAR - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03568 - FRIGELAR - AVENIDA MARIO LEAL FERREIRA - 901 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-06",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Feira de Santana",
+              "filial": "CLIMA RIO - FEIRA DE SANTANA/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04991 - CLIMA RIO - AV. JOSE FALCAO DA SILVA - 1326 - FEIRA DE SANTANA - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "FEIRA DE SANTANA",
+              "filial": "FRIGELAR - FEIRA DE SANTANA/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "17:00",
+              "nome_pdv": "S08012 - FRIGELAR - R CABACEIRAS - 55 - FEIRA DE SANTANA - BA"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-07",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - VIANA SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00300 - FERREIRA COSTA - AVENIDA LUIS VIANA FILHO - 6180 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "LAURO DE FREITAS",
+              "filial": "FRIGELAR - LAURO DE FREITAS/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S07474 - FRIGELAR - AV SANTOS DUMONT - 4806 - LAURO DE FREITAS - BA"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-08",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03156 - FERREIRA COSTA - SALVADOR/BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-09",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "FRIGELAR - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03568 - FRIGELAR - AVENIDA MARIO LEAL FERREIRA - 901 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-12",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Nossa Senhora Aparecida",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-13",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Feira de Santana",
+              "filial": "CLIMA RIO - FEIRA DE SANTANA/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04991 - CLIMA RIO - AV. JOSE FALCAO DA SILVA - 1326 - FEIRA DE SANTANA - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "FEIRA DE SANTANA",
+              "filial": "FRIGELAR - FEIRA DE SANTANA/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "17:00",
+              "nome_pdv": "S08012 - FRIGELAR - R CABACEIRAS - 55 - FEIRA DE SANTANA - BA"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-14",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - VIANA SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00300 - FERREIRA COSTA - AVENIDA LUIS VIANA FILHO - 6180 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "LAURO DE FREITAS",
+              "filial": "FRIGELAR - LAURO DE FREITAS/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S07474 - FRIGELAR - AV SANTOS DUMONT - 4806 - LAURO DE FREITAS - BA"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-15",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03156 - FERREIRA COSTA - SALVADOR/BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-16",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "FRIGELAR - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03568 - FRIGELAR - AVENIDA MARIO LEAL FERREIRA - 901 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-19",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Feira de Santana",
+              "filial": "CLIMA RIO - FEIRA DE SANTANA/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04991 - CLIMA RIO - AV. JOSE FALCAO DA SILVA - 1326 - FEIRA DE SANTANA - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "FEIRA DE SANTANA",
+              "filial": "FRIGELAR - FEIRA DE SANTANA/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "17:00",
+              "nome_pdv": "S08012 - FRIGELAR - R CABACEIRAS - 55 - FEIRA DE SANTANA - BA"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-20",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - VIANA SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00300 - FERREIRA COSTA - AVENIDA LUIS VIANA FILHO - 6180 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "LAURO DE FREITAS",
+              "filial": "FRIGELAR - LAURO DE FREITAS/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S07474 - FRIGELAR - AV SANTOS DUMONT - 4806 - LAURO DE FREITAS - BA"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-21",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03156 - FERREIRA COSTA - SALVADOR/BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-22",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "FRIGELAR - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03568 - FRIGELAR - AVENIDA MARIO LEAL FERREIRA - 901 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-23",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Feira de Santana",
+              "filial": "CLIMA RIO - FEIRA DE SANTANA/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04991 - CLIMA RIO - AV. JOSE FALCAO DA SILVA - 1326 - FEIRA DE SANTANA - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "FEIRA DE SANTANA",
+              "filial": "FRIGELAR - FEIRA DE SANTANA/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "17:00",
+              "nome_pdv": "S08012 - FRIGELAR - R CABACEIRAS - 55 - FEIRA DE SANTANA - BA"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-10-26",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - VIANA SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00300 - FERREIRA COSTA - AVENIDA LUIS VIANA FILHO - 6180 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "LAURO DE FREITAS",
+              "filial": "FRIGELAR - LAURO DE FREITAS/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S07474 - FRIGELAR - AV SANTOS DUMONT - 4806 - LAURO DE FREITAS - BA"
+            }
+          ],
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-10-27",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03156 - FERREIRA COSTA - SALVADOR/BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-10-28",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "FRIGELAR - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03568 - FRIGELAR - AVENIDA MARIO LEAL FERREIRA - 901 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-10-29",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Feira de Santana",
+              "filial": "CLIMA RIO - FEIRA DE SANTANA/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04991 - CLIMA RIO - AV. JOSE FALCAO DA SILVA - 1326 - FEIRA DE SANTANA - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "FEIRA DE SANTANA",
+              "filial": "FRIGELAR - FEIRA DE SANTANA/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "17:00",
+              "nome_pdv": "S08012 - FRIGELAR - R CABACEIRAS - 55 - FEIRA DE SANTANA - BA"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-10-30",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - VIANA SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00300 - FERREIRA COSTA - AVENIDA LUIS VIANA FILHO - 6180 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "LAURO DE FREITAS",
+              "filial": "FRIGELAR - LAURO DE FREITAS/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S07474 - FRIGELAR - AV SANTOS DUMONT - 4806 - LAURO DE FREITAS - BA"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        },
+        {
+          "data": "2026-11-02",
+          "lojas": [],
+          "feriado": "Feriado Nacional - Finados",
+          "diaSemana": "SEGUNDA-FEIRA"
+        },
+        {
+          "data": "2026-11-03",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S03156 - FERREIRA COSTA - SALVADOR/BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "TERÇA-FEIRA"
+        },
+        {
+          "data": "2026-11-04",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "CLIMA RIO - SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S02603 - CLIMA RIO - AVENIDA VASCO DA GAMA - 2698 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "SALVADOR",
+              "filial": "FRIGELAR - SALVADOR/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S03568 - FRIGELAR - AVENIDA MARIO LEAL FERREIRA - 901 - SALVADOR - BA"
+            }
+          ],
+          "diaSemana": "QUARTA-FEIRA"
+        },
+        {
+          "data": "2026-11-05",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Feira de Santana",
+              "filial": "CLIMA RIO - FEIRA DE SANTANA/BA",
+              "checkIn": "09:00",
+              "cliente": "CLIMA RIO",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S04991 - CLIMA RIO - AV. JOSE FALCAO DA SILVA - 1326 - FEIRA DE SANTANA - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "FEIRA DE SANTANA",
+              "filial": "FRIGELAR - FEIRA DE SANTANA/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "17:00",
+              "nome_pdv": "S08012 - FRIGELAR - R CABACEIRAS - 55 - FEIRA DE SANTANA - BA"
+            }
+          ],
+          "diaSemana": "QUINTA-FEIRA"
+        },
+        {
+          "data": "2026-11-06",
+          "lojas": [
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "Salvador",
+              "filial": "FERREIRA COSTA - VIANA SALVADOR/BA",
+              "checkIn": "09:00",
+              "cliente": "FERREIRA COSTA",
+              "cluster": "A",
+              "checkOut": "12:00",
+              "nome_pdv": "S00300 - FERREIRA COSTA - AVENIDA LUIS VIANA FILHO - 6180 - SALVADOR - BA"
+            },
+            {
+              "uf": "BA",
+              "rota": "NE_1",
+              "tipo": "local",
+              "cidade": "LAURO DE FREITAS",
+              "filial": "FRIGELAR - LAURO DE FREITAS/BA",
+              "checkIn": "13:30",
+              "cliente": "FRIGELAR",
+              "cluster": "A",
+              "checkOut": "18:00",
+              "nome_pdv": "S07474 - FRIGELAR - AV SANTOS DUMONT - 4806 - LAURO DE FREITAS - BA"
+            }
+          ],
+          "diaSemana": "SEXTA-FEIRA"
+        }
+      ],
+      "consultor": "TATIANE SOUZA DOS SANTOS",
+      "versao_id": "v-journey-outubro-aprovado",
+      "extraCosts": {
+        "hotels": {},
+        "flights": {}
+      },
+      "totalLojas": 46,
+      "versao_nome": "Journey Outubro - Aprovado",
+      "estimatedCost": 1470.917619813829,
+      "totalDiasUteis": 23,
+      "totalEstimatedKM": 1838.6470247672862
+    },
+    "created_at": "2026-09-14T19:18:44.812166+00:00",
+    "updated_at": "2026-09-14T19:18:44.812166+00:00"
+  }
+]

@@ -173,6 +173,33 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
     const ws = xlsx.utils.json_to_sheet(dataToExport);
     const wb = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, ws, 'Roteiros');
+
+    const resumoCustosData = alvo.map((r) => {
+      const d = r.dados_roteiro || {};
+      const kmEst = Math.round(d.totalEstimatedKM || 0);
+      const custoKM = (d.totalEstimatedKM || 0) * 0.80;
+      const extraCosts = d.extraCosts || {};
+      const parking = extraCosts.parking || extraCosts.other || 0;
+      const totalCost = d.estimatedCost || (custoKM + parking);
+
+      let obs = [];
+      if (parking > 0) obs.push(`Estacionamento/Eventos: R$ ${parking.toFixed(2)} (Febrava)`);
+
+      return {
+        'Consultor': r.consultor,
+        'Mês/Ano': `${r.mes}/${r.ano}`,
+        'Banco de Horas': d.bancoHoras || 'N/A',
+        'Total KM Rodado': kmEst,
+        'Custo KM (R$ 0,80)': Number(custoKM.toFixed(2)),
+        'Custos Extras / Eventos (R$)': Number(parking.toFixed(2)),
+        'Custo Total Estimado (R$)': Number(totalCost.toFixed(2)),
+        'Observações': obs.join(' | ') || 'Nenhum'
+      };
+    });
+
+    const wsResumo = xlsx.utils.json_to_sheet(resumoCustosData);
+    xlsx.utils.book_append_sheet(wb, wsResumo, 'Resumo e Custos');
+
     xlsx.writeFile(wb, `Route_${versaoNome.replace(/\s+/g, '_')}.xlsx`);
   };
 

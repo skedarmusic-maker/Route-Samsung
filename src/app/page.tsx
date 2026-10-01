@@ -1117,10 +1117,11 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
     return total;
   }, [roteiroState, consultorCoords, distancias, manualFlights]);
 
-  // Totalizar custos extras
+  // Totalizar custos extras (voos, hotéis, estacionamento/eventos como Febrava)
   const flightCosts = Object.values(chosenFlights).reduce((acc: number, f: any) => acc + (f?.price || 0), 0);
   const hotelCosts = Object.values(chosenHotels).reduce((acc: number, h: any) => acc + (h?.price || 0), 0);
-  const extraCostsTotal = flightCosts + hotelCosts;
+  const otherCosts = resultado?.extraCosts?.parking || resultado?.extraCosts?.other || 0;
+  const extraCostsTotal = flightCosts + hotelCosts + (typeof otherCosts === 'number' ? otherCosts : 0);
 
   // Inteligência Financeira e de Desempenho
   const despesasMes = (despesasHistoricasMeses as any)[mesComparacao] || {};
@@ -1207,7 +1208,13 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         ...resultado,
         totalEstimatedKM: totalEstimatedKM,
         estimatedCost: estimatedCost,
-        extraCosts: { flights: chosenFlights, hotels: chosenHotels },
+        extraCosts: { 
+          flights: chosenFlights, 
+          hotels: chosenHotels,
+          parking: resultado?.extraCosts?.parking || 0,
+          other: resultado?.extraCosts?.other || 0,
+          otherDetails: resultado?.extraCosts?.otherDetails || []
+        },
         manualFlights: manualFlights,
         distancias: distancias,
         totalLojas: resultado.totalLojas || roteiroState.reduce((acc: number, dia: any) => acc + (dia.lojas?.length || 0), 0),

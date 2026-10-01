@@ -220,6 +220,37 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
     const worksheet = xlsx.utils.json_to_sheet(dataToExport);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, "Consolidado");
+
+    const resumoCustosData = Object.entries(stats.consultorStats).map(([nome, c]) => {
+      const roteiroOriginal = roteiros.find(r => normalize(r.consultor) === normalize(nome));
+      const d = roteiroOriginal?.dados_roteiro || {};
+      const extraCosts = d.extraCosts || {};
+      const parking = extraCosts.parking || extraCosts.other || 0;
+      const kmEst = Math.round(c.km);
+      const custoKM = c.km * 0.80;
+      const totalCost = c.custo;
+      
+      let obs = [];
+      if (parking > 0) {
+        obs.push(`Estacionamento/Eventos: R$ ${parking.toFixed(2)} (Febrava)`);
+      }
+
+      return {
+        'Consultor': nome,
+        'Banco de Horas': d.bancoHoras || 'N/A',
+        'Total Lojas': c.lojas,
+        'Total Visitas': c.visitas,
+        'KM Estimado': kmEst,
+        'Custo KM (R$ 0,80)': Number(custoKM.toFixed(2)),
+        'Custos Extras / Eventos (R$)': Number(parking.toFixed(2)),
+        'Custo Total Estimado (R$)': Number(totalCost.toFixed(2)),
+        'Observações': obs.join(' | ') || 'Nenhum'
+      };
+    });
+
+    const wsResumo = xlsx.utils.json_to_sheet(resumoCustosData);
+    xlsx.utils.book_append_sheet(workbook, wsResumo, "Resumo e Custos");
+
     xlsx.writeFile(workbook, `Consolidado_Roteiros_${new Date().getTime()}.xlsx`);
   };
 
@@ -370,6 +401,11 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                         <td className="px-6 py-4 text-center font-black text-blue-600">{Math.round(c.km)} km</td>
                         <td className="px-6 py-4 text-right font-black text-gray-900">
                           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(c.custo)}
+                          {((roteiroOriginal?.dados_roteiro?.extraCosts?.parking || roteiroOriginal?.dados_roteiro?.extraCosts?.other || 0) > 0) && (
+                            <span className="block text-[10px] font-semibold text-amber-600">
+                              + R$ {Number(roteiroOriginal?.dados_roteiro?.extraCosts?.parking || roteiroOriginal?.dados_roteiro?.extraCosts?.other).toFixed(2)} (Febrava)
+                            </span>
+                          )}
                         </td>
                       </tr>
                     );
