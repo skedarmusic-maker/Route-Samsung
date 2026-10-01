@@ -38,16 +38,27 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
 
   const pastMonthStats = useMemo(() => {
     const data = (despesasHistoricasMeses as any)[mesComparacao] || {};
-    let pastKM = 0;
-    let pastCost = 0;
-    
-    Object.values(data).forEach((info: any) => {
-      pastKM += info.km || 0;
-      pastCost += info.valor || 0;
+    let pastKMTotal = 0;
+    let pastCostTotal = 0;
+    let pastKMActive = 0;
+    let pastCostActive = 0;
+
+    const consultoresAtivosNomes = roteiros.map(r => normalize(r.consultor));
+
+    Object.entries(data).forEach(([consultor, info]: [string, any]) => {
+      const k = info.km || 0;
+      const v = info.valor || 0;
+      pastKMTotal += k;
+      pastCostTotal += v;
+
+      if (consultoresAtivosNomes.includes(normalize(consultor))) {
+        pastKMActive += k;
+        pastCostActive += v;
+      }
     });
 
-    return { pastKM, pastCost };
-  }, [mesComparacao]);
+    return { pastKMTotal, pastCostTotal, pastKMActive, pastCostActive };
+  }, [mesComparacao, roteiros]);
 
   const globalExpenseStats = useMemo(() => {
     const data = (despesasHistoricasMeses as any)[mesComparacao] || {};
@@ -334,7 +345,9 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                 <Map className="w-3 h-3" />
                 <span className="text-[10px] font-bold">Total da Frota</span>
               </div>
-              <span className="text-[9px] font-bold text-gray-400">vs {Math.round(pastMonthStats.pastKM)} km ({mesComparacao === '09' ? 'Setembro' : mesComparacao === '03' ? 'Março' : 'Abril'})</span>
+              <span className="text-[9px] font-bold text-gray-500" title={`Equipe Ativa: ${Math.round(pastMonthStats.pastKMActive)} km | Frota Total: ${Math.round(pastMonthStats.pastKMTotal)} km`}>
+                vs {Math.round(pastMonthStats.pastKMActive)} km ({mesComparacao === '09' ? 'Setembro' : mesComparacao === '03' ? 'Março' : 'Abril'})
+              </span>
             </div>
           </div>
           <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm border-b-4 border-b-green-600">
@@ -345,7 +358,9 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                 <DollarSign className="w-3 h-3" />
                 <span className="text-[10px] font-bold">Base R$ 0,80/km</span>
               </div>
-              <span className="text-[9px] font-bold text-gray-400">vs {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pastMonthStats.pastCost)}</span>
+              <span className="text-[9px] font-bold text-gray-500" title={`Equipe Ativa: R$ ${pastMonthStats.pastCostActive.toFixed(2)} | Frota Total: R$ ${pastMonthStats.pastCostTotal.toFixed(2)}`}>
+                vs {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(pastMonthStats.pastCostActive)}
+              </span>
             </div>
           </div>
           <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm border-b-4 border-b-purple-600">
@@ -376,37 +391,57 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gray-50 text-gray-500 uppercase text-[10px] font-black tracking-widest">
+                <thead className="bg-gray-50 text-gray-500 uppercase text-[10px] font-black tracking-widest border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-4">Consultor</th>
-                    <th className="px-6 py-4 text-center">Banco de Horas</th>
-                    <th className="px-6 py-4 text-center">Lojas</th>
-                    <th className="px-6 py-4 text-center">Visitas</th>
-                    <th className="px-6 py-4 text-center">KM Est.</th>
-                    <th className="px-6 py-4 text-right">Custo Est.</th>
+                    <th className="px-5 py-3.5">Consultor</th>
+                    <th className="px-3 py-3.5 text-center">Banco Horas</th>
+                    <th className="px-3 py-3.5 text-center">Visitas</th>
+                    <th className="px-4 py-3.5 text-center bg-blue-50/60 text-blue-900">KM Out/26 (Est.)</th>
+                    <th className="px-4 py-3.5 text-center bg-gray-100/70 text-gray-700">KM {mesComparacao === '09' ? 'Set/26' : mesComparacao === '03' ? 'Mar/26' : 'Abr/26'} (Real)</th>
+                    <th className="px-4 py-3.5 text-right bg-blue-50/60 text-blue-900">Custo Out/26 (Est.)</th>
+                    <th className="px-4 py-3.5 text-right bg-gray-100/70 text-gray-700">Custo {mesComparacao === '09' ? 'Set/26' : mesComparacao === '03' ? 'Mar/26' : 'Abr/26'} (Real)</th>
+                    <th className="px-4 py-3.5 text-right">Variação R$</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {Object.entries(stats.consultorStats).sort((a, b) => b[1].km - a[1].km).map(([nome, c]) => {
                     const roteiroOriginal = roteiros.find(r => normalize(r.consultor) === normalize(nome));
+                    const mesData = (despesasHistoricasMeses as any)[mesComparacao] || {};
+                    const hist = Object.entries(mesData).find(([k]) => normalize(k) === normalize(nome))?.[1] as any;
+                    
+                    const kmHist = hist?.km || 0;
+                    const valorHist = hist?.valor || 0;
+                    const variacao = valorHist > 0 ? c.custo - valorHist : 0;
+                    const economizou = variacao < 0;
+
                     return (
                       <tr 
                         key={nome} 
                         onClick={() => roteiroOriginal && onSelectRoteiro(roteiroOriginal.dados_roteiro)}
                         className="hover:bg-blue-50 transition-colors cursor-pointer group"
                       >
-                        <td className="px-6 py-4 font-bold text-gray-700 group-hover:text-blue-700">{nome}</td>
-                        <td className="px-6 py-4 text-center font-bold text-orange-600">{roteiroOriginal?.dados_roteiro?.bancoHoras || 'N/A'}</td>
-                        <td className="px-6 py-4 text-center text-gray-600 font-medium">{c.lojas}</td>
-                        <td className="px-6 py-4 text-center text-gray-600 font-medium">{c.visitas}</td>
-                        <td className="px-6 py-4 text-center font-black text-blue-600">{Math.round(c.km)} km</td>
-                        <td className="px-6 py-4 text-right font-black text-gray-900">
+                        <td className="px-5 py-4 font-bold text-gray-800 group-hover:text-blue-700">{nome}</td>
+                        <td className="px-3 py-4 text-center font-bold text-orange-600 text-xs">{roteiroOriginal?.dados_roteiro?.bancoHoras || 'N/A'}</td>
+                        <td className="px-3 py-4 text-center text-gray-600 font-medium text-xs">{c.visitas}</td>
+                        <td className="px-4 py-4 text-center font-black text-blue-700 bg-blue-50/30">{Math.round(c.km)} km</td>
+                        <td className="px-4 py-4 text-center font-bold text-gray-600 bg-gray-50/50">{kmHist > 0 ? `${Math.round(kmHist)} km` : '—'}</td>
+                        <td className="px-4 py-4 text-right font-black text-gray-900 bg-blue-50/30">
                           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(c.custo)}
                           {((roteiroOriginal?.dados_roteiro?.extraCosts?.parking || roteiroOriginal?.dados_roteiro?.extraCosts?.other || 0) > 0) && (
                             <span className="block text-[10px] font-semibold text-amber-600">
                               + R$ {Number(roteiroOriginal?.dados_roteiro?.extraCosts?.parking || roteiroOriginal?.dados_roteiro?.extraCosts?.other).toFixed(2)} (Febrava)
                             </span>
                           )}
+                        </td>
+                        <td className="px-4 py-4 text-right font-bold text-gray-700 bg-gray-50/50">
+                          {valorHist > 0 ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorHist) : '—'}
+                        </td>
+                        <td className="px-4 py-4 text-right font-black">
+                          {valorHist > 0 ? (
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${economizou ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                              {economizou ? '' : '+'}{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(variacao)}
+                            </span>
+                          ) : '—'}
                         </td>
                       </tr>
                     );
