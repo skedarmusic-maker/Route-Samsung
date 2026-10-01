@@ -146,7 +146,7 @@
     },
     "LIEDY AQUINO GOMES DOS SANTOS": {
       "km": 2194.47,
-      "valor": 2636.02,
+      "valor": 6354.02,
       "detalhes": {
         "Café da Manhã em viagem": 35.0,
         "Cópias e Impressão": 15.0,
@@ -154,17 +154,23 @@
         "Jantar em Viagem": 121.1,
         "Outros": 42.99,
         "Pedágio": 371.35,
-        "Percurso - TRACKING": 1755.58
-      }
+        "Percurso - TRACKING": 1755.58,
+        "Aéreo (QT380 Aprovado)": 1477.0,
+        "Hospedagem (QT380 Aprovado)": 1089.0,
+        "Rodoviário (QT380 Aprovado)": 1152.0
+      },
+      "valorViagem": 3718.0
     },
     "LUIZ FALCAO DE SOUZA NETO": {
       "km": 1934.2,
-      "valor": 1653.73,
+      "valor": 1963.73,
       "detalhes": {
         "Café da Manhã em viagem": 14.0,
         "Jantar": 92.37,
-        "Percurso - TRACKING": 1547.36
-      }
+        "Percurso - TRACKING": 1547.36,
+        "Hospedagem (QT380 Aprovado)": 310.0
+      },
+      "valorViagem": 310.0
     },
     "MARCIO JOSÉ FLORES PEREIRA": {
       "km": 1264.47,
