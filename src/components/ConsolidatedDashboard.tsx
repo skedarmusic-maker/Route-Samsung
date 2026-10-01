@@ -33,8 +33,22 @@ interface ConsolidatedDashboardProps {
   onSelectRoteiro: (dados: any) => void;
 }
 
+const MES_OPCOES = [
+  { id: '09', label: 'Setembro/2026 (Vexpenses + QT380)', short: 'Set/26' },
+  { id: '08', label: 'Agosto/2026 (Vexpenses)', short: 'Ago/26' },
+  { id: '07', label: 'Julho/2026 (Vexpenses)', short: 'Jul/26' },
+  { id: '06', label: 'Junho/2026 (Vexpenses)', short: 'Jun/26' },
+  { id: '05', label: 'Maio/2026 (Vexpenses)', short: 'Mai/26' },
+  { id: '04', label: 'Abril/2026', short: 'Abr/26' },
+  { id: '03', label: 'Março/2026', short: 'Mar/26' },
+];
+
 export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar, onSelectRoteiro }: ConsolidatedDashboardProps) {
-  const [mesComparacao, setMesComparacao] = useState<'03' | '04' | '09'>('09');
+  const [mesComparacao, setMesComparacao] = useState<string>('09');
+
+  const mesAtualInfo = useMemo(() => {
+    return MES_OPCOES.find(m => m.id === mesComparacao) || MES_OPCOES[0];
+  }, [mesComparacao]);
 
   const pastMonthStats = useMemo(() => {
     const data = (despesasHistoricasMeses as any)[mesComparacao] || {};
@@ -307,12 +321,12 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Base Comparação:</span>
             <select 
               value={mesComparacao} 
-              onChange={(e) => setMesComparacao(e.target.value as '03' | '04' | '09')}
+              onChange={(e) => setMesComparacao(e.target.value)}
               className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer"
             >
-              <option value="09">Setembro/2026 (Vexpenses)</option>
-              <option value="04">Abril/2026</option>
-              <option value="03">Março/2026</option>
+              {MES_OPCOES.map(m => (
+                <option key={m.id} value={m.id}>{m.label}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -346,7 +360,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                 <span className="text-[10px] font-bold">Total da Frota</span>
               </div>
               <span className="text-[9px] font-bold text-gray-500" title={`Equipe Ativa: ${Math.round(pastMonthStats.pastKMActive)} km | Frota Total: ${Math.round(pastMonthStats.pastKMTotal)} km`}>
-                vs {Math.round(pastMonthStats.pastKMActive)} km ({mesComparacao === '09' ? 'Setembro' : mesComparacao === '03' ? 'Março' : 'Abril'})
+                vs {Math.round(pastMonthStats.pastKMActive)} km ({mesAtualInfo.short})
               </span>
             </div>
           </div>
@@ -397,9 +411,9 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                     <th className="px-3 py-3.5 text-center">Banco Horas</th>
                     <th className="px-3 py-3.5 text-center">Visitas</th>
                     <th className="px-4 py-3.5 text-center bg-blue-50/60 text-blue-900">KM Out/26 (Est.)</th>
-                    <th className="px-4 py-3.5 text-center bg-gray-100/70 text-gray-700">KM {mesComparacao === '09' ? 'Set/26' : mesComparacao === '03' ? 'Mar/26' : 'Abr/26'} (Real)</th>
+                    <th className="px-4 py-3.5 text-center bg-gray-100/70 text-gray-700">KM {mesAtualInfo.short} (Real)</th>
                     <th className="px-4 py-3.5 text-right bg-blue-50/60 text-blue-900">Custo Out/26 (Est.)</th>
-                    <th className="px-4 py-3.5 text-right bg-gray-100/70 text-gray-700">Custo {mesComparacao === '09' ? 'Set/26' : mesComparacao === '03' ? 'Mar/26' : 'Abr/26'} (Real)</th>
+                    <th className="px-4 py-3.5 text-right bg-gray-100/70 text-gray-700">Custo {mesAtualInfo.short} (Real)</th>
                     <th className="px-4 py-3.5 text-right">Variação R$</th>
                   </tr>
                 </thead>
@@ -490,7 +504,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
         {/* ── DESPESAS OPERACIONAIS ── */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mt-6">
           <h3 className="font-bold text-gray-800 flex items-center gap-2 mb-4">
-            <DollarSign className="w-5 h-5 text-green-600" /> Detalhamento de Despesas Operacionais ({mesComparacao === '09' ? 'Setembro' : mesComparacao === '03' ? 'Março' : 'Abril'})
+            <DollarSign className="w-5 h-5 text-green-600" /> Detalhamento de Despesas Operacionais ({mesAtualInfo.label.split(' ')[0]})
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">

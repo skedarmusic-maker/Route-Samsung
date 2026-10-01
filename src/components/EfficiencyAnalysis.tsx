@@ -12,11 +12,21 @@ import { RoteiroDia, LojaVisita } from '@/lib/types';
 
 import despesasHistoricasMeses from '@/lib/despesas_historicas_meses.json';
 
+const MES_MAP: Record<string, string> = {
+  '09': 'Setembro',
+  '08': 'Agosto',
+  '07': 'Julho',
+  '06': 'Junho',
+  '05': 'Maio',
+  '04': 'Abril',
+  '03': 'Março',
+};
+
 interface EfficiencyAnalysisProps {
   resultado: any;
   totalEstimatedKM: number;
   historico: { km: number; valor: number; detalhes?: Record<string, number> } | null;
-  mesComparacao: '03' | '04' | '09';
+  mesComparacao: string;
 }
 
 export default function EfficiencyAnalysis({ resultado, totalEstimatedKM, historico, mesComparacao }: EfficiencyAnalysisProps) {
@@ -262,7 +272,7 @@ export default function EfficiencyAnalysis({ resultado, totalEstimatedKM, histor
                           {Math.round(historico.km)} km
                         </div>
                       </div>
-                      <p className="text-[10px] font-bold text-gray-500 uppercase">Histórico ({mesComparacao === '09' ? 'Setembro' : mesComparacao === '03' ? 'Março' : 'Abril'})</p>
+                      <p className="text-[10px] font-bold text-gray-500 uppercase">Histórico ({MES_MAP[mesComparacao] || 'Mês Anterior'})</p>
                     </div>
                     <div className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
                       <div

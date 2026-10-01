@@ -792,7 +792,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   }, [resultado]);
 
   const [viewMode, setViewMode] = useState<'visualizacao' | 'eficiencia'>('visualizacao');
-  const [mesComparacao, setMesComparacao] = useState<'03' | '04' | '09'>('09');
+  const [mesComparacao, setMesComparacao] = useState<string>('09');
   const [isSaving, setIsSaving] = useState(false);
   const [showVersionModal, setShowVersionModal] = useState(false);
 
@@ -1278,10 +1278,14 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
           <label className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Base Despesas:</label>
           <select 
             value={mesComparacao} 
-            onChange={(e) => setMesComparacao(e.target.value as '03' | '04' | '09')}
+            onChange={(e) => setMesComparacao(e.target.value)}
             className="px-3 py-1.5 bg-white border border-gray-300 rounded-xl text-xs font-bold text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="09">Setembro/2026 (Vexpenses)</option>
+            <option value="09">Setembro/2026 (Vexpenses + QT380)</option>
+            <option value="08">Agosto/2026 (Vexpenses)</option>
+            <option value="07">Julho/2026 (Vexpenses)</option>
+            <option value="06">Junho/2026 (Vexpenses)</option>
+            <option value="05">Maio/2026 (Vexpenses)</option>
             <option value="04">Abril/2026</option>
             <option value="03">Março/2026</option>
           </select>
