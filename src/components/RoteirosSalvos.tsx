@@ -8,6 +8,7 @@ import {
   BarChart3, Package, Clock, AlertCircle
 } from 'lucide-react';
 import * as xlsx from 'xlsx';
+import { getFeriadoNome } from '@/lib/feriados';
 
 interface RoteiroSalvo {
   id: string;
@@ -153,8 +154,9 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
       const resultado = r.dados_roteiro;
       if (!resultado || !resultado.roteiro) return [];
       return resultado.roteiro.flatMap((dia: any) => {
-        if (dia.feriado && !dia.feriado.startsWith('__viagem')) {
-          return [{ Data: dia.data, 'Dia da Semana': dia.diaSemana, Consultor: resultado.consultor, Rota: ROTA_MAP[resultado.consultor] || '', Versão: versaoNome, Cenário: r.cenario || 'Principal', 'Nome PDV': dia.feriado, Status: 'FERIADO/FOLGA' }];
+        const feriadoNome = getFeriadoNome(dia.data, dia.feriado);
+        if (feriadoNome) {
+          return [{ Data: dia.data, 'Dia da Semana': dia.diaSemana, Consultor: resultado.consultor, Rota: ROTA_MAP[resultado.consultor] || '', Versão: versaoNome, Cenário: r.cenario || 'Principal', 'Nome PDV': feriadoNome, Status: 'FERIADO/FOLGA' }];
         }
         return (dia.lojas || []).map((loja: any) => ({
           Data: dia.data, 'Dia da Semana': dia.diaSemana,

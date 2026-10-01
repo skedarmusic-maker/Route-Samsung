@@ -25,6 +25,7 @@ import despesasHistoricas from '@/lib/despesas_historicas.json';
 import despesasHistoricasMeses from '@/lib/despesas_historicas_meses.json';
 import auditKM from '@/lib/audit_km.json';
 import { supabase } from '@/lib/supabase';
+import { getFeriadoNome, isDiaFeriado } from '@/lib/feriados';
 
 import { normalize, computeDistance } from '@/lib/utils';
 
@@ -264,7 +265,8 @@ function DiaCard({
     const [y, m, d] = dia.data.split('-').map(Number);
     return new Date(y, m - 1, d);
   });
-  const isFeriado = !!dia.feriado && !dia.feriado.startsWith('__viagem_');
+  const feriadoNome = getFeriadoNome(dia.data, dia.feriado);
+  const isFeriado = !!feriadoNome;
   const semLojas = dia.lojas.length === 0;
   const clickable = !isFeriado && dia.lojas.length > 0;
 
@@ -289,7 +291,7 @@ function DiaCard({
             <p className="text-base font-bold text-gray-900">
               {dataObj.getDate().toString().padStart(2, '0')}/{(dataObj.getMonth() + 1).toString().padStart(2, '0')}
             </p>
-            {onSwapDays && outrosDias && (
+            {!isFeriado && onSwapDays && outrosDias && (
               <select
                 value={dia.data}
                 onChange={(e) => {
@@ -319,7 +321,7 @@ function DiaCard({
           </div>
         </div>
         {isFeriado && (
-          <span className="text-[10px] text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-medium max-w-[130px] text-right leading-tight">{dia.feriado}</span>
+          <span className="text-[10px] text-red-600 bg-red-100 px-2 py-0.5 rounded-full font-medium max-w-[130px] text-right leading-tight">{feriadoNome}</span>
         )}
         {!isFeriado && (
           <div className="flex items-center gap-1.5">
@@ -677,7 +679,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const frequencyAudit = useMemo(() => {
     const counts: Record<string, number> = {};
     roteiroState.forEach(dia => {
-      if (dia.feriado && !dia.feriado.startsWith('__viagem')) return;
+      if (isDiaFeriado(dia.data, dia.feriado)) return;
       dia.lojas.forEach(loja => {
         counts[loja.nome_pdv] = (counts[loja.nome_pdv] || 0) + 1;
       });
@@ -713,7 +715,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
 
     // Lojas no roteiro ativo
     roteiroState.forEach(dia => {
-      if (dia.feriado && !dia.feriado.startsWith('__viagem')) return;
+      if (isDiaFeriado(dia.data, dia.feriado)) return;
       dia.lojas.forEach(loja => {
         let entry = auditMap.get(loja.nome_pdv);
         if (!entry) {
@@ -764,7 +766,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
 
   const totalVisitas = roteiroState.reduce((acc: number, d: RoteiroDia) => acc + d.lojas.length, 0);
   const diasComVisitas = roteiroState.filter((d: RoteiroDia) => d.lojas.length > 0);
-  const feriadosDias = roteiroState.filter((d: RoteiroDia) => d.feriado && !d.feriado.startsWith('__viagem_'));
+  const feriadosDias = roteiroState.filter((d: RoteiroDia) => isDiaFeriado(d.data, d.feriado));
   const mesNome = new Date(resultado.ano, resultado.mes - 1, 1).toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
 
   // Dia selecionado para o mapa — inicializa no primeiro dia com visitas
@@ -1153,14 +1155,15 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
 
   const handleExport = () => {
     const dataToExport = roteiroState.flatMap((dia: any) => {
-      if (dia.feriado && !dia.feriado.startsWith('__viagem')) {
+      const feriadoNome = getFeriadoNome(dia.data, dia.feriado);
+      if (feriadoNome) {
         return [{
           Data: dia.data,
           'Dia da Semana': dia.diaSemana,
           Consultor: resultado.consultor,
           Rota: ROTA_MAP[resultado.consultor] || '',
           'Cenário': cenarioNome,
-          'Nome PDV': dia.feriado,
+          'Nome PDV': feriadoNome,
           'Status': 'FERIADO/FOLGA'
         }];
       }

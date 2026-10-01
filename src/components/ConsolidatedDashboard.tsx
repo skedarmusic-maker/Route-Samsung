@@ -14,6 +14,7 @@ const MapPreview = dynamic(() => import('@/components/MapPreview'), { ssr: false
 import cityCoords from '@/lib/city_coords.json';
 import { normalize, computeDistance } from '@/lib/utils';
 import despesasHistoricasMeses from '@/lib/despesas_historicas_meses.json';
+import { getFeriadoNome } from '@/lib/feriados';
 
 interface RoteiroSalvo {
   id: string;
@@ -187,13 +188,14 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
       if (!resultado || !resultado.roteiro) return [];
 
       return resultado.roteiro.flatMap((dia: any) => {
-        if (dia.feriado && !dia.feriado.startsWith('__viagem')) {
+        const feriadoNome = getFeriadoNome(dia.data, dia.feriado);
+        if (feriadoNome) {
           return [{
             Data: dia.data,
             'Dia da Semana': dia.diaSemana,
             Consultor: r.consultor,
             'Banco de Horas': r.dados_roteiro?.bancoHoras || 'N/A',
-            'Nome PDV': dia.feriado,
+            'Nome PDV': feriadoNome,
             'Status': 'FERIADO/FOLGA'
           }];
         }
