@@ -34,7 +34,7 @@ interface ConsolidatedDashboardProps {
 }
 
 export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar, onSelectRoteiro }: ConsolidatedDashboardProps) {
-  const [mesComparacao, setMesComparacao] = useState<'03' | '04'>('04');
+  const [mesComparacao, setMesComparacao] = useState<'03' | '04' | '09'>('09');
 
   const pastMonthStats = useMemo(() => {
     const data = (despesasHistoricasMeses as any)[mesComparacao] || {};
@@ -296,11 +296,12 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Base Comparação:</span>
             <select 
               value={mesComparacao} 
-              onChange={(e) => setMesComparacao(e.target.value as '03' | '04')}
+              onChange={(e) => setMesComparacao(e.target.value as '03' | '04' | '09')}
               className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer"
             >
-              <option value="03">Março/2026</option>
+              <option value="09">Setembro/2026 (Vexpenses)</option>
               <option value="04">Abril/2026</option>
+              <option value="03">Março/2026</option>
             </select>
           </div>
         </div>
@@ -333,7 +334,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                 <Map className="w-3 h-3" />
                 <span className="text-[10px] font-bold">Total da Frota</span>
               </div>
-              <span className="text-[9px] font-bold text-gray-400">vs {Math.round(pastMonthStats.pastKM)} km ({mesComparacao === '03' ? 'Março' : 'Abril'})</span>
+              <span className="text-[9px] font-bold text-gray-400">vs {Math.round(pastMonthStats.pastKM)} km ({mesComparacao === '09' ? 'Setembro' : mesComparacao === '03' ? 'Março' : 'Abril'})</span>
             </div>
           </div>
           <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm border-b-4 border-b-green-600">
@@ -454,7 +455,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
         {/* ── DESPESAS OPERACIONAIS ── */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mt-6">
           <h3 className="font-bold text-gray-800 flex items-center gap-2 mb-4">
-            <DollarSign className="w-5 h-5 text-green-600" /> Detalhamento de Despesas Operacionais ({mesComparacao === '03' ? 'Março' : 'Abril'})
+            <DollarSign className="w-5 h-5 text-green-600" /> Detalhamento de Despesas Operacionais ({mesComparacao === '09' ? 'Setembro' : mesComparacao === '03' ? 'Março' : 'Abril'})
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">

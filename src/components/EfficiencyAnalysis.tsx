@@ -16,7 +16,7 @@ interface EfficiencyAnalysisProps {
   resultado: any;
   totalEstimatedKM: number;
   historico: { km: number; valor: number; detalhes?: Record<string, number> } | null;
-  mesComparacao: '03' | '04';
+  mesComparacao: '03' | '04' | '09';
 }
 
 export default function EfficiencyAnalysis({ resultado, totalEstimatedKM, historico, mesComparacao }: EfficiencyAnalysisProps) {
@@ -262,7 +262,7 @@ export default function EfficiencyAnalysis({ resultado, totalEstimatedKM, histor
                           {Math.round(historico.km)} km
                         </div>
                       </div>
-                      <p className="text-[10px] font-bold text-gray-500 uppercase">Histórico ({mesComparacao === '03' ? 'Março' : 'Abril'})</p>
+                      <p className="text-[10px] font-bold text-gray-500 uppercase">Histórico ({mesComparacao === '09' ? 'Setembro' : mesComparacao === '03' ? 'Março' : 'Abril'})</p>
                     </div>
                     <div className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
                       <div
