@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samsung AC | Visão Geral Consolidada - Journey Plan Outubro V4</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SheetJS for client-side Excel export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            samsung: {
+              blue: '#1428A0',
+              dark: '#0B1446',
+              light: '#E8ECFF',
+              accent: '#2B59FF'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #F8FAFC;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #F1F5F9;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      body {
+        background: white !important;
+        padding: 0 !important;
+      }
+      #print-area {
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- TOP EXECUTIVE HEADER -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- LOGO & BRANDING -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1428A0] to-[#2B59FF] flex items-center justify-center text-white font-black text-xl shadow-md shadow-blue-500/20">
+          S
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black tracking-widest text-[#1428A0] uppercase">Samsung AC</span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wider">
+              Versão V4 Oficial
+            </span>
+          </div>
+          <h1 class="text-lg font-black text-slate-900 tracking-tight">Visão Geral Consolidada — Journey Plan</h1>
+        </div>
+      </div>
+
+      <!-- FILTER & ACTIONS -->
+      <div class="flex items-center gap-3 flex-wrap">
+        
+        <!-- BASE COMPARACAO SELECTOR -->
+        <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl shadow-inner">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Base Comparação:</span>
+          <select id="mesComparacaoSelect" onchange="alterarMesComparacao(this.value)" class="bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer pr-1">
+            <option value="09" selected>Setembro/2026 (Vexpenses + QT380)</option>
+            <option value="08">Agosto/2026 (Vexpenses)</option>
+            <option value="07">Julho/2026 (Vexpenses)</option>
+            <option value="06">Junho/2026 (Vexpenses)</option>
+            <option value="05">Maio/2026 (Vexpenses)</option>
+            <option value="04">Abril/2026</option>
+            <option value="03">Março/2026</option>
+          </select>
+        </div>
+
+        <!-- PRINT / PDF BUTTON -->
+        <button onclick="window.print()" class="flex items-center gap-2 px-3.5 py-2 bg-slate-900 text-white font-bold rounded-xl hover:bg-black transition-all shadow-sm active:scale-95 text-xs">
+          <i data-lucide="printer" class="w-4 h-4"></i>
+          <span>Imprimir / PDF</span>
+        </button>
+
+        <!-- EXCEL EXPORT BUTTON -->
+        <button onclick="exportarExcel()" class="flex items-center gap-2 px-4 py-2 bg-[#1428A0] text-white font-bold rounded-xl hover:bg-blue-800 transition-all shadow-md shadow-blue-900/20 active:scale-95 text-xs">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Exportar Planilha (XLSX)</span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN DASHBOARD CONTENT -->
+  <main id="print-area" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- HERO NOTIFICATION / CONTEXT BAR -->
+    <div class="bg-gradient-to-r from-blue-900 via-[#1428A0] to-indigo-900 rounded-2xl p-5 text-white shadow-lg shadow-blue-950/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-blue-400/20 text-blue-200 border border-blue-300/30 uppercase tracking-widest">
+            Outubro / 2026
+          </span>
+          <span class="text-xs text-blue-200 font-medium">• Validação de Rota e Previsibilidade Financeira</span>
+        </div>
+        <h2 class="text-xl font-black tracking-tight">Cenário Aprovado V4 — Ajustes Operacionais Samsung</h2>
+        <p class="text-xs text-blue-100/80 mt-1 max-w-2xl leading-relaxed">
+          Planejamento logístico dos 4 consultores ativos de campo com roteirização inteligente, inclusão de eventos de capacitação (Febrava) e redução significativa de quilometragem ociosa.
+        </p>
+      </div>
+
+      <!-- STATUS BADGE -->
+      <div class="flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2.5 rounded-xl shrink-0 self-start md:self-auto">
+        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+        <div>
+          <p class="text-[10px] text-blue-200 font-black uppercase tracking-wider">Status Geral</p>
+          <p class="text-xs font-black text-white">Roteiro Aprovado Oficial</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 TOP KPI CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- CARD 1: DISTANCIA TOTAL -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm border-b-4 border-b-blue-600 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Distância Total (Out/26)</p>
+          <div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <i data-lucide="map" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <p id="kpi-km-total" class="text-3xl font-black text-slate-900 tracking-tight">2.210 km</p>
+        <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 text-xs">
+          <span class="font-bold text-slate-500">Frota Ativa (4 Cons.)</span>
+          <span id="kpi-km-comparacao" class="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded-md">
+            vs 8.327 km (Set/26)
+          </span>
+        </div>
+      </div>
+
+      <!-- CARD 2: INVESTIMENTO TOTAL -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm border-b-4 border-b-emerald-600 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Investimento Total (Out/26)</p>
+          <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <p id="kpi-custo-total" class="text-3xl font-black text-slate-900 tracking-tight">R$ 1.968,00</p>
+        <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 text-xs">
+          <span class="font-bold text-emerald-600">Base R$ 0,80/km + Eventos</span>
+          <span id="kpi-custo-comparacao" class="text-[10px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded-md">
+            vs R$ 12.255,69
+          </span>
+        </div>
+      </div>
+
+      <!-- CARD 3: COBERTURA DE LOJAS -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm border-b-4 border-b-purple-600 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cobertura de Lojas</p>
+          <div class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+            <i data-lucide="store" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <p class="text-3xl font-black text-slate-900 tracking-tight">181</p>
+        <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 text-xs">
+          <span class="font-bold text-purple-600 flex items-center gap-1">
+            <i data-lucide="check-circle-2" class="w-3 h-3"></i> PDVs Atendidos
+          </span>
+          <span class="text-[10px] font-bold text-slate-400">100% Rota Mapeada</span>
+        </div>
+      </div>
+
+      <!-- CARD 4: CONSULTORES ATIVOS -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm border-b-4 border-b-amber-500 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Consultores em Campo</p>
+          <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+            <i data-lucide="users" class="w-4 h-4"></i>
+          </div>
+        </div>
+        <p class="text-3xl font-black text-slate-900 tracking-tight">4</p>
+        <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-100 text-xs">
+          <span class="font-bold text-amber-700">Equipe Operacional</span>
+          <span class="text-[10px] font-bold text-slate-400">Licença Maternidade (Tatiane)</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- EXECUTIVE COMPARISON HIGHLIGHT BANNER -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+        <div>
+          <h3 class="text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="trending-down" class="w-4 h-4 text-emerald-600"></i>
+            Balanço Executivo de Eficiência e Redução de Custos
+          </h3>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Comparativo direto do Journey Plan de Outubro V4 contra o histórico real de <span id="banner-mes-nome" class="font-bold text-slate-700">Setembro/2026</span> para os mesmos 4 consultores ativos.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="px-3.5 py-1.5 bg-emerald-50 border border-emerald-200 rounded-xl text-right">
+            <p class="text-[9px] font-bold text-emerald-700 uppercase tracking-wider">Economia Orçamentária</p>
+            <p id="banner-economia-reais" class="text-base font-black text-emerald-700">- R$ 10.287,69 (-83,9%)</p>
+          </div>
+          <div class="px-3.5 py-1.5 bg-blue-50 border border-blue-200 rounded-xl text-right">
+            <p class="text-[9px] font-bold text-blue-700 uppercase tracking-wider">Redução KM Rodado</p>
+            <p id="banner-economia-km" class="text-base font-black text-blue-700">- 6.117 km (-73,5%)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MINI PROGRESS BARS -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div>
+          <div class="flex justify-between text-xs font-bold mb-1.5">
+            <span class="text-slate-600">Quilometragem Frota Ativa</span>
+            <span id="bar-km-label" class="text-slate-900">2.210 km (Out) vs 8.327 km (Histórico)</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+            <div id="bar-km-fill" class="bg-blue-600 h-full rounded-full transition-all duration-700" style="width: 26.5%;"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs font-bold mb-1.5">
+            <span class="text-slate-600">Investimento em Deslocamento e Viagens</span>
+            <span id="bar-custo-label" class="text-slate-900">R$ 1.968,00 (Out) vs R$ 12.255,69 (Histórico)</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+            <div id="bar-custo-fill" class="bg-emerald-600 h-full rounded-full transition-all duration-700" style="width: 16.1%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN COMPARATIVE TABLE -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
+        <div>
+          <h3 class="font-black text-slate-800 flex items-center gap-2 text-base">
+            <i data-lucide="layers" class="w-5 h-5 text-blue-600"></i> Detalhamento por Consultor (Lado a Lado)
+          </h3>
+          <p class="text-xs text-slate-500">Clique na linha de qualquer consultor para abrir seu roteiro diário completo.</p>
+        </div>
+        <span class="text-[11px] font-bold text-slate-400 bg-white border border-slate-200 px-3 py-1 rounded-lg shadow-sm">
+          💡 Clique para detalhar visitas
+        </span>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] font-black tracking-widest border-b border-slate-200">
+            <tr>
+              <th class="px-6 py-4">Consultor</th>
+              <th class="px-4 py-4 text-center">Banco de Horas</th>
+              <th class="px-4 py-4 text-center">PDVs</th>
+              <th class="px-4 py-4 text-center">Visitas</th>
+              <th class="px-4 py-4 text-center bg-blue-50/70 text-blue-900 border-x border-blue-100">KM Out/26 (Est.)</th>
+              <th id="th-km-hist" class="px-4 py-4 text-center bg-slate-100/70 text-slate-700">KM Set/26 (Real)</th>
+              <th class="px-4 py-4 text-right bg-blue-50/70 text-blue-900 border-x border-blue-100">Custo Out/26 (Est.)</th>
+              <th id="th-custo-hist" class="px-4 py-4 text-right bg-slate-100/70 text-slate-700">Custo Set/26 (Real)</th>
+              <th class="px-6 py-4 text-right">Variação / Economia</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-consultores-body" class="divide-y divide-slate-100">
+            <!-- Dynamic rows will be injected by JavaScript -->
+          </tbody>
+          <tfoot id="tabela-consultores-foot" class="bg-slate-50/90 font-bold border-t-2 border-slate-200 text-xs text-slate-900">
+            <!-- Dynamic footer summary -->
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+        <!-- OPERATIONAL EXPENSES BREAKDOWN IN COMPARISON MONTH -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+        <div>
+          <h3 class="font-black text-slate-800 flex items-center gap-2 text-base">
+            <i data-lucide="pie-chart" class="w-5 h-5 text-emerald-600"></i>
+            <span>Composição Histórica de Despesas — <span id="despesas-section-mes">Setembro/2026</span></span>
+          </h3>
+          <p class="text-xs text-slate-500">Distribuição auditada dos gastos realizados na referência selecionada.</p>
+        </div>
+      </div>
+
+      <!-- 3 SUMMARY CARDS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 bg-slate-50 border border-slate-200/80 rounded-xl">
+          <p class="text-[10px] text-slate-500 font-black uppercase tracking-wider">Total Auditado no Período</p>
+          <p id="det-total-declarado" class="text-2xl font-black text-slate-900 mt-1">R$ 13.094,51</p>
+          <p class="text-[10px] text-slate-400 mt-1">Frota completa com viagens aprovadas</p>
+        </div>
+        <div class="p-4 bg-orange-50/70 border border-orange-200/80 rounded-xl">
+          <p class="text-[10px] text-orange-700 font-black uppercase tracking-wider">Custos de Viagem (Aéreo/Hotel/Rodov.)</p>
+          <p id="det-custos-viagem" class="text-2xl font-black text-orange-800 mt-1">R$ 5.536,02</p>
+          <p id="det-custos-viagem-pct" class="text-[10px] text-orange-600 font-bold mt-1">42.3% do total gasto</p>
+        </div>
+        <div class="p-4 bg-blue-50/70 border border-blue-200/80 rounded-xl">
+          <p class="text-[10px] text-blue-700 font-black uppercase tracking-wider">Custos Locais de Rodagem (KM)</p>
+          <p id="det-custos-locais" class="text-2xl font-black text-blue-800 mt-1">R$ 7.558,49</p>
+          <p id="det-custos-locais-pct" class="text-[10px] text-blue-600 font-bold mt-1">57.7% do total gasto</p>
+        </div>
+      </div>
+
+      <!-- CATEGORY PILLS -->
+      <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Maiores Gastos por Categoria:</p>
+      <div id="categorias-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DE DETALHES DO CONSULTOR (ROTEIRO DIÁRIO COMPLETO) -->
+  <div id="consultor-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+            <!-- MODAL HEADER -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/60">
+        <div>
+          <span class="text-[10px] font-black uppercase tracking-widest text-blue-600">Cronograma Detalhado</span>
+          <h3 id="modal-consultor-nome" class="text-lg font-black text-slate-900">Consultor</h3>
+          <p id="modal-consultor-sub" class="text-xs text-slate-500 mt-0.5">Visão dia a dia das lojas, horários e percursos</p>
+        </div>
+        <button onclick="fecharModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- MODAL BODY -->
+      <div id="modal-dias-container" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+        <!-- Days will be rendered dynamically -->
+      </div>
+<!-- MODAL FOOTER -->
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+        <span class="text-xs text-slate-500 font-medium">Dados auditados conforme Journey Plan V4 Outubro/2026</span>
+        <button onclick="fecharModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition-all">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 no-print mt-auto">
+    <p>Painel Gerencial Oficial — Protrade MKT / Samsung AC • Outubro 2026 (Versão V4)</p>
+  </footer>
+
+  <!-- SCRIPT DATA & LOGIC -->
+  <script>
+    // Injected official records
+    const v4Records = [{"id": "481d3390-ead1-4167-a9f4-e42b61da9735", "consultor": "LIEDY AQUINO GOMES DOS SANTOS", "mes": 10, "ano": 2026, "versao_id": "v-journey-outubro-v4", "versao_nome": "Journey Outubro V4 (Ajustes Samsung 23/09)", "cenario": "Journey Outubro V4 - Ajustes Email 23/09 e 29/09", "status": "APROVADO", "dados_roteiro": {"ano": 2026, "mes": 10, "cenario": "Journey Outubro V4 - Ajustes Email 23/09 e 29/09", "roteiro": [{"data": "2026-10-05", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - GLETE 771/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00461 - FRIGELAR - ALAMEDA GLETE - 771 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIOPECAS - SAO PAULO/SP", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00390 - FRIOPECAS - ALAMEDA GLETE - 812 - SAO PAULO - SP"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-06", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - GLETE 798/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S01867 - FRIGELAR - ALAMEDA GLETE - 798 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - ALAMEDA 908 SAO PAULO/SP", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S02324 - FRIGELAR - ALAMEDA GLETE - 908 - SAO PAULO - SP"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-07", "lojas": [{"uf": "SP", "lat": -23.9618, "lng": -46.3322, "cidade": "SANTOS", "codigo": "S05692", "filial": "FRIGELAR - SANTOS/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA WASHINGTON LUIS, 1 - SANTOS - SP", "nome_pdv": "S05692 - FRIGELAR - AVENIDA WASHINGTON LUIS - 1 - SANTOS - SP"}, {"uf": "SP", "lat": -24.0058, "lng": -46.4152, "cidade": "PRAIA GRANDE", "codigo": "S00157", "filial": "CLIMA RIO - PRAIA GRANDE/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA COMENDADOR JOAO BATISTA GLEREAN - PRAIA GRANDE - SP", "nome_pdv": "S00157 - CLIMA RIO - RUA COMENDADOR JOAO BATISTA GLEREAN - PRAIA GRANDE - SP"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-08", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "CLIMA RIO - IPIRANGA/SP", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S02867 - CLIMA RIO - RUA BRIGADEIRO JORDAO - 346 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "CLIMA RIO - VILA GUILHERME/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00813 - CLIMA RIO - RUA AMAZONAS DA SILVA - 205 - SAO PAULO - SP"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-09", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - BARRA FUNDA/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S05935 - FRIGELAR - RUA QUIRINO DOS SANTOS - 167 - SAO PAULO - SP"}, {"uf": "SP", "lat": -23.6215, "lng": -46.6978, "cidade": "SÃO PAULO", "codigo": "S09001", "filial": "ENGAGE FILIAL SP - BACAETAVA 191", "checkIn": "13:30", "cliente": "ENGAGE ELETRO", "checkOut": "15:30", "endereco": "RUA BACAETAVA, 191 - SÃO PAULO - SP", "nome_pdv": "S09001 - ENGAGE ELETRO - BACAETAVA - 191 - SÃO PAULO - SP"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-12", "lojas": [], "feriado": "Feriado Nacional - Nossa Senhora Aparecida", "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-13", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - MORATO/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S06664 - FRIGELAR - AVENIDA PROF FRANCISCO MORATO - 3200 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - CHACARA SANTO ANTONIO/SP", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S06230 - FRIGELAR - AVENIDA REDIG DE CAMPOS - 105 - SAO PAULO - SP"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-14", "lojas": [{"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S00117", "filial": "FRIGELAR - SÃO PAULO/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA ALCANTARA MACHADO, 2182 - SÃO PAULO - SP", "nome_pdv": "S00117 - FRIGELAR - SÃO PAULO - SP"}, {"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S02867", "filial": "CLIMA RIO - SÃO PAULO/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA BRIGADEIRO JORDAO, 346 - SÃO PAULO - SP", "nome_pdv": "S02867 - CLIMA RIO - SÃO PAULO - SP"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-15", "lojas": [{"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S00117", "filial": "FRIGELAR - SÃO PAULO/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA ALCANTARA MACHADO, 2182 - SÃO PAULO - SP", "nome_pdv": "S00117 - FRIGELAR - SÃO PAULO - SP"}, {"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S02867", "filial": "CLIMA RIO - SÃO PAULO/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA BRIGADEIRO JORDAO, 346 - SÃO PAULO - SP", "nome_pdv": "S02867 - CLIMA RIO - SÃO PAULO - SP"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-16", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - TATUAPE/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S03487 - FRIGELAR - AVENIDA AIRTON PRETINI - 321 - SAO PAULO - SP"}, {"uf": "SP", "lat": -23.5487, "lng": -46.5925, "tipo": "local", "cidade": "SAO PAULO", "codigo": "S01377", "filial": "CLIMA RIO - SAO PAULO/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "endereco": "RUA SERRA DE JAIRE - 425 - SAO PAULO - SP", "nome_pdv": "S01377 - CLIMA RIO - RUA SERRA DE JAIRE - 425 - SAO PAULO - SP"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-19", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - GLETE 771/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00461 - FRIGELAR - ALAMEDA GLETE - 771 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIOPECAS - SAO PAULO/SP", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00390 - FRIOPECAS - ALAMEDA GLETE - 812 - SAO PAULO - SP"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-20", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - GLETE 798/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S01867 - FRIGELAR - ALAMEDA GLETE - 798 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - ALAMEDA 908 SAO PAULO/SP", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S02324 - FRIGELAR - ALAMEDA GLETE - 908 - SAO PAULO - SP"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-21", "lojas": [{"uf": "SP", "lat": -21.20159, "lng": -50.4398, "tipo": "local", "cidade": "ARACATUBA", "checkIn": "09:00", "cliente": "CENTRAL AR", "cluster": "B", "checkOut": "12:00", "endereco": "Rua Do Fico, 211", "nome_pdv": "S00156 - CENTRAL AR - RUA DO FICO - 211 - ARACATUBA - SP"}, {"uf": "SP", "lat": -21.22779, "lng": -50.43732, "tipo": "local", "cidade": "ARACATUBA", "checkIn": "14:00", "cliente": "CENTRAL AR", "cluster": "B", "checkOut": "18:00", "endereco": "Avenida. Brasília, 2121", "nome_pdv": "S01963 - CENTRAL AR - AVENIDA. BRASILIA - 2121 - ARACATUBA - SP"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-22", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "CLIMA RIO - IPIRANGA/SP", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S02867 - CLIMA RIO - RUA BRIGADEIRO JORDAO - 346 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "CLIMA RIO - VILA GUILHERME/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00813 - CLIMA RIO - RUA AMAZONAS DA SILVA - 205 - SAO PAULO - SP"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-23", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - BARRA FUNDA/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S05935 - FRIGELAR - RUA QUIRINO DOS SANTOS - 167 - SAO PAULO - SP"}, {"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S09002", "filial": "AR7 MANUTENÇÃO - SÃO PAULO", "checkIn": "13:30", "cliente": "AR7", "checkOut": "14:00", "endereco": "SÃO PAULO - SP", "nome_pdv": "S09002 - AR7 - SÃO PAULO - SP (MANUTENÇÃO RÁPIDA 30MIN)"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-26", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - MORATO/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S06664 - FRIGELAR - AVENIDA PROF FRANCISCO MORATO - 3200 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - CHACARA SANTO ANTONIO/SP", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S06230 - FRIGELAR - AVENIDA REDIG DE CAMPOS - 105 - SAO PAULO - SP"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-27", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - TATUAPE/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S03487 - FRIGELAR - AVENIDA AIRTON PRETINI - 321 - SAO PAULO - SP"}, {"uf": "SP", "lat": -23.5487, "lng": -46.5925, "tipo": "local", "cidade": "SAO PAULO", "codigo": "S01377", "filial": "CLIMA RIO - SAO PAULO/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "endereco": "RUA SERRA DE JAIRE - 425 - SAO PAULO - SP", "nome_pdv": "S01377 - CLIMA RIO - RUA SERRA DE JAIRE - 425 - SAO PAULO - SP"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-28", "lojas": [{"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S00117", "filial": "FRIGELAR - SÃO PAULO/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA ALCANTARA MACHADO, 2182 - SÃO PAULO - SP", "nome_pdv": "S00117 - FRIGELAR - SÃO PAULO - SP"}, {"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S02867", "filial": "CLIMA RIO - SÃO PAULO/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA BRIGADEIRO JORDAO, 346 - SÃO PAULO - SP", "nome_pdv": "S02867 - CLIMA RIO - SÃO PAULO - SP"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-29", "lojas": [{"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S00117", "filial": "FRIGELAR - SÃO PAULO/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA ALCANTARA MACHADO, 2182 - SÃO PAULO - SP", "nome_pdv": "S00117 - FRIGELAR - SÃO PAULO - SP"}, {"uf": "SP", "lat": -23.5505, "lng": -46.6333, "cidade": "SÃO PAULO", "codigo": "S02867", "filial": "CLIMA RIO - SÃO PAULO/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA BRIGADEIRO JORDAO, 346 - SÃO PAULO - SP", "nome_pdv": "S02867 - CLIMA RIO - SÃO PAULO - SP"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-30", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - GLETE 771/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00461 - FRIGELAR - ALAMEDA GLETE - 771 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIOPECAS - SAO PAULO/SP", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00390 - FRIOPECAS - ALAMEDA GLETE - 812 - SAO PAULO - SP"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-11-02", "lojas": [], "feriado": "Feriado Nacional - Finados", "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-11-03", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - GLETE 798/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S01867 - FRIGELAR - ALAMEDA GLETE - 798 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - ALAMEDA 908 SAO PAULO/SP", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S02324 - FRIGELAR - ALAMEDA GLETE - 908 - SAO PAULO - SP"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-11-04", "lojas": [{"uf": "SP", "lat": -23.9618, "lng": -46.3322, "cidade": "SANTOS", "codigo": "S05692", "filial": "FRIGELAR - SANTOS/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA WASHINGTON LUIS, 1 - SANTOS - SP", "nome_pdv": "S05692 - FRIGELAR - AVENIDA WASHINGTON LUIS - 1 - SANTOS - SP"}, {"uf": "SP", "lat": -24.0058, "lng": -46.4152, "cidade": "PRAIA GRANDE", "codigo": "S00157", "filial": "CLIMA RIO - PRAIA GRANDE/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA COMENDADOR JOAO BATISTA GLEREAN - PRAIA GRANDE - SP", "nome_pdv": "S00157 - CLIMA RIO - RUA COMENDADOR JOAO BATISTA GLEREAN - PRAIA GRANDE - SP"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-11-05", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "CLIMA RIO - IPIRANGA/SP", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S02867 - CLIMA RIO - RUA BRIGADEIRO JORDAO - 346 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "CLIMA RIO - VILA GUILHERME/SP", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00813 - CLIMA RIO - RUA AMAZONAS DA SILVA - 205 - SAO PAULO - SP"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-11-06", "lojas": [{"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "FRIGELAR - BARRA FUNDA/SP", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S05935 - FRIGELAR - RUA QUIRINO DOS SANTOS - 167 - SAO PAULO - SP"}, {"uf": "SP", "rota": "SPC1", "tipo": "local", "cidade": "SÃO PAULO", "filial": "DIS - JARDINS/SP", "checkIn": "13:30", "cliente": "DIS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00170 - DIS - ALAMEDA GABRIEL MONTEIRO DA SILVA - 1717 - SAO PAULO - SP"}], "diaSemana": "SEXTA-FEIRA"}], "consultor": "LIEDY AQUINO GOMES DOS SANTOS", "versao_id": "v-journey-outubro-v4", "bancoHoras": "-24:00", "distancias": {"2026-10-05": 25.0, "2026-10-06": 25.0, "2026-10-07": 25.0, "2026-10-08": 25.0, "2026-10-09": 25.0, "2026-10-13": 25.0, "2026-10-14": 25.0, "2026-10-15": 25.0, "2026-10-16": 25.0, "2026-10-19": 25.0, "2026-10-20": 25.0, "2026-10-21": 25.0, "2026-10-22": 25.0, "2026-10-23": 25.0, "2026-10-26": 25.0, "2026-10-27": 25.0, "2026-10-28": 25.0, "2026-10-29": 25.0, "2026-10-30": 25.0, "2026-11-03": 25.0, "2026-11-04": 25.0, "2026-11-05": 25.0, "2026-11-06": 25.0}, "extraCosts": {"hotels": {}, "flights": {}}, "totalLojas": 46, "versao_nome": "Journey Outubro V4 (Ajustes Samsung 23/09)", "estimatedCost": 460.0, "manualFlights": {}, "totalDiasUteis": 23, "totalEstimatedKM": 575.0}}, {"id": "b6764673-0a2c-4f5d-b4d3-275ebdbb0c9c", "consultor": "LUIZ FALCAO DE SOUZA NETO", "mes": 10, "ano": 2026, "versao_id": "v-journey-outubro-v4", "versao_nome": "Journey Outubro V4 (Ajustes Samsung 23/09)", "cenario": "Journey Outubro V4 - Ajustes Email 23/09 e 29/09", "status": "APROVADO", "dados_roteiro": {"ano": 2026, "mes": 10, "cenario": "Journey Outubro V4 - Ajustes Email 23/09 e 29/09", "roteiro": [{"data": "2026-10-05", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "FRIGELAR - BOA VIAGEM/PE", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-06", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIGELAR - IMBIRIBEIRA/PE", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "12:00", "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIOPECAS - IMBIRIBEIRA/PE", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-07", "lojas": [{"uf": "PB", "rota": "NE_2", "tipo": "local", "cidade": "João Pessoa", "filial": "FRIGELAR - DISTRITO INDUSTRIAL/PB", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "12:00", "nome_pdv": "S00976 - FRIGELAR - RUA HORTENCIO RIBEIRO DE LUNA - 1841 - JOAO PESSOA - PB"}, {"uf": "PB", "rota": "NE_2", "tipo": "local", "cidade": "JOAO PESSOA", "filial": "CLIMA RIO - JOAO PESSOA/PB", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S04649 - CLIMA RIO - AVENIDA PRESIDENTE EPITACIO PESSOA - 941 - JOAO PESSOA - PB"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-08", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - MASCARENHAS RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S01960 - FERREIRA COSTA - AVENIDA MAL. MASCARENHAS DE MORAES - 2967 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "CLIMA RIO - ARTUR MOURA RECIFE/PE", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-09", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "CLIMA RIO - RECIFE/PE", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S03596 - CLIMA RIO - AV. ENG. DOMINGOS FERREIRA - 1274 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "FRIGELAR - BOA VIAGEM/PE", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-12", "lojas": [], "feriado": "Feriado Nacional - Nossa Senhora Aparecida", "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-13", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"}, {"uf": "PE", "lat": -8.0476, "lng": -34.877, "cidade": "RECIFE", "codigo": "S09003", "filial": "LOJA MAGNO - RECIFE", "checkIn": "13:30", "cliente": "MAGNO", "checkOut": "18:00", "endereco": "RECIFE - PE", "nome_pdv": "S09003 - MAGNO - RECIFE - PE"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-14", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIGELAR - IMBIRIBEIRA/PE", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "12:00", "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIOPECAS - IMBIRIBEIRA/PE", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-15", "lojas": [{"uf": "PE", "lat": -8.113, "lng": -34.894, "cidade": "RECIFE", "codigo": "S04106", "filial": "FRIGELAR - RECIFE/PE", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}, {"uf": "PE", "lat": -8.0476, "lng": -34.877, "cidade": "RECIFE", "codigo": "S01119", "filial": "CLIMA RIO - RECIFE/PE", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA ARTUR MOURA - 91 - RECIFE - PE", "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-16", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - MASCARENHAS RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S01960 - FERREIRA COSTA - AVENIDA MAL. MASCARENHAS DE MORAES - 2967 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "CLIMA RIO - ARTUR MOURA RECIFE/PE", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-19", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "CLIMA RIO - RECIFE/PE", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S03596 - CLIMA RIO - AV. ENG. DOMINGOS FERREIRA - 1274 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "FRIGELAR - BOA VIAGEM/PE", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-20", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "FRIGELAR - BOA VIAGEM/PE", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-21", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIGELAR - IMBIRIBEIRA/PE", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "12:00", "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIOPECAS - IMBIRIBEIRA/PE", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-22", "lojas": [{"uf": "PE", "lat": -8.113, "lng": -34.894, "cidade": "RECIFE", "codigo": "S04106", "filial": "FRIGELAR - RECIFE/PE", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}, {"uf": "PE", "lat": -8.0476, "lng": -34.877, "cidade": "RECIFE", "codigo": "S01119", "filial": "CLIMA RIO - RECIFE/PE", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA ARTUR MOURA - 91 - RECIFE - PE", "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-23", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - MASCARENHAS RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S01960 - FERREIRA COSTA - AVENIDA MAL. MASCARENHAS DE MORAES - 2967 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "CLIMA RIO - ARTUR MOURA RECIFE/PE", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-26", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "CLIMA RIO - RECIFE/PE", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S03596 - CLIMA RIO - AV. ENG. DOMINGOS FERREIRA - 1274 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "FRIGELAR - BOA VIAGEM/PE", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-27", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "FRIGELAR - BOA VIAGEM/PE", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-28", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIGELAR - IMBIRIBEIRA/PE", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "12:00", "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIOPECAS - IMBIRIBEIRA/PE", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-29", "lojas": [{"uf": "PE", "lat": -8.113, "lng": -34.894, "cidade": "RECIFE", "codigo": "S04106", "filial": "FRIGELAR - RECIFE/PE", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}, {"uf": "PE", "lat": -8.0476, "lng": -34.877, "cidade": "RECIFE", "codigo": "S01119", "filial": "CLIMA RIO - RECIFE/PE", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "RUA ARTUR MOURA - 91 - RECIFE - PE", "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-30", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - MASCARENHAS RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S01960 - FERREIRA COSTA - AVENIDA MAL. MASCARENHAS DE MORAES - 2967 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "CLIMA RIO - ARTUR MOURA RECIFE/PE", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S01119 - CLIMA RIO - RUA ARTUR MOURA - 91 - RECIFE - PE"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-11-02", "lojas": [], "feriado": "Feriado Nacional - Finados", "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-11-03", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "CLIMA RIO - RECIFE/PE", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S03596 - CLIMA RIO - AV. ENG. DOMINGOS FERREIRA - 1274 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "FRIGELAR - BOA VIAGEM/PE", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-11-04", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "Recife", "filial": "FERREIRA COSTA - RECIFE/PE", "checkIn": "09:00", "cliente": "FERREIRA COSTA", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00483 - FERREIRA COSTA - R. CONEGO BARATA - 275 - RECIFE - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "RECIFE", "filial": "FRIGELAR - BOA VIAGEM/PE", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S04106 - FRIGELAR - AVENIDA ENG DOMINGOS FERREIRA - 2030 - RECIFE - PE"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-11-05", "lojas": [{"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIGELAR - IMBIRIBEIRA/PE", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "12:00", "nome_pdv": "S00623 - FRIGELAR - RUA SGTO SILVIO D HOLLEMBACH - 171 - IMBIRIBEIRA - PE"}, {"uf": "PE", "rota": "NE_2", "tipo": "local", "cidade": "IMBIRIBEIRA", "filial": "FRIOPECAS - IMBIRIBEIRA/PE", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S00986 - FRIOPECAS - AVENIDA. MALAMEDA MASCARENHAS DE MORAES - 2453 - IMBIRIBEIRA - PE"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-11-06", "lojas": [{"uf": "PB", "rota": "NE_2", "tipo": "local", "cidade": "João Pessoa", "filial": "FRIGELAR - DISTRITO INDUSTRIAL/PB", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "B", "checkOut": "12:00", "nome_pdv": "S00976 - FRIGELAR - RUA HORTENCIO RIBEIRO DE LUNA - 1841 - JOAO PESSOA - PB"}, {"uf": "PB", "rota": "NE_2", "tipo": "local", "cidade": "JOAO PESSOA", "filial": "CLIMA RIO - JOAO PESSOA/PB", "checkIn": "13:30", "cliente": "CLIMA RIO", "cluster": "B", "checkOut": "18:00", "nome_pdv": "S04649 - CLIMA RIO - AVENIDA PRESIDENTE EPITACIO PESSOA - 941 - JOAO PESSOA - PB"}], "diaSemana": "SEXTA-FEIRA"}], "consultor": "LUIZ FALCAO DE SOUZA NETO", "versao_id": "v-journey-outubro-v4", "bancoHoras": "-45:13", "distancias": {"2026-10-05": 20.0, "2026-10-06": 20.0, "2026-10-07": 20.0, "2026-10-08": 20.0, "2026-10-09": 20.0, "2026-10-13": 20.0, "2026-10-14": 20.0, "2026-10-15": 20.0, "2026-10-16": 20.0, "2026-10-19": 20.0, "2026-10-20": 20.0, "2026-10-21": 20.0, "2026-10-22": 20.0, "2026-10-23": 20.0, "2026-10-26": 20.0, "2026-10-27": 20.0, "2026-10-28": 20.0, "2026-10-29": 20.0, "2026-10-30": 20.0, "2026-11-03": 20.0, "2026-11-04": 20.0, "2026-11-05": 20.0, "2026-11-06": 20.0}, "extraCosts": {"hotels": {}, "flights": {}}, "totalLojas": 46, "versao_nome": "Journey Outubro V4 (Ajustes Samsung 23/09)", "estimatedCost": 368.0, "manualFlights": {}, "totalDiasUteis": 23, "totalEstimatedKM": 460.0}}, {"id": "2bec3343-686d-4878-8b5b-12ab35fe3d57", "consultor": "MARCIO JOSE FLORES PEREIRA", "mes": 10, "ano": 2026, "versao_id": "v-journey-outubro-v4", "versao_nome": "Journey Outubro V4 (Ajustes Samsung 23/09)", "cenario": "Journey Outubro V4 - Ajustes Email 23/09 e 29/09", "status": "APROVADO", "dados_roteiro": {"ano": 2026, "mes": 10, "cenario": "Journey Outubro V4 - Ajustes Email 23/09 e 29/09", "roteiro": [{"data": "2026-10-05", "lojas": [{"uf": "RS", "lat": -30.0055, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S02352", "filial": "CLIMA RIO - PORTO ALEGRE/RS", "checkIn": "09:00", "cliente": "CLIMA RIO", "checkOut": "12:00", "endereco": "AVENIDA FRANCA, 606 - PORTO ALEGRE - RS", "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00119", "filial": "FRIGELAR - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2285 - PORTO ALEGRE - RS", "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-06", "lojas": [{"uf": "RS", "lat": -29.918, "lng": -51.183, "cidade": "CANOAS", "codigo": "S07202", "filial": "FRIGELAR - CANOAS/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA INCONFIDENCIA, 31 - CANOAS - RS", "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-07", "lojas": [{"uf": "RS", "lat": -29.68, "lng": -51.13, "cidade": "NOVO HAMBURGO", "codigo": "S07717", "filial": "FRIGELAR - NOVO HAMBURGO/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "RUA VINTE E CINCO DE JULHO, 536 - NOVO HAMBURGO - RS", "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"}, {"uf": "RS", "lat": -30.0055, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S02352", "filial": "CLIMA RIO - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "AVENIDA FRANCA, 606 - PORTO ALEGRE - RS", "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-08", "lojas": [{"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00119", "filial": "FRIGELAR - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2285 - PORTO ALEGRE - RS", "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-09", "lojas": [{"uf": "RS", "lat": -30.005, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00127", "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS", "checkIn": "09:00", "cliente": "WEBCONTINENTAL", "checkOut": "12:00", "endereco": "TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS", "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-12", "lojas": [], "feriado": "Feriado Nacional - Nossa Senhora Aparecida", "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-13", "lojas": [{"uf": "RS", "lat": -29.918, "lng": -51.183, "cidade": "CANOAS", "codigo": "S07202", "filial": "FRIGELAR - CANOAS/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA INCONFIDENCIA, 31 - CANOAS - RS", "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-14", "lojas": [{"uf": "RS", "lat": -29.68, "lng": -51.13, "cidade": "NOVO HAMBURGO", "codigo": "S07717", "filial": "FRIGELAR - NOVO HAMBURGO/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "RUA VINTE E CINCO DE JULHO, 536 - NOVO HAMBURGO - RS", "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"}, {"uf": "RS", "lat": -30.0055, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S02352", "filial": "CLIMA RIO - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "AVENIDA FRANCA, 606 - PORTO ALEGRE - RS", "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-15", "lojas": [{"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00119", "filial": "FRIGELAR - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2285 - PORTO ALEGRE - RS", "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-16", "lojas": [{"uf": "RS", "lat": -30.005, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00127", "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS", "checkIn": "09:00", "cliente": "WEBCONTINENTAL", "checkOut": "12:00", "endereco": "TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS", "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-19", "lojas": [{"uf": "RS", "lat": -30.0055, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S02352", "filial": "CLIMA RIO - PORTO ALEGRE/RS", "checkIn": "09:00", "cliente": "CLIMA RIO", "checkOut": "12:00", "endereco": "AVENIDA FRANCA, 606 - PORTO ALEGRE - RS", "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00119", "filial": "FRIGELAR - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2285 - PORTO ALEGRE - RS", "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-20", "lojas": [{"uf": "RS", "lat": -29.918, "lng": -51.183, "cidade": "CANOAS", "codigo": "S07202", "filial": "FRIGELAR - CANOAS/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA INCONFIDENCIA, 31 - CANOAS - RS", "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-21", "lojas": [{"uf": "RS", "lat": -29.68, "lng": -51.13, "cidade": "NOVO HAMBURGO", "codigo": "S07717", "filial": "FRIGELAR - NOVO HAMBURGO/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "RUA VINTE E CINCO DE JULHO, 536 - NOVO HAMBURGO - RS", "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"}, {"uf": "RS", "lat": -30.0055, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S02352", "filial": "CLIMA RIO - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "AVENIDA FRANCA, 606 - PORTO ALEGRE - RS", "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-22", "lojas": [{"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00119", "filial": "FRIGELAR - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2285 - PORTO ALEGRE - RS", "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-23", "lojas": [{"uf": "RS", "lat": -30.005, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00127", "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS", "checkIn": "09:00", "cliente": "WEBCONTINENTAL", "checkOut": "12:00", "endereco": "TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS", "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-26", "lojas": [{"uf": "RS", "lat": -30.0055, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S02352", "filial": "CLIMA RIO - PORTO ALEGRE/RS", "checkIn": "09:00", "cliente": "CLIMA RIO", "checkOut": "12:00", "endereco": "AVENIDA FRANCA, 606 - PORTO ALEGRE - RS", "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00119", "filial": "FRIGELAR - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2285 - PORTO ALEGRE - RS", "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-27", "lojas": [{"uf": "RS", "lat": -29.918, "lng": -51.183, "cidade": "CANOAS", "codigo": "S07202", "filial": "FRIGELAR - CANOAS/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA INCONFIDENCIA, 31 - CANOAS - RS", "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-28", "lojas": [{"uf": "RS", "lat": -29.68, "lng": -51.13, "cidade": "NOVO HAMBURGO", "codigo": "S07717", "filial": "FRIGELAR - NOVO HAMBURGO/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "RUA VINTE E CINCO DE JULHO, 536 - NOVO HAMBURGO - RS", "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"}, {"uf": "RS", "lat": -30.0055, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S02352", "filial": "CLIMA RIO - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "AVENIDA FRANCA, 606 - PORTO ALEGRE - RS", "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-29", "lojas": [{"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00119", "filial": "FRIGELAR - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2285 - PORTO ALEGRE - RS", "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-30", "lojas": [{"uf": "RS", "lat": -30.005, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00127", "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS", "checkIn": "09:00", "cliente": "WEBCONTINENTAL", "checkOut": "12:00", "endereco": "TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS", "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-11-02", "lojas": [], "feriado": "Feriado Nacional - Finados", "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-11-03", "lojas": [{"uf": "RS", "lat": -29.918, "lng": -51.183, "cidade": "CANOAS", "codigo": "S07202", "filial": "FRIGELAR - CANOAS/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA INCONFIDENCIA, 31 - CANOAS - RS", "nome_pdv": "S07202 - FRIGELAR - AVENIDA INCONFIDENCIA - 31 - CANOAS - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-11-04", "lojas": [{"uf": "RS", "lat": -29.68, "lng": -51.13, "cidade": "NOVO HAMBURGO", "codigo": "S07717", "filial": "FRIGELAR - NOVO HAMBURGO/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "RUA VINTE E CINCO DE JULHO, 536 - NOVO HAMBURGO - RS", "nome_pdv": "S07717 - FRIGELAR - RUA VINTE E CINCO DE JULHO - 536 - NOVO HAMBURGO - RS"}, {"uf": "RS", "lat": -30.0055, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S02352", "filial": "CLIMA RIO - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "CLIMA RIO", "checkOut": "18:00", "endereco": "AVENIDA FRANCA, 606 - PORTO ALEGRE - RS", "nome_pdv": "S02352 - CLIMA RIO - AVENIDA FRANCA - 606 - PORTO ALEGRE - RS"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-11-05", "lojas": [{"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "09:00", "cliente": "FRIGELAR", "checkOut": "12:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00119", "filial": "FRIGELAR - PORTO ALEGRE/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2285 - PORTO ALEGRE - RS", "nome_pdv": "S00119 - FRIGELAR - AVENIDA PERNAMBUCO - 2285 - PORTO ALEGRE - RS"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-11-06", "lojas": [{"uf": "RS", "lat": -30.005, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S00127", "filial": "WEBCONTINENTAL - PORTO ALEGRE/RS", "checkIn": "09:00", "cliente": "WEBCONTINENTAL", "checkOut": "12:00", "endereco": "TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS", "nome_pdv": "S00127 - WEBCONTINENTAL - TRAVENIDAESSA VENEZUELA 210 NAVEGANTES - PORTO ALEGRE - RS"}, {"uf": "RS", "lat": -30.01, "lng": -51.2, "cidade": "PORTO ALEGRE", "codigo": "S01271", "filial": "FRIGELAR - SAO GERALDO 2273/RS", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "AVENIDA PERNAMBUCO, 2273 - PORTO ALEGRE - RS", "nome_pdv": "S01271 - FRIGELAR - AVENIDA PERNAMBUCO - 2273 - PORTO ALEGRE - RS"}], "diaSemana": "SEXTA-FEIRA"}], "consultor": "MARCIO JOSE FLORES PEREIRA", "versao_id": "v-journey-outubro-v4", "bancoHoras": "-68:28", "distancias": {"2026-10-05": 30.0, "2026-10-06": 30.0, "2026-10-07": 30.0, "2026-10-08": 30.0, "2026-10-09": 30.0, "2026-10-13": 30.0, "2026-10-14": 30.0, "2026-10-15": 30.0, "2026-10-16": 30.0, "2026-10-19": 30.0, "2026-10-20": 30.0, "2026-10-21": 30.0, "2026-10-22": 30.0, "2026-10-23": 30.0, "2026-10-26": 30.0, "2026-10-27": 30.0, "2026-10-28": 30.0, "2026-10-29": 30.0, "2026-10-30": 30.0, "2026-11-03": 30.0, "2026-11-04": 30.0, "2026-11-05": 30.0, "2026-11-06": 30.0}, "extraCosts": {"hotels": {}, "flights": {}}, "totalLojas": 46, "versao_nome": "Journey Outubro V4 (Ajustes Samsung 23/09)", "estimatedCost": 552.0, "manualFlights": {}, "totalDiasUteis": 23, "totalEstimatedKM": 690.0}}, {"id": "bcca1394-b0b3-4d67-acf9-23c212784a2d", "consultor": "DIOGO DO NASCIMENTO SANTOS", "mes": 10, "ano": 2026, "versao_id": "v-journey-outubro-v4", "versao_nome": "Journey Outubro V4 (Ajustes Samsung 23/09)", "cenario": "Journey Outubro V4 - Ajustes Email 23/09 e 29/09", "status": "APROVADO", "dados_roteiro": {"ano": 2026, "mes": 10, "cenario": "Journey Outubro V4 - Ajustes Email 23/09 e 29/09", "roteiro": [{"data": "2026-10-05", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - BARRA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CENTRAL AR - RECREIO/RJ", "checkIn": "13:30", "cliente": "CENTRAL AR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-06", "lojas": [{"uf": "RJ", "obs": "Dedicação Exclusiva Febrava RJ (Montagem 08h-11h + Feira 13h-20h)", "cidade": "RIO DE JANEIRO", "codigo": "FEBRAVA_01", "filial": "FEBRAVA 2026 - Montagem / Estande (RJ)", "checkIn": "08:00", "cliente": "FEBRAVA", "checkOut": "20:00", "endereco": "Rio de Janeiro - RJ", "nome_pdv": "FEBRAVA 2026 - EVENTO EXCLUSIVO RJ (08:00 às 20:00)"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-07", "lojas": [{"uf": "RJ", "obs": "Dedicação Exclusiva Febrava RJ (Operação 13h-20h com chegada 12h)", "cidade": "RIO DE JANEIRO", "codigo": "FEBRAVA_02", "filial": "FEBRAVA 2026 - Operação Estande (RJ)", "checkIn": "12:00", "cliente": "FEBRAVA", "checkOut": "20:00", "endereco": "Rio de Janeiro - RJ", "nome_pdv": "FEBRAVA 2026 - EVENTO EXCLUSIVO RJ (12:00 às 20:00)"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-08", "lojas": [{"uf": "RJ", "obs": "Dedicação Exclusiva Febrava RJ (Operação 13h-20h com chegada 12h)", "cidade": "RIO DE JANEIRO", "codigo": "FEBRAVA_02", "filial": "FEBRAVA 2026 - Operação Estande (RJ)", "checkIn": "12:00", "cliente": "FEBRAVA", "checkOut": "20:00", "endereco": "Rio de Janeiro - RJ", "nome_pdv": "FEBRAVA 2026 - EVENTO EXCLUSIVO RJ (12:00 às 20:00)"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-09", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - BARRA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CENTRAL AR - RECREIO/RJ", "checkIn": "13:30", "cliente": "CENTRAL AR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-12", "lojas": [], "feriado": "Feriado Nacional - Nossa Senhora Aparecida", "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-13", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - PENHA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIOPECAS - RAMOS/RJ", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-14", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "NITEROI", "filial": "CLIMA RIO - NITEROI/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"}, {"uf": "RJ", "lat": -22.9068, "lng": -43.1729, "cidade": "RIO DE JANEIRO", "codigo": "S00123", "filial": "FRIGELAR - RIO DE JANEIRO/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "RUA IPIRANGA, 134 - RIO DE JANEIRO - RJ", "nome_pdv": "S00123 - FRIGELAR - RIO DE JANEIRO - RJ"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-15", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIGELAR - SAO CRISTOVAO/RJ", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIGELAR - BARRA/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-16", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - BARRA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CENTRAL AR - RECREIO/RJ", "checkIn": "13:30", "cliente": "CENTRAL AR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-19", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - PENHA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIOPECAS - RAMOS/RJ", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-20", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "NITEROI", "filial": "CLIMA RIO - NITEROI/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"}, {"uf": "RJ", "lat": -22.9068, "lng": -43.1729, "cidade": "RIO DE JANEIRO", "codigo": "S00123", "filial": "FRIGELAR - RIO DE JANEIRO/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "RUA IPIRANGA, 134 - RIO DE JANEIRO - RJ", "nome_pdv": "S00123 - FRIGELAR - RIO DE JANEIRO - RJ"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-21", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIGELAR - SAO CRISTOVAO/RJ", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIGELAR - BARRA/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-22", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - BARRA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CENTRAL AR - RECREIO/RJ", "checkIn": "13:30", "cliente": "CENTRAL AR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-23", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - PENHA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIOPECAS - RAMOS/RJ", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-10-26", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "NITEROI", "filial": "CLIMA RIO - NITEROI/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"}, {"uf": "RJ", "lat": -22.9068, "lng": -43.1729, "cidade": "RIO DE JANEIRO", "codigo": "S00123", "filial": "FRIGELAR - RIO DE JANEIRO/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "RUA IPIRANGA, 134 - RIO DE JANEIRO - RJ", "nome_pdv": "S00123 - FRIGELAR - RIO DE JANEIRO - RJ"}], "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-10-27", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIGELAR - SAO CRISTOVAO/RJ", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIGELAR - BARRA/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-10-28", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - BARRA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CENTRAL AR - RECREIO/RJ", "checkIn": "13:30", "cliente": "CENTRAL AR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-10-29", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - PENHA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIOPECAS - RAMOS/RJ", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-10-30", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "NITEROI", "filial": "CLIMA RIO - NITEROI/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"}, {"uf": "RJ", "lat": -22.9068, "lng": -43.1729, "cidade": "RIO DE JANEIRO", "codigo": "S00123", "filial": "FRIGELAR - RIO DE JANEIRO/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "RUA IPIRANGA, 134 - RIO DE JANEIRO - RJ", "nome_pdv": "S00123 - FRIGELAR - RIO DE JANEIRO - RJ"}], "diaSemana": "SEXTA-FEIRA"}, {"data": "2026-11-02", "lojas": [], "feriado": "Feriado Nacional - Finados", "diaSemana": "SEGUNDA-FEIRA"}, {"data": "2026-11-03", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIGELAR - SAO CRISTOVAO/RJ", "checkIn": "09:00", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00895 - FRIGELAR - RUA GENERAL ARGOLO - 15 - SAO CRISTOVAO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIGELAR - BARRA/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S06150 - FRIGELAR - AVENIDA AYRTON SENNA - 4701 - RIO DE JANEIRO - RJ"}], "diaSemana": "TERÇA-FEIRA"}, {"data": "2026-11-04", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - BARRA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00157 - CLIMA RIO - AVENIDA AYRTON SENNA - 1850 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CENTRAL AR - RECREIO/RJ", "checkIn": "13:30", "cliente": "CENTRAL AR", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00135 - CENTRAL AR - AV. DAS AMERICAS - 18000 - RIO DE JANEIRO - RJ"}], "diaSemana": "QUARTA-FEIRA"}, {"data": "2026-11-05", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "CLIMA RIO - PENHA/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S00228 - CLIMA RIO - AVENIDA LOBO JUNIOR - 1184 - RIO DE JANEIRO - RJ"}, {"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "RIO DE JANEIRO", "filial": "FRIOPECAS - RAMOS/RJ", "checkIn": "13:30", "cliente": "FRIOPECAS", "cluster": "A", "checkOut": "18:00", "nome_pdv": "S00633 - FRIOPECAS - RUA TEIXEIRA RIBEIRO - 275 - RIO DE JANEIRO - RJ"}], "diaSemana": "QUINTA-FEIRA"}, {"data": "2026-11-06", "lojas": [{"uf": "RJ", "rota": "RJ", "tipo": "local", "cidade": "NITEROI", "filial": "CLIMA RIO - NITEROI/RJ", "checkIn": "09:00", "cliente": "CLIMA RIO", "cluster": "A", "checkOut": "12:00", "nome_pdv": "S04053 - CLIMA RIO - RUA MIGUEL DE FRIAS - 254 - NITEROI - RJ"}, {"uf": "RJ", "lat": -22.9068, "lng": -43.1729, "cidade": "RIO DE JANEIRO", "codigo": "S00123", "filial": "FRIGELAR - RIO DE JANEIRO/RJ", "checkIn": "13:30", "cliente": "FRIGELAR", "checkOut": "18:00", "endereco": "RUA IPIRANGA, 134 - RIO DE JANEIRO - RJ", "nome_pdv": "S00123 - FRIGELAR - RIO DE JANEIRO - RJ"}], "diaSemana": "SEXTA-FEIRA"}], "consultor": "DIOGO DO NASCIMENTO SANTOS", "versao_id": "v-journey-outubro-v4", "bancoHoras": "-26:28", "distancias": {"2026-10-05": 22.0, "2026-10-06": 15.0, "2026-10-07": 15.0, "2026-10-08": 15.0, "2026-10-09": 22.0, "2026-10-13": 22.0, "2026-10-14": 22.0, "2026-10-15": 22.0, "2026-10-16": 22.0, "2026-10-19": 22.0, "2026-10-20": 22.0, "2026-10-21": 22.0, "2026-10-22": 22.0, "2026-10-23": 22.0, "2026-10-26": 22.0, "2026-10-27": 22.0, "2026-10-28": 22.0, "2026-10-29": 22.0, "2026-10-30": 22.0, "2026-11-03": 22.0, "2026-11-04": 22.0, "2026-11-05": 22.0, "2026-11-06": 22.0}, "extraCosts": {"other": 200, "hotels": {}, "flights": {}, "parking": 200, "otherDetails": [{"valor": 200.0, "diarias": 2, "descricao": "Estacionamento Febrava (2 dias x R$ 100,00)", "valorDiaria": 100.0}]}, "totalLojas": 43, "versao_nome": "Journey Outubro V4 (Ajustes Samsung 23/09)", "estimatedCost": 588.0, "manualFlights": {}, "totalDiasUteis": 23, "totalEstimatedKM": 485.0}}];
+    const historicoDespesas = {"03": {"ALEXANDRE RIBEIRO LIMA": {"km": 7241.370000000001, "valor": 5793.1, "detalhes": {"KM": 5793.1}}, "ANDRÉ SILVA PINTO": {"km": 1113.8999999999999, "valor": 1336.6499999999999, "detalhes": {"KM": 1336.6499999999999}}, "BIBIANO RODRIGUES NETO": {"km": 548.74, "valor": 658.47, "detalhes": {"KM": 658.47}}, "DIOGO DO NASCIMENTO SANTOS": {"km": 2907.77, "valor": 2326.2, "detalhes": {"KM": 2326.2}}, "LIEDY AQUINO GOMES DOS SANTOS": {"km": 2315.289999999999, "valor": 1852.3099999999993, "detalhes": {"KM": 1852.3099999999993}}, "LUIZ FALCAO DE SOUZA NETO": {"km": 2499.4499999999994, "valor": 1999.5999999999995, "detalhes": {"KM": 1999.5999999999995}}, "MARCIO JOSÉ FLORES PEREIRA": {"km": 1265.3900000000003, "valor": 1012.2600000000003, "detalhes": {"KM": 1012.2600000000003}}, "PAULO SERGIO MARQUES DA SILVA": {"km": 3144.3199999999993, "valor": 2515.4399999999996, "detalhes": {"KM": 2515.4399999999996}}, "TATIANE SOUZA DOS SANTOS": {"km": 2428.8500000000004, "valor": 1943.0900000000006, "detalhes": {"KM": 1943.0900000000006}}}, "04": {"ALEXANDRE RIBEIRO LIMA": {"km": 3978.04, "valor": 3491.4599999999996, "detalhes": {"Pedágio": 229.79999999999995, "Percurso - TRACKING": 3182.4199999999996, "Café da Manhã em viagem": 32.24, "Jantar em Viagem": 47.0}}, "DIOGO DO NASCIMENTO SANTOS": {"km": 2147.08, "valor": 1994.66, "detalhes": {"Estacionamento": 273.0, "Pedágio": 4.0, "Percurso - MAPA": 1717.66}}, "LIEDY AQUINO GOMES DOS SANTOS": {"km": 1317.8999999999999, "valor": 1291.28, "detalhes": {"Jantar em Viagem": 46.9, "Água durante viagem": 10.0, "Café da Manhã em viagem": 20.0, "Pedágio": 3.1, "Percurso - TRACKING": 1026.64, "Estacionamento": 157.0, "Percurso - MAPA": 27.64}}, "LUIZ FALCAO DE SOUZA NETO": {"km": 1880.1399999999996, "valor": 1746.45, "detalhes": {"Café da Manhã em viagem": 102.0, "Jantar": 140.35, "Percurso - TRACKING": 1421.5200000000002, "Percurso - MAPA": 82.58}}, "MARCIO JOSÉ FLORES PEREIRA": {"km": 807.8399999999999, "valor": 777.2699999999999, "detalhes": {"Estacionamento": 91.0, "Café da Manhã em viagem": 40.0, "Percurso - TRACKING": 592.2, "Percurso - MAPA": 54.07}}, "PAULO SERGIO MARQUES DA SILVA": {"km": 2088.879999999999, "valor": 1908.72, "detalhes": {"Estacionamento": 165.0, "Pedágio": 72.6, "Percurso - TRACKING": 1671.1200000000001}}, "TATIANE SOUZA DOS SANTOS": {"km": 1527.4299999999998, "valor": 1221.9399999999998, "detalhes": {"Percurso - TRACKING": 1221.9399999999998}}}, "05": {"ALEXANDRE RIBEIRO LIMA": {"km": 5899.56, "valor": 5743.25, "detalhes": {"Café da Manhã em viagem": 71.0, "Jantar em Viagem": 341.0, "Pedágio": 611.6, "Percurso - MAPA": 724.29, "Percurso - TRACKING": 3995.36}}, "DIOGO DO NASCIMENTO SANTOS": {"km": 373.19, "valor": 538.55, "detalhes": {"Café da Manhã em viagem": 20.0, "Jantar em Viagem": 200.0, "Percurso - MAPA": 298.55, "Água durante viagem": 20.0}}, "LIEDY AQUINO GOMES DOS SANTOS": {"km": 1920.29, "valor": 1878.71, "detalhes": {"Café da Manhã em viagem": 19.0, "Estacionamento": 219.0, "Jantar em Viagem": 91.9, "Outros": 7.6, "Percurso - TRACKING": 1536.23, "Água durante viagem": 4.98}}, "LUIZ FALCAO DE SOUZA NETO": {"km": 1949.49, "valor": 1776.59, "detalhes": {"Café da Manhã em viagem": 37.0, "Estacionamento": 30.0, "Jantar": 150.0, "Percurso - MAPA": 107.77, "Percurso - TRACKING": 1451.82}}, "MARCIO JOSÉ FLORES PEREIRA": {"km": 1657.37, "valor": 1378.9, "detalhes": {"Café da Manhã em viagem": 20.0, "Estacionamento": 33.0, "Percurso - MAPA": 119.88, "Percurso - TRACKING": 1206.02}}, "TATIANE SOUZA DOS SANTOS": {"km": 1794.87, "valor": 1565.9, "detalhes": {"Jantar em Viagem": 100.0, "Percurso - MAPA": 22.45, "Percurso - TRACKING": 1413.45, "Água durante viagem": 30.0}}}, "06": {"ALEXANDRE RIBEIRO LIMA": {"km": 4663.55, "valor": 4736.92, "detalhes": {"Café da Manhã em viagem": 68.98, "Estacionamento": 500.0, "Jantar em Viagem": 100.0, "Pedágio": 337.1, "Percurso - MAPA": 684.39, "Percurso - TRACKING": 3046.45}}, "DIOGO DO NASCIMENTO SANTOS": {"km": 2789.32, "valor": 2683.77, "detalhes": {"Café da Manhã em viagem": 35.5, "Estacionamento": 130.0, "Jantar em Viagem": 235.8, "Percurso - MAPA": 2221.34, "Percurso - TRACKING": 10.12, "Água durante viagem": 51.01}}, "LIEDY AQUINO GOMES DOS SANTOS": {"km": 1129.92, "valor": 1478.0, "detalhes": {"Estacionamento": 305.0, "Jantar em Viagem": 138.56, "Pedágio": 130.5, "Percurso - MAPA": 20.7, "Percurso - TRACKING": 883.24}}, "LUIZ FALCAO DE SOUZA NETO": {"km": 2175.26, "valor": 1960.21, "detalhes": {"Café da Manhã em viagem": 40.0, "Estacionamento": 30.0, "Jantar": 150.0, "Percurso - MAPA": 238.39, "Percurso - TRACKING": 1501.82}}, "MARCIO JOSÉ FLORES PEREIRA": {"km": 1233.59, "valor": 1133.87, "detalhes": {"Estacionamento": 147.0, "Percurso - MAPA": 101.53, "Percurso - TRACKING": 885.34}}, "TATIANE SOUZA DOS SANTOS": {"km": 1815.5, "valor": 1502.4, "detalhes": {"Outros": 50.0, "Percurso - TRACKING": 1452.4}}}, "07": {"DIOGO DO NASCIMENTO SANTOS": {"km": 2954.08, "valor": 2918.96, "detalhes": {"Estacionamento": 310.0, "Jantar em Viagem": 149.35, "Pedágio": 62.5, "Percurso - MAPA": 2235.76, "Percurso - TRACKING": 127.5, "Água durante viagem": 33.85}}, "LIEDY AQUINO GOMES DOS SANTOS": {"km": 1049.84, "valor": 1236.67, "detalhes": {"Café da Manhã em viagem": 37.0, "Estacionamento": 129.0, "Jantar em Viagem": 50.0, "Pedágio": 168.9, "Percurso - TRACKING": 839.87, "Água durante viagem": 11.9}}, "LUIZ FALCAO DE SOUZA NETO": {"km": 2110.49, "valor": 1848.39, "detalhes": {"Café da Manhã em viagem": 60.0, "Jantar": 100.0, "Percurso - TRACKING": 1688.39}}, "MARCIO JOSÉ FLORES PEREIRA": {"km": 1455.81, "valor": 1263.65, "detalhes": {"Estacionamento": 49.0, "Jantar": 50.0, "Percurso - MAPA": 268.05, "Percurso - TRACKING": 896.6}}, "TATIANE SOUZA DOS SANTOS": {"km": 1678.2, "valor": 1392.56, "detalhes": {"Outros": 50.0, "Percurso - MAPA": 190.94, "Percurso - TRACKING": 1151.62}}}, "08": {"DIOGO DO NASCIMENTO SANTOS": {"km": 2943.76, "valor": 3455.06, "detalhes": {"Café da Manhã em viagem": 33.5, "Estacionamento": 875.0, "Jantar em Viagem": 50.0, "Pedágio": 128.05, "Percurso - MAPA": 2355.01, "Água durante viagem": 13.5}}, "LIEDY AQUINO GOMES DOS SANTOS": {"km": 1573.65, "valor": 1620.12, "detalhes": {"Estacionamento": 159.0, "Pedágio": 202.2, "Percurso - MAPA": 19.88, "Percurso - TRACKING": 1239.04}}, "LUIZ FALCAO DE SOUZA NETO": {"km": 516.75, "valor": 433.4, "detalhes": {"Café da Manhã em viagem": 20.0, "Percurso - TRACKING": 413.4}}, "MARCIO JOSÉ FLORES PEREIRA": {"km": 653.52, "valor": 543.82, "detalhes": {"Estacionamento": 21.0, "Percurso - MAPA": 20.17, "Percurso - TRACKING": 502.65}}, "TATIANE SOUZA DOS SANTOS": {"km": 1301.36, "valor": 1091.09, "detalhes": {"Outros": 50.0, "Percurso - TRACKING": 1041.09}}}, "09": {"DIOGO DO NASCIMENTO SANTOS": {"km": 2933.95, "valor": 2876.36, "detalhes": {"Estacionamento": 410.0, "Pedágio": 119.2, "Percurso - MAPA": 2347.16}}, "LIEDY AQUINO GOMES DOS SANTOS": {"km": 2194.47, "valor": 6354.02, "detalhes": {"Café da Manhã em viagem": 35.0, "Cópias e Impressão": 15.0, "Estacionamento": 295.0, "Jantar em Viagem": 121.1, "Outros": 42.99, "Pedágio": 371.35, "Percurso - TRACKING": 1755.58, "Aéreo (QT380 Aprovado)": 1477.0, "Hospedagem (QT380 Aprovado)": 1089.0, "Rodoviário (QT380 Aprovado)": 1152.0}, "valorViagem": 3718.0}, "LUIZ FALCAO DE SOUZA NETO": {"km": 1934.2, "valor": 1963.73, "detalhes": {"Café da Manhã em viagem": 14.0, "Jantar": 92.37, "Percurso - TRACKING": 1547.36, "Hospedagem (QT380 Aprovado)": 310.0}, "valorViagem": 310.0}, "MARCIO JOSÉ FLORES PEREIRA": {"km": 1264.47, "valor": 1061.58, "detalhes": {"Jantar": 50.0, "Percurso - MAPA": 179.62, "Percurso - TRACKING": 831.96}}, "TATIANE SOUZA DOS SANTOS": {"km": 1048.53, "valor": 838.82, "detalhes": {"Percurso - TRACKING": 838.82}}}};
+
+    const MES_OPCOES = [
+      { id: '09', label: 'Setembro/2026 (Vexpenses + QT380)', short: 'Set/26' },
+      { id: '08', label: 'Agosto/2026 (Vexpenses)', short: 'Ago/26' },
+      { id: '07', label: 'Julho/2026 (Vexpenses)', short: 'Jul/26' },
+      { id: '06', label: 'Junho/2026 (Vexpenses)', short: 'Jun/26' },
+      { id: '05', label: 'Maio/2026 (Vexpenses)', short: 'Mai/26' },
+      { id: '04', label: 'Abril/2026', short: 'Abr/26' },
+      { id: '03', label: 'Março/2026', short: 'Mar/26' }
+    ];
+
+        let mesAtual = '09';
+
+    function normalizeName(str) {
+      if (!str) return '';
+      return str.normalize("NFD").replace(/[̀-ͯ]/g, "").trim().toUpperCase();
+    }
+
+    function formatCurrency(val) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+    }
+
+    function renderDashboard() {
+      const mesData = historicoDespesas[mesAtual] || {};
+      const mesInfo = MES_OPCOES.find(m => m.id === mesAtual) || MES_OPCOES[0];
+
+      // Atualizar headers e labels de mês
+      document.getElementById('banner-mes-nome').innerText = mesInfo.label.split(' ')[0];
+      document.getElementById('despesas-section-mes').innerText = mesInfo.label;
+      document.getElementById('th-km-hist').innerText = `KM ${mesInfo.short} (Real)`;
+      document.getElementById('th-custo-hist').innerText = `Custo ${mesInfo.short} (Real)`;
+
+      // Totais Outubro V4
+      let totalOutKM = 0;
+      let totalOutCusto = 0;
+      let totalLojas = 0;
+      let totalVisitas = 0;
+
+      // Totais Mês Comparativo (Equipe Ativa)
+      let totalHistKMAtivo = 0;
+      let totalHistCustoAtivo = 0;
+
+      const nomesAtivos = v4Records.map(r => normalizeName(r.consultor));
+
+      // Calcular histórico da equipe ativa
+      v4Records.forEach(r => {
+        const dr = r.dados_roteiro || {};
+        const km = dr.totalEstimatedKM || 0;
+        const custo = dr.estimatedCost || (km * 0.80);
+        totalOutKM += km;
+        totalOutCusto += custo;
+        totalLojas += dr.totalLojas || 0;
+
+        let visitas = 0;
+        if (dr.roteiro) {
+          dr.roteiro.forEach(d => visitas += (d.lojas?.length || 0));
+        }
+        totalVisitas += visitas;
+
+        // Histórico
+        const cNomeNorm = normalizeName(r.consultor);
+        const histEntry = Object.entries(mesData).find(([k]) => normalizeName(k) === cNomeNorm)?.[1];
+        if (histEntry) {
+          totalHistKMAtivo += histEntry.km || 0;
+          totalHistCustoAtivo += histEntry.valor || 0;
+        }
+      });
+
+      // Atualizar KPIs do topo
+      document.getElementById('kpi-km-total').innerText = `${Math.round(totalOutKM).toLocaleString('pt-BR')} km`;
+      document.getElementById('kpi-km-comparacao').innerText = `vs ${Math.round(totalHistKMAtivo).toLocaleString('pt-BR')} km (${mesInfo.short})`;
+      document.getElementById('kpi-custo-total').innerText = formatCurrency(totalOutCusto);
+      document.getElementById('kpi-custo-comparacao').innerText = `vs ${formatCurrency(totalHistCustoAtivo)}`;
+
+      // Atualizar Banner de Economia
+      const diffCusto = totalOutCusto - totalHistCustoAtivo;
+      const diffPctCusto = totalHistCustoAtivo > 0 ? ((diffCusto / totalHistCustoAtivo) * 100).toFixed(1) : 0;
+      const diffKM = totalOutKM - totalHistKMAtivo;
+      const diffPctKM = totalHistKMAtivo > 0 ? ((diffKM / totalHistKMAtivo) * 100).toFixed(1) : 0;
+
+      document.getElementById('banner-economia-reais').innerText = `${diffCusto < 0 ? '-' : '+'} ${formatCurrency(Math.abs(diffCusto))} (${diffPctCusto}%)`;
+      document.getElementById('banner-economia-km').innerText = `${diffKM < 0 ? '-' : '+'} ${Math.round(Math.abs(diffKM)).toLocaleString('pt-BR')} km (${diffPctKM}%)`;
+
+      document.getElementById('bar-km-label').innerText = `${Math.round(totalOutKM)} km (Out) vs ${Math.round(totalHistKMAtivo)} km (${mesInfo.short})`;
+      const kmPctBar = totalHistKMAtivo > 0 ? Math.min(100, Math.round((totalOutKM / totalHistKMAtivo) * 100)) : 100;
+      document.getElementById('bar-km-fill').style.width = `${kmPctBar}%`;
+
+      document.getElementById('bar-custo-label').innerText = `${formatCurrency(totalOutCusto)} (Out) vs ${formatCurrency(totalHistCustoAtivo)} (${mesInfo.short})`;
+      const custoPctBar = totalHistCustoAtivo > 0 ? Math.min(100, Math.round((totalOutCusto / totalHistCustoAtivo) * 100)) : 100;
+      document.getElementById('bar-custo-fill').style.width = `${custoPctBar}%`;
+
+      // Renderizar Tabela de Consultores
+      const tbody = document.getElementById('tabela-consultores-body');
+      tbody.innerHTML = '';
+
+      v4Records.forEach((r, idx) => {
+        const dr = r.dados_roteiro || {};
+        const cNome = r.consultor;
+        const cNomeNorm = normalizeName(cNome);
+        const km = dr.totalEstimatedKM || 0;
+        const custo = dr.estimatedCost || (km * 0.80);
+        const bh = dr.bancoHoras || dr.dados_roteiro?.bancoHoras || '-';
+        const lojasCount = dr.totalLojas || 0;
+        let visitasCount = 0;
+        if (dr.roteiro) {
+          dr.roteiro.forEach(d => visitasCount += (d.lojas?.length || 0));
+        }
+
+        const histEntry = Object.entries(mesData).find(([k]) => normalizeName(k) === cNomeNorm)?.[1];
+        const kmHist = histEntry?.km || 0;
+        const custoHist = histEntry?.valor || 0;
+        const variacao = custoHist > 0 ? custo - custoHist : 0;
+        const economizou = variacao < 0;
+        const parking = dr.extraCosts?.parking || dr.extraCosts?.other || 0;
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-blue-50/40 cursor-pointer transition-colors";
+        tr.onclick = () => abrirModal(r);
+        tr.innerHTML = `
+          <td class="px-6 py-4 font-bold text-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] flex items-center justify-center font-black">
+                ${cNome.split(' ')[0][0]}${cNome.split(' ').slice(-1)[0][0]}
+              </span>
+              <span>${cNome}</span>
+            </div>
+          </td>
+          <td class="px-4 py-4 text-center font-bold text-orange-600 text-xs">${bh}</td>
+          <td class="px-4 py-4 text-center font-semibold text-slate-600 text-xs">${lojasCount}</td>
+          <td class="px-4 py-4 text-center font-semibold text-slate-600 text-xs">${visitasCount}</td>
+          <td class="px-4 py-4 text-center font-black text-blue-700 bg-blue-50/30">${Math.round(km)} km</td>
+          <td class="px-4 py-4 text-center font-bold text-slate-600 bg-slate-50/50">${kmHist > 0 ? `${Math.round(kmHist)} km` : '—'}</td>
+          <td class="px-4 py-4 text-right font-black text-slate-900 bg-blue-50/30">
+            ${formatCurrency(custo)}
+            ${parking > 0 ? `<span class="block text-[10px] font-semibold text-amber-600">+ R$ ${parking.toFixed(2)} (Febrava)</span>` : ''}
+          </td>
+          <td class="px-4 py-4 text-right font-bold text-slate-700 bg-slate-50/50">
+            ${custoHist > 0 ? formatCurrency(custoHist) : '—'}
+          </td>
+          <td class="px-6 py-4 text-right font-black">
+            ${custoHist > 0 ? `
+              <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold ${economizou ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                ${economizou ? '' : '+'}${formatCurrency(variacao)}
+              </span>
+            ` : '—'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Footer da Tabela
+      const diffTotalCusto = totalOutCusto - totalHistCustoAtivo;
+      const tfoot = document.getElementById('tabela-consultores-foot');
+      tfoot.innerHTML = `
+        <tr>
+          <td class="px-6 py-3.5">TOTAL EQUIPE ATIVA</td>
+          <td class="px-4 py-3.5 text-center">—</td>
+          <td class="px-4 py-3.5 text-center">${totalLojas}</td>
+          <td class="px-4 py-3.5 text-center">${totalVisitas}</td>
+          <td class="px-4 py-3.5 text-center text-blue-700 font-black bg-blue-50/50">${Math.round(totalOutKM)} km</td>
+          <td class="px-4 py-3.5 text-center text-slate-700 font-black bg-slate-100/50">${Math.round(totalHistKMAtivo)} km</td>
+          <td class="px-4 py-3.5 text-right text-blue-900 font-black bg-blue-50/50">${formatCurrency(totalOutCusto)}</td>
+          <td class="px-4 py-3.5 text-right text-slate-800 font-black bg-slate-100/50">${formatCurrency(totalHistCustoAtivo)}</td>
+          <td class="px-6 py-3.5 text-right">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black bg-emerald-100 text-emerald-800">
+              ${diffTotalCusto < 0 ? '' : '+'}${formatCurrency(diffTotalCusto)}
+            </span>
+          </td>
+        </tr>
+      `;
+
+      // Detalhamento de Despesas Operacionais da Referência
+      let totalDeclaradoMes = 0;
+      let valorViagemMes = 0;
+      let valorLocalMes = 0;
+      const categoriasMes = {};
+
+      Object.values(mesData).forEach(info => {
+        totalDeclaradoMes += info.valor || 0;
+        if (info.detalhes) {
+          Object.entries(info.detalhes).forEach(([cat, val]) => {
+            categoriasMes[cat] = (categoriasMes[cat] || 0) + val;
+            const cLower = cat.toLowerCase();
+            if (cLower.includes('viagem') || cLower.includes('pedágio') || cLower.includes('pedagio') || 
+                cLower.includes('estacionamento') || cLower.includes('hospedagem') || cLower.includes('aéreo') || 
+                cLower.includes('aereo') || cLower.includes('rodoviário') || cLower.includes('rodoviario') || 
+                cLower.includes('jantar') || cLower.includes('almoço') || cLower.includes('café')) {
+              valorViagemMes += val;
+            } else {
+              valorLocalMes += val;
+            }
+          });
+        } else {
+          valorLocalMes += info.valor || 0;
+        }
+      });
+
+      document.getElementById('det-total-declarado').innerText = formatCurrency(totalDeclaradoMes);
+      document.getElementById('det-custos-viagem').innerText = formatCurrency(valorViagemMes);
+      document.getElementById('det-custos-viagem-pct').innerText = totalDeclaradoMes > 0 ? `${((valorViagemMes / totalDeclaradoMes) * 100).toFixed(1)}% do total` : '0%';
+      document.getElementById('det-custos-locais').innerText = formatCurrency(valorLocalMes);
+      document.getElementById('det-custos-locais-pct').innerText = totalDeclaradoMes > 0 ? `${((valorLocalMes / totalDeclaradoMes) * 100).toFixed(1)}% do total` : '0%';
+
+      const catGrid = document.getElementById('categorias-grid');
+      catGrid.innerHTML = '';
+      const topCats = Object.entries(categoriasMes).sort((a,b) => b[1] - a[1]).slice(0, 6);
+      if (topCats.length === 0) {
+        catGrid.innerHTML = '<p class="text-xs text-slate-400 col-span-6">Sem detalhamento de categorias para este período.</p>';
+      } else {
+        topCats.forEach(([cat, val]) => {
+          const div = document.createElement('div');
+          div.className = "p-3 bg-slate-50 border border-slate-200/60 rounded-xl";
+          div.innerHTML = `
+            <p class="text-[10px] text-slate-500 font-bold truncate" title="${cat}">${cat}</p>
+            <p class="text-sm font-black text-slate-800 mt-0.5">${formatCurrency(val)}</p>
+          `;
+          catGrid.appendChild(div);
+        });
+      }
+
+      lucide.createIcons();
+    }
+
+    function alterarMesComparacao(novoMes) {
+      mesAtual = novoMes;
+      renderDashboard();
+    }
+
+    // MODAL DE DETALHES DO CONSULTOR
+    function abrirModal(registro) {
+      const dr = registro.dados_roteiro || {};
+      document.getElementById('modal-consultor-nome').innerText = registro.consultor;
+      document.getElementById('modal-consultor-sub').innerText = `Total de ${dr.totalLojas || 0} lojas • ${Math.round(dr.totalEstimatedKM || 0)} km estimados • Custo: ${formatCurrency(dr.estimatedCost || 0)}`;
+
+      const container = document.getElementById('modal-dias-container');
+      container.innerHTML = '';
+
+      const roteiro = dr.roteiro || [];
+      if (roteiro.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 text-sm">Nenhum dia de roteiro detalhado encontrado.</p>';
+      } else {
+        roteiro.forEach(dia => {
+          const card = document.createElement('div');
+          card.className = "border border-slate-200 rounded-xl p-3.5 bg-slate-50/50";
+          
+          let lojasHtml = '';
+          if (dia.feriado || (dia.lojas?.length === 0)) {
+            lojasHtml = `<div class="p-2.5 rounded-lg bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200">
+              🚩 ${dia.feriado ? `Feriado / Sem Atendimento (${dia.feriado})` : 'Sem atendimentos agendados'}
+            </div>`;
+          } else {
+            dia.lojas.forEach(loja => {
+              const isFebrava = (loja.nome_pdv || '').toUpperCase().includes('FEBRAVA');
+              lojasHtml += `
+                <div class="p-2.5 rounded-lg ${isFebrava ? 'bg-amber-50 border border-amber-200' : 'bg-white border border-slate-200'} text-xs mb-2 last:mb-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-black text-slate-800">${loja.nome_pdv || loja.filial || 'PDV'}</span>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${loja.tipo === 'viagem' ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'}">
+                      ${loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem || ''})` : 'Local'}
+                    </span>
+                  </div>
+                  <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-500 text-[11px]">
+                    <span>📍 ${loja.cidade || ''} / ${loja.uf || ''}</span>
+                    <span>🏷️ Cluster: <b>${loja.cluster || 'N/A'}</b></span>
+                    <span>⏰ ${loja.checkIn || '--:--'} às ${loja.checkOut || '--:--'}</span>
+                  </div>
+                </div>
+              `;
+            });
+          }
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-black text-xs text-slate-800 tracking-wider uppercase">${dia.data} • ${dia.diaSemana || ''}</span>
+              <span class="text-[10px] font-bold text-slate-500">${dia.lojas?.length || 0} visitas</span>
+            </div>
+            ${lojasHtml}
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      document.getElementById('consultor-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function fecharModal() {
+      document.getElementById('consultor-modal').classList.add('hidden');
+    }
+
+    function exportarExcel() {
+      const wb = XLSX.utils.book_new();
+
+      // Aba 1: Roteiro Consolidado Completo
+      const dataVisitas = [];
+      v4Records.forEach(r => {
+        const dr = r.dados_roteiro || {};
+        (dr.roteiro || []).forEach(dia => {
+          if (dia.feriado) {
+            dataVisitas.push({
+              Data: dia.data,
+              'Dia da Semana': dia.diaSemana,
+              Consultor: r.consultor,
+              'Banco de Horas': dr.bancoHoras || 'N/A',
+              'Nome PDV': dia.feriado,
+              Status: 'FERIADO/FOLGA'
+            });
+          } else {
+            (dia.lojas || []).forEach(loja => {
+              dataVisitas.push({
+                Data: dia.data,
+                'Dia da Semana': dia.diaSemana,
+                Consultor: r.consultor,
+                'Banco de Horas': dr.bancoHoras || 'N/A',
+                'Nome PDV': loja.nome_pdv || loja.filial,
+                Cliente: loja.cliente || '',
+                Cidade: loja.cidade || '',
+                UF: loja.uf || '',
+                Cluster: loja.cluster || '',
+                'Check-in': loja.checkIn || '',
+                'Check-out': loja.checkOut || '',
+                Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem || ''})` : 'Local'
+              });
+            });
+          }
+        });
+      });
+
+      const wsVisitas = XLSX.utils.json_to_sheet(dataVisitas);
+      XLSX.utils.book_append_sheet(wb, wsVisitas, "Visitas_Consolidadas");
+
+      // Aba 2: Resumo e Custos Executivos
+      const mesData = historicoDespesas[mesAtual] || {};
+      const mesInfo = MES_OPCOES.find(m => m.id === mesAtual) || MES_OPCOES[0];
+
+      const dataResumo = v4Records.map(r => {
+        const dr = r.dados_roteiro || {};
+        const km = dr.totalEstimatedKM || 0;
+        const custo = dr.estimatedCost || (km * 0.80);
+        const parking = dr.extraCosts?.parking || dr.extraCosts?.other || 0;
+        const cNomeNorm = normalizeName(r.consultor);
+        const histEntry = Object.entries(mesData).find(([k]) => normalizeName(k) === cNomeNorm)?.[1];
+        const kmHist = histEntry?.km || 0;
+        const custoHist = histEntry?.valor || 0;
+        const diff = custoHist > 0 ? custo - custoHist : 0;
+
+        return {
+          Consultor: r.consultor,
+          'Banco de Horas': dr.bancoHoras || 'N/A',
+          'Lojas Atendidas': dr.totalLojas || 0,
+          'KM Out/26 (Est.)': Math.round(km),
+          [`KM ${mesInfo.short} (Real)`]: Math.round(kmHist),
+          'Custo Out/26 (Est.)': Number(custo.toFixed(2)),
+          [`Custo ${mesInfo.short} (Real)`]: Number(custoHist.toFixed(2)),
+          'Variação Orçamentária (R$)': Number(diff.toFixed(2)),
+          Observações: parking > 0 ? `Inclui R$ ${parking.toFixed(2)} (Estacionamento Febrava)` : 'Nenhuma'
+        };
+      });
+
+      const wsResumo = XLSX.utils.json_to_sheet(dataResumo);
+      XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo_Custos");
+
+      XLSX.writeFile(wb, `Samsung_AC_Journey_Plan_Outubro_V4_Consolidado.xlsx`);
+    }
+
+    // Iniciar renderização ao carregar
+    window.addEventListener('DOMContentLoaded', () => {
+      renderDashboard();
+    });
+  </script>
+</body>
+</html>

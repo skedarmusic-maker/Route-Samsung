@@ -930,7 +930,8 @@ export async function POST(request: Request) {
     const { data: dataC, error: errorC } = await supabase.from('consultores').select('*').eq('nome', consultor).single();
     if (errorC || !dataC) return NextResponse.json({ error: `Consultor "${consultor}" não encontrado.` }, { status: 404 });
 
-    const consultorData: ConsultorLocal = { nome: dataC.nome, endereco: dataC.endereco_completo, lat: dataC.lat, lng: dataC.lng };
+    const enderecoConsultor = dataC.endereco_completo || `${dataC.cidade || ''} - ${dataC.uf || 'SP'}`;
+    const consultorData: ConsultorLocal = { nome: dataC.nome, endereco: enderecoConsultor, lat: dataC.lat, lng: dataC.lng, cidade: dataC.cidade, uf_base: dataC.uf };
     const lojasTable = process.env.NEXT_PUBLIC_LOJAS_TABLE || 'lojas_julho';
     let query = supabase.from(lojasTable).select('*');
     
