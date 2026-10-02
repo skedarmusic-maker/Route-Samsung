@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Samsung AC | Visão Geral Consolidada - Journey Plan Outubro V4</title>
+  <title>Samsung AC | Visão Geral Consolidada - Journey Plan Outubro V6</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,7 +82,7 @@
           <div class="flex items-center gap-2">
             <span class="text-xs font-black tracking-widest text-[#1428A0] uppercase">Samsung AC</span>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 uppercase tracking-wider">
-              Versão V4 Oficial
+              Versão V6 (OSRM) Oficial
             </span>
           </div>
           <h1 class="text-lg font-black text-slate-900 tracking-tight">Visão Geral Consolidada — Journey Plan</h1>
@@ -134,7 +134,7 @@
           </span>
           <span class="text-xs text-blue-200 font-medium">• Validação de Rota e Previsibilidade Financeira</span>
         </div>
-        <h2 class="text-xl font-black tracking-tight">Cenário Aprovado V4 — Ajustes Operacionais Samsung</h2>
+        <h2 class="text-xl font-black tracking-tight">Cenário Aprovado V6 — Ajustes Operacionais Samsung</h2>
         <p class="text-xs text-blue-100/80 mt-1 max-w-2xl leading-relaxed">
           Planejamento logístico dos 4 consultores ativos de campo com roteirização inteligente, inclusão de eventos de capacitação (Febrava) e redução significativa de quilometragem ociosa.
         </p>
@@ -230,7 +230,7 @@
             Balanço Executivo de Eficiência e Redução de Custos
           </h3>
           <p class="text-xs text-slate-500 mt-0.5">
-            Comparativo direto do Journey Plan de Outubro V4 contra o histórico real de <span id="banner-mes-nome" class="font-bold text-slate-700">Setembro/2026</span> para os mesmos 4 consultores ativos.
+            Comparativo direto do Journey Plan de Outubro V6 contra o histórico real de <span id="banner-mes-nome" class="font-bold text-slate-700">Setembro/2026</span> para os mesmos 4 consultores ativos.
           </p>
         </div>
         <div class="flex items-center gap-3">
@@ -472,7 +472,7 @@
 
   <!-- FOOTER -->
   <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 no-print mt-auto">
-    <p>Painel Gerencial Oficial — Protrade MKT / Samsung AC • Outubro 2026 (Versão V4)</p>
+    <p>Painel Gerencial Oficial — Protrade MKT / Samsung AC • Outubro 2026 (Versão V6 (OSRM))</p>
   </footer>
 
   <!-- SCRIPT DATA & LOGIC -->
@@ -512,7 +512,7 @@
       document.getElementById('th-km-hist').innerText = `KM ${mesInfo.short} (Real)`;
       document.getElementById('th-custo-hist').innerText = `Custo ${mesInfo.short} (Real)`;
 
-      // Totais Outubro V4
+      // Totais Outubro V6
       let totalOutKM = 0;
       let totalOutCusto = 0;
       let totalLojas = 0;
@@ -982,7 +982,7 @@
       const wsResumo = XLSX.utils.json_to_sheet(dataResumo);
       XLSX.utils.book_append_sheet(wb, wsResumo, "Resumo_Custos");
 
-      XLSX.writeFile(wb, `Samsung_AC_Journey_Plan_Outubro_V4_Consolidado.xlsx`);
+      XLSX.writeFile(wb, `Samsung_AC_Journey_Plan_Outubro_V6_Consolidado.xlsx`);
     }
 
     // Iniciar renderização ao carregar
