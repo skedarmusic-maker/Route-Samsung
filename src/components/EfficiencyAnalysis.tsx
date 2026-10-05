@@ -281,7 +281,7 @@ export default function EfficiencyAnalysis({ resultado, totalEstimatedKM, histor
                       >
                         {Math.round(stats.currentKM)} km
                       </div>
-                      <p className="text-[10px] font-bold text-blue-600 uppercase">Projetado (Maio)</p>
+                      <p className="text-[10px] font-bold text-blue-600 uppercase">Projetado</p>
                     </div>
                   </div>
 
