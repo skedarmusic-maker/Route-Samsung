@@ -3,7 +3,8 @@
 import React, { useMemo, useState } from 'react';
 import { 
   TrendingUp, Users, Map, DollarSign, Activity, 
-  ArrowLeft, Download, Layers, CheckCircle2 
+  ArrowLeft, Download, Layers, CheckCircle2,
+  Eye, X, Search, FileCode, Filter, ChevronRight, PieChart, Sparkles
 } from 'lucide-react';
 import * as xlsx from 'xlsx';
 import dynamic from 'next/dynamic';
@@ -45,6 +46,9 @@ const MES_OPCOES = [
 
 export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar, onSelectRoteiro }: ConsolidatedDashboardProps) {
   const [mesComparacao, setMesComparacao] = useState<string>('09');
+  const [showModalDespesas, setShowModalDespesas] = useState<boolean>(false);
+  const [selectedConsultorModal, setSelectedConsultorModal] = useState<string>('todos');
+  const [searchTermModal, setSearchTermModal] = useState<string>('');
 
   const mesAtualInfo = useMemo(() => {
     return MES_OPCOES.find(m => m.id === mesComparacao) || MES_OPCOES[0];
@@ -118,6 +122,285 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
 
     return { totalValor, valorViagem, valorLocal, porCategoria: categoriasOrdenadas };
   }, [mesComparacao]);
+
+  const microDespesasData = useMemo(() => {
+    const rawData = (despesasHistoricasMeses as any)[mesComparacao] || {};
+    const items: Array<{
+      consultor: string;
+      categoria: string;
+      valor: number;
+      isViagem: boolean;
+    }> = [];
+
+    const consultorTotals: Record<string, { total: number; km: number; viagem: number; local: number; count: number }> = {};
+
+    Object.entries(rawData).forEach(([consultor, info]: [string, any]) => {
+      const vTotal = info.valor || 0;
+      const kTotal = info.km || 0;
+      let totalViagem = 0;
+      let totalLocal = 0;
+      let count = 0;
+
+      if (info.detalhes) {
+        Object.entries(info.detalhes).forEach(([cat, val]: [string, any]) => {
+          count++;
+          const catNorm = cat.toLowerCase();
+          const isViag = (
+            catNorm.includes('viagem') || 
+            catNorm.includes('pedágio') || 
+            catNorm.includes('pedagio') || 
+            catNorm.includes('estacionamento') || 
+            catNorm.includes('hospedagem') ||
+            catNorm.includes('aéreo') ||
+            catNorm.includes('aereo') ||
+            catNorm.includes('rodoviário') ||
+            catNorm.includes('rodoviario') ||
+            catNorm.includes('jantar') ||
+            catNorm.includes('almoço') ||
+            catNorm.includes('café')
+          );
+
+          if (isViag) totalViagem += val;
+          else totalLocal += val;
+
+          items.push({
+            consultor,
+            categoria: cat,
+            valor: val,
+            isViagem: isViag
+          });
+        });
+      } else {
+        count = 1;
+        totalLocal = vTotal;
+        items.push({
+          consultor,
+          categoria: 'Percurso / Reembolso KM',
+          valor: vTotal,
+          isViagem: false
+        });
+      }
+
+      consultorTotals[consultor] = {
+        total: vTotal,
+        km: kTotal,
+        viagem: totalViagem,
+        local: totalLocal,
+        count
+      };
+    });
+
+    return { items, consultorTotals, rawData };
+  }, [mesComparacao]);
+
+  const exportDynamicExpensesHTML = () => {
+    const mesLabel = mesAtualInfo.label;
+    const mesShort = mesAtualInfo.short;
+    const rawData = microDespesasData.rawData;
+
+    const htmlContent = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhamento Micro de Despesas Operacionais - ${mesLabel}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Inter', sans-serif; } </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-gray-800 p-4 md:p-8">
+  <div class="max-w-6xl mx-auto bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden">
+    <div class="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-6 md:p-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold mb-2">
+            PROTRADE & SAMSUNG | RELATÓRIO EXECUTIVO MICRO
+          </div>
+          <h1 class="text-2xl md:text-3xl font-black">Detalhamento Micro de Despesas Operacionais</h1>
+          <p class="text-blue-200 text-sm mt-1">Mês de Referência: <span class="font-bold text-white">${mesLabel}</span></p>
+        </div>
+        <div class="bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/10 text-right">
+          <p class="text-[10px] uppercase font-bold text-gray-300">Total Declarado</p>
+          <p class="text-2xl font-black text-green-400">
+            ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(globalExpenseStats.totalValor)}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 border-b border-gray-200 bg-gray-50 flex flex-wrap gap-3 items-center justify-between">
+      <div class="flex flex-wrap gap-2" id="consultor-tabs"></div>
+      <input type="text" id="search-input" placeholder="🔍 Buscar por categoria ou consultor..." class="px-4 py-2 bg-white border border-gray-300 rounded-xl text-xs font-semibold w-full md:w-64 focus:outline-none focus:ring-2 focus:ring-blue-600">
+    </div>
+
+    <div class="p-6 md:p-8 space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="kpi-cards"></div>
+
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="font-bold text-gray-800 text-xs uppercase tracking-wider">Itens Detalhados de Despesa</h3>
+          <span class="text-xs text-gray-500 font-semibold" id="items-count">-- itens</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-gray-100 text-gray-600 font-black uppercase text-[10px] tracking-wider border-b border-gray-200">
+              <tr>
+                <th class="px-4 py-3">Consultor</th>
+                <th class="px-4 py-3">Categoria / Descrição</th>
+                <th class="px-4 py-3 text-center">Tipo</th>
+                <th class="px-4 py-3 text-right">Valor (R$)</th>
+                <th class="px-4 py-3 text-right">% do Total Consultor</th>
+              </tr>
+            </thead>
+            <tbody id="expense-table-body" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 text-center text-xs text-gray-500 font-semibold">
+      Gerado via Sistema Route Samsung • Vexpenses & QT380
+    </div>
+  </div>
+
+  <script>
+    const data = ${JSON.stringify(rawData)};
+    let activeConsultor = 'todos';
+    let searchQuery = '';
+
+    function formatBRL(v) {
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v);
+    }
+
+    function renderTabs() {
+      const tabsContainer = document.getElementById('consultor-tabs');
+      const consultores = Object.keys(data);
+      let html = \`<button onclick="setConsultor('todos')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all \${activeConsultor === 'todos' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-200 border border-gray-200'}">Todos os Consultores</button>\`;
+      
+      consultores.forEach(c => {
+        const val = data[c].valor || 0;
+        const shortName = c.split(' ')[0] + ' ' + (c.split(' ')[1] || '');
+        html += \`<button onclick="setConsultor('\${c}')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all \${activeConsultor === c ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-200 border border-gray-200'}">\${shortName} (\${formatBRL(val)})</button>\`;
+      });
+
+      tabsContainer.innerHTML = html;
+    }
+
+    function setConsultor(c) {
+      activeConsultor = c;
+      renderTabs();
+      renderContent();
+    }
+
+    document.getElementById('search-input').addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase();
+      renderContent();
+    });
+
+    function renderContent() {
+      const items = [];
+      let totalFiltered = 0;
+      let totalViagem = 0;
+      let totalLocal = 0;
+
+      Object.entries(data).forEach(([consultor, info]) => {
+        if (activeConsultor !== 'todos' && activeConsultor !== consultor) return;
+        const consultorTotal = info.valor || 0;
+
+        if (info.detalhes) {
+          Object.entries(info.detalhes).forEach(([cat, val]) => {
+            const catNorm = cat.toLowerCase();
+            const isViagem = catNorm.includes('viagem') || catNorm.includes('pedágio') || catNorm.includes('pedagio') || catNorm.includes('estacionamento') || catNorm.includes('hospedagem') || catNorm.includes('aéreo') || catNorm.includes('aereo') || catNorm.includes('rodoviário') || catNorm.includes('rodoviario') || catNorm.includes('jantar') || catNorm.includes('almoço') || catNorm.includes('café');
+            
+            if (searchQuery && !cat.toLowerCase().includes(searchQuery) && !consultor.toLowerCase().includes(searchQuery)) return;
+
+            items.push({
+              consultor,
+              categoria: cat,
+              valor: val,
+              isViagem,
+              pct: consultorTotal > 0 ? (val / consultorTotal) * 100 : 0
+            });
+
+            totalFiltered += val;
+            if (isViagem) totalViagem += val;
+            else totalLocal += val;
+          });
+        } else {
+          if (searchQuery && !consultor.toLowerCase().includes(searchQuery)) return;
+          items.push({
+            consultor,
+            categoria: 'Percurso / KM Declarado',
+            valor: info.valor || 0,
+            isViagem: false,
+            pct: 100
+          });
+          totalFiltered += info.valor || 0;
+          totalLocal += info.valor || 0;
+        }
+      });
+
+      document.getElementById('kpi-cards').innerHTML = \`
+        <div class="p-4 bg-gray-50 border border-gray-200 rounded-2xl">
+          <p class="text-[10px] font-black uppercase text-gray-500">Total Selecionado</p>
+          <p class="text-xl font-black text-gray-900 mt-1">\${formatBRL(totalFiltered)}</p>
+        </div>
+        <div class="p-4 bg-orange-50 border border-orange-200 rounded-2xl">
+          <p class="text-[10px] font-black uppercase text-orange-700">Custos de Viagem & Passagens</p>
+          <p class="text-xl font-black text-orange-900 mt-1">\${formatBRL(totalViagem)}</p>
+        </div>
+        <div class="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+          <p class="text-[10px] font-black uppercase text-blue-700">Custos Locais / KM</p>
+          <p class="text-xl font-black text-blue-900 mt-1">\${formatBRL(totalLocal)}</p>
+        </div>
+      \`;
+
+      document.getElementById('items-count').innerText = items.length + ' lançamentos';
+
+      const tbody = document.getElementById('expense-table-body');
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400 font-medium">Nenhum item de despesa encontrado.</td></tr>';
+        return;
+      }
+
+      items.sort((a, b) => b.valor - a.valor);
+
+      let tbodyHtml = '';
+      items.forEach(item => {
+        tbodyHtml += \`
+          <tr class="hover:bg-blue-50/50 transition-colors">
+            <td class="px-4 py-3 font-bold text-gray-900">\${item.consultor}</td>
+            <td class="px-4 py-3 font-medium text-gray-700">\${item.categoria}</td>
+            <td class="px-4 py-3 text-center">
+              <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold \${item.isViagem ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'}">
+                \${item.isViagem ? 'Viagem' : 'Local'}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-right font-black text-gray-900">\${formatBRL(item.valor)}</td>
+            <td class="px-4 py-3 text-right font-bold text-gray-500">\${item.pct.toFixed(1)}%</td>
+          </tr>
+        \`;
+      });
+
+      tbody.innerHTML = tbodyHtml;
+    }
+
+    renderTabs();
+    renderContent();
+  </script>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Detalhamento_Micro_Despesas_${mesShort.replace('/', '_')}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const stats = useMemo(() => {
     let totalKM = 0;
@@ -448,7 +731,22 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                           )}
                         </td>
                         <td className="px-4 py-4 text-right font-bold text-gray-700 bg-gray-50/50">
-                          {valorHist > 0 ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorHist) : '—'}
+                          {valorHist > 0 ? (
+                            <div className="flex items-center justify-end gap-1">
+                              <span>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorHist)}</span>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedConsultorModal(nome);
+                                  setShowModalDespesas(true);
+                                }}
+                                className="text-[10px] font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200"
+                                title="Ver micro detalhamento de custos"
+                              >
+                                micro
+                              </button>
+                            </div>
+                          ) : '—'}
                         </td>
                         <td className="px-4 py-4 text-right font-black">
                           {valorHist > 0 ? (
@@ -503,9 +801,27 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
 
         {/* ── DESPESAS OPERACIONAIS ── */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 mt-6">
-          <h3 className="font-bold text-gray-800 flex items-center gap-2 mb-4">
-            <DollarSign className="w-5 h-5 text-green-600" /> Detalhamento de Despesas Operacionais ({mesAtualInfo.label.split(' ')[0]})
-          </h3>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <h3 className="font-bold text-gray-800 flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-green-600" /> Detalhamento de Despesas Operacionais ({mesAtualInfo.label.split(' ')[0]})
+            </h3>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => { setSelectedConsultorModal('todos'); setShowModalDespesas(true); }}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all active:scale-95"
+              >
+                <Eye className="w-4 h-4 text-blue-200" /> Ver Micro Detalhado por Consultor
+              </button>
+              <button
+                onClick={exportDynamicExpensesHTML}
+                className="flex items-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all active:scale-95"
+                title="Baixar Arquivo HTML Dinâmico Interativo"
+              >
+                <FileCode className="w-4 h-4 text-emerald-200" /> HTML Dinâmico
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
               <p className="text-xs text-gray-500 font-bold uppercase">Total Declarado</p>
@@ -552,6 +868,204 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
           </div>
         </div>
       </div>
+
+      {/* ── MODAL MICRO DETALHAMENTO DE DESPESAS ── */}
+      {showModalDespesas && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-5xl max-h-[90vh] rounded-3xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-6 flex items-center justify-between shrink-0">
+              <div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-bold uppercase tracking-wider mb-1">
+                  <Sparkles className="w-3 h-3 text-blue-400" /> Auditoria Micro de Custos
+                </div>
+                <h2 className="text-xl font-black text-white flex items-center gap-2">
+                  Detalhamento de Despesas Operacionais — {mesAtualInfo.label}
+                </h2>
+                <p className="text-xs text-blue-200 mt-0.5">Visão micro individualizada por consultor (Vexpenses e QT380)</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={exportDynamicExpensesHTML}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all"
+                  title="Baixar Arquivo HTML Dinâmico Interativo"
+                >
+                  <FileCode className="w-4 h-4" /> Exportar HTML
+                </button>
+                <button
+                  onClick={() => setShowModalDespesas(false)}
+                  className="p-2 hover:bg-white/10 rounded-full text-gray-300 hover:text-white transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Subheader / Filters */}
+            <div className="p-4 bg-gray-50 border-b border-gray-200 flex flex-col md:flex-row gap-3 items-center justify-between shrink-0">
+              {/* Consultant Selector Tabs */}
+              <div className="flex flex-wrap gap-1.5 w-full md:w-auto">
+                <button
+                  onClick={() => setSelectedConsultorModal('todos')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    selectedConsultorModal === 'todos' 
+                      ? 'bg-blue-600 text-white shadow-md' 
+                      : 'bg-white text-gray-600 hover:bg-gray-200 border border-gray-200'
+                  }`}
+                >
+                  Todos os Consultores
+                </button>
+                {Object.keys(microDespesasData.rawData).map((cNome) => {
+                  const info = microDespesasData.rawData[cNome];
+                  const isSelected = selectedConsultorModal === cNome;
+                  const shortName = cNome.split(' ')[0] + ' ' + (cNome.split(' ')[1] || '');
+                  return (
+                    <button
+                      key={cNome}
+                      onClick={() => setSelectedConsultorModal(cNome)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                        isSelected 
+                          ? 'bg-blue-600 text-white shadow-md' 
+                          : 'bg-white text-gray-600 hover:bg-gray-200 border border-gray-200'
+                      }`}
+                    >
+                      {shortName} ({new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(info.valor || 0)})
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Search Bar */}
+              <div className="relative w-full md:w-64">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  value={searchTermModal}
+                  onChange={(e) => setSearchTermModal(e.target.value)}
+                  placeholder="Buscar categoria ou valor..."
+                  className="w-full pl-9 pr-4 py-1.5 bg-white border border-gray-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600"
+                />
+              </div>
+            </div>
+
+            {/* Modal Content / Table */}
+            <div className="p-6 overflow-y-auto space-y-6">
+              {/* Filtered Summary KPIs */}
+              {(() => {
+                const filteredItems = microDespesasData.items.filter(item => {
+                  const matchConsultor = selectedConsultorModal === 'todos' || item.consultor === selectedConsultorModal;
+                  const matchSearch = !searchTermModal || 
+                    item.categoria.toLowerCase().includes(searchTermModal.toLowerCase()) || 
+                    item.consultor.toLowerCase().includes(searchTermModal.toLowerCase());
+                  return matchConsultor && matchSearch;
+                });
+
+                const totalVal = filteredItems.reduce((acc, curr) => acc + curr.valor, 0);
+                const viagemVal = filteredItems.filter(i => i.isViagem).reduce((acc, curr) => acc + curr.valor, 0);
+                const localVal = filteredItems.filter(i => !i.isViagem).reduce((acc, curr) => acc + curr.valor, 0);
+
+                return (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 bg-gray-50 border border-gray-200 rounded-2xl">
+                        <p className="text-[10px] font-black uppercase text-gray-500">Total Selecionado</p>
+                        <p className="text-xl font-black text-gray-900 mt-1">
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalVal)}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-orange-50 border border-orange-200 rounded-2xl">
+                        <p className="text-[10px] font-black uppercase text-orange-700">Custos de Viagem & Passagens</p>
+                        <p className="text-xl font-black text-orange-900 mt-1">
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(viagemVal)}
+                        </p>
+                        <p className="text-[10px] font-bold text-orange-600 mt-0.5">
+                          {totalVal > 0 ? ((viagemVal / totalVal) * 100).toFixed(1) : 0}% do selecionado
+                        </p>
+                      </div>
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+                        <p className="text-[10px] font-black uppercase text-blue-700">Custos Locais / KM</p>
+                        <p className="text-xl font-black text-blue-900 mt-1">
+                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(localVal)}
+                        </p>
+                        <p className="text-[10px] font-bold text-blue-600 mt-0.5">
+                          {totalVal > 0 ? ((localVal / totalVal) * 100).toFixed(1) : 0}% do selecionado
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Table of Expenses */}
+                    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                      <div className="px-6 py-4 bg-gray-50/70 border-b border-gray-200 flex justify-between items-center">
+                        <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider">
+                          {selectedConsultorModal === 'todos' ? 'Lançamentos Detalhados de Todos os Consultores' : `Lançamentos Detalhados de ${selectedConsultorModal}`}
+                        </h4>
+                        <span className="text-xs font-bold text-gray-500">{filteredItems.length} registros</span>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs">
+                          <thead className="bg-gray-100/80 text-gray-600 font-black uppercase text-[10px] tracking-wider border-b border-gray-200">
+                            <tr>
+                              <th className="px-5 py-3.5">Consultor</th>
+                              <th className="px-5 py-3.5">Categoria / Item de Despesa</th>
+                              <th className="px-4 py-3.5 text-center">Tipo</th>
+                              <th className="px-5 py-3.5 text-right">Valor (R$)</th>
+                              <th className="px-5 py-3.5 text-right">% no Consultor</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {filteredItems.length === 0 ? (
+                              <tr>
+                                <td colSpan={5} className="px-6 py-8 text-center text-gray-400 font-medium">
+                                  Nenhum item de despesa encontrado para os filtros selecionados.
+                                </td>
+                              </tr>
+                            ) : (
+                              filteredItems.sort((a, b) => b.valor - a.valor).map((item, idx) => {
+                                const cTotal = microDespesasData.rawData[item.consultor]?.valor || 0;
+                                const pct = cTotal > 0 ? (item.valor / cTotal) * 100 : 0;
+                                return (
+                                  <tr key={idx} className="hover:bg-blue-50/40 transition-colors">
+                                    <td className="px-5 py-3.5 font-bold text-gray-900">{item.consultor}</td>
+                                    <td className="px-5 py-3.5 font-medium text-gray-700">{item.categoria}</td>
+                                    <td className="px-4 py-3.5 text-center">
+                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                                        item.isViagem ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'
+                                      }`}>
+                                        {item.isViagem ? 'Viagem' : 'Local'}
+                                      </span>
+                                    </td>
+                                    <td className="px-5 py-3.5 text-right font-black text-gray-900">
+                                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.valor)}
+                                    </td>
+                                    <td className="px-5 py-3.5 text-right font-bold text-gray-500">
+                                      {pct.toFixed(1)}%
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-between items-center text-xs shrink-0">
+              <span className="text-gray-500 font-medium">Fonte de dados: Vexpenses V2 / QT380 Planilha Mês Anterior</span>
+              <button
+                onClick={() => setShowModalDespesas(false)}
+                className="px-5 py-2 bg-gray-900 hover:bg-black text-white font-bold rounded-xl shadow-sm transition-all"
+              >
+                Fechar Visualização
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
