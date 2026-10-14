@@ -212,10 +212,8 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChan
 // Constantes Injetadas
 // ─────────────────────────────────────────────────────────
 const ROTA_MAP: Record<string, string> = {
-  "PAULO SERGIO MARQUES DA SILVA": "SPC2",
   "LIEDY AQUINO GOMES DOS SANTOS": "SPC1",
   "MARCIO JOSE FLORES PEREIRA": "SUL_1",
-  "ALEXANDRE RIBEIRO LIMA": "SPI_2",
   "DIOGO DO NASCIMENTO SANTOS": "RJ",
   "TATIANE SOUZA DOS SANTOS": "NE_1",
   "LUIZ FALCAO DE SOUZA NETO": "NE_2",
@@ -1889,7 +1887,8 @@ export default function ConfigurationPanel() {
             canal: l.canal,
             periodo: l.periodo,
             status: l.status,
-            consultor: l.consultor_vinculado,
+            consultor: l.consultor || l.consultor_vinculado || '',
+            rota: l.rota || '',
             lat: l.lat,
             lng: l.lng
           }));

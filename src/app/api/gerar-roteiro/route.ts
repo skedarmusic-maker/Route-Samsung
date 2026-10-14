@@ -124,10 +124,8 @@ const HORARIO_TRES_LOJAS = [
   { checkIn: '15:00', checkOut: '18:00' },
 ];
 const ROTA_MAP: Record<string, string> = {
-  "PAULO SERGIO MARQUES DA SILVA": "SPC2",
   "LIEDY AQUINO GOMES DOS SANTOS": "SPC1",
   "MARCIO JOSE FLORES PEREIRA": "SUL_1",
-  "ALEXANDRE RIBEIRO LIMA": "SPI_2",
   "DIOGO DO NASCIMENTO SANTOS": "RJ",
   "TATIANE SOUZA DOS SANTOS": "NE_1",
   "LUIZ FALCAO DE SOUZA NETO": "NE_2",
@@ -937,7 +935,7 @@ export async function POST(request: Request) {
     let query = supabase.from(lojasTable).select('*');
     
     const rotasToFetch = [consultor, ...selectedRotasBase];
-    const orCondition = rotasToFetch.map(r => `consultor_vinculado.eq."${r}"`).join(',');
+    const orCondition = rotasToFetch.map(r => `consultor.eq."${r}"`).join(',');
     query = query.or(orCondition);
     const { data: dataL, error: errorL } = await query;
     if (errorL) return NextResponse.json({ error: 'Erro ao buscar lojas.' }, { status: 500 });
@@ -959,7 +957,7 @@ export async function POST(request: Request) {
         return true;
       })
       .map(l => ({
-        trader: '', cliente: l.cliente, bandeira: '', nome_pdv_novo: l.nome_pdv, cnpj: l.codigo_sap, endereco: l.endereco, canal: '', consultor: l.consultor_vinculado, cidade: l.cidade, uf: l.uf, status: l.status, cluster: l.cluster, periodo: l.periodo, lat: l.lat, lng: l.lng
+        trader: '', cliente: l.cliente, bandeira: '', nome_pdv_novo: l.nome_pdv, cnpj: l.codigo_sap, endereco: l.endereco, canal: '', consultor: l.consultor || l.consultor_vinculado || '', cidade: l.cidade, uf: l.uf, status: l.status, cluster: l.cluster, periodo: l.periodo, lat: l.lat, lng: l.lng
       }));
 
     // Extrair UF da base de dados de forma robusta
