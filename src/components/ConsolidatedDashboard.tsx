@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { 
-  TrendingUp, Users, Map, DollarSign, Activity, 
+import {
+  TrendingUp, Users, Map, DollarSign, Activity,
   ArrowLeft, Download, Layers, CheckCircle2,
   Eye, X, Search, FileCode, Filter, ChevronRight, PieChart, Sparkles
 } from 'lucide-react';
@@ -94,13 +94,13 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
             targetCat = 'Percurso';
           }
           porCategoria[targetCat] = (porCategoria[targetCat] || 0) + val;
-          
+
           const catNorm = cat.toLowerCase();
           if (
-            catNorm.includes('viagem') || 
-            catNorm.includes('pedágio') || 
-            catNorm.includes('pedagio') || 
-            catNorm.includes('estacionamento') || 
+            catNorm.includes('viagem') ||
+            catNorm.includes('pedágio') ||
+            catNorm.includes('pedagio') ||
+            catNorm.includes('estacionamento') ||
             catNorm.includes('hospedagem') ||
             catNorm.includes('jantar') ||
             catNorm.includes('almoço') ||
@@ -146,10 +146,10 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
           count++;
           const catNorm = cat.toLowerCase();
           const isViag = (
-            catNorm.includes('viagem') || 
-            catNorm.includes('pedágio') || 
-            catNorm.includes('pedagio') || 
-            catNorm.includes('estacionamento') || 
+            catNorm.includes('viagem') ||
+            catNorm.includes('pedágio') ||
+            catNorm.includes('pedagio') ||
+            catNorm.includes('estacionamento') ||
             catNorm.includes('hospedagem') ||
             catNorm.includes('aéreo') ||
             catNorm.includes('aereo') ||
@@ -204,16 +204,16 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
       if (!d) return;
 
       let km = d.totalEstimatedKM || 0;
-      
+
       // FALLBACK: Se o KM não estiver no JSON (roteiros antigos), calculamos agora
       if (km === 0 && d.roteiro) {
         const consultorInfo = consultores.find(c => normalize(c.nome) === normalize(r.consultor));
         const consultorCoords = consultorInfo ? { lat: consultorInfo.lat, lng: consultorInfo.lng } : { lat: 0, lng: 0 };
-        
+
         if (consultorCoords.lat !== 0) {
           d.roteiro.forEach((dia: any) => {
             if (dia.lojas.length === 0) return;
-            
+
             let firstStore = dia.lojas[0];
             let firstCoords = { lat: firstStore.lat, lng: firstStore.lng };
             if (!firstCoords.lat || !firstCoords.lng) {
@@ -224,10 +224,10 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
 
             const distToHub = (firstCoords.lat && firstCoords.lng) ? computeDistance(consultorCoords, firstCoords) : 0;
             const goesByPlane = distToHub > 350;
-            
+
             let curr = goesByPlane ? firstCoords : consultorCoords;
             let diaEstimado = 0;
-            
+
             dia.lojas.forEach((loja: any, idx: number) => {
               let lat = loja.lat;
               let lng = loja.lng;
@@ -251,7 +251,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
 
       totalKM += km;
       totalLojas += d.totalLojas || 0;
-      
+
       let visitas = 0;
       d.roteiro?.forEach((dia: any) => {
         visitas += dia.lojas?.length || 0;
@@ -955,7 +955,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
       const kmEst = Math.round(c.km);
       const custoKM = c.km * 0.80;
       const totalCost = c.custo;
-      
+
       let obs = [];
       if (parking > 0) {
         obs.push(`Estacionamento/Eventos: R$ ${parking.toFixed(2)} (Febrava)`);
@@ -982,7 +982,8 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
 
   return (
     <div id="consolidated-dashboard-container" className="fixed inset-0 bg-gray-50 z-[60] flex flex-col overflow-hidden">
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @media print {
           body * {
             visibility: hidden;
@@ -1020,8 +1021,8 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
 
           <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl ml-4">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Base Comparação:</span>
-            <select 
-              value={mesComparacao} 
+            <select
+              value={mesComparacao}
               onChange={(e) => setMesComparacao(e.target.value)}
               className="bg-transparent text-xs font-bold text-gray-700 focus:outline-none cursor-pointer"
             >
@@ -1033,13 +1034,13 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
         </div>
 
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={() => window.print()}
             className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition-all shadow-md active:scale-95 text-sm"
           >
             <Download className="w-4 h-4" /> Baixar PDF
           </button>
-          <button 
+          <button
             onClick={handleExportAll}
             className="flex items-center gap-2 px-4 py-2 bg-[#1428A0] text-white font-bold rounded-xl hover:bg-blue-800 transition-all shadow-md active:scale-95 text-sm"
           >
@@ -1123,15 +1124,15 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                     const roteiroOriginal = roteiros.find(r => normalize(r.consultor) === normalize(nome));
                     const mesData = (despesasHistoricasMeses as any)[mesComparacao] || {};
                     const hist = Object.entries(mesData).find(([k]) => normalize(k) === normalize(nome))?.[1] as any;
-                    
+
                     const kmHist = hist?.km || 0;
                     const valorHist = hist?.valor || 0;
                     const variacao = valorHist > 0 ? c.custo - valorHist : 0;
                     const economizou = variacao < 0;
 
                     return (
-                      <tr 
-                        key={nome} 
+                      <tr
+                        key={nome}
                         onClick={() => roteiroOriginal && onSelectRoteiro(roteiroOriginal.dados_roteiro)}
                         className="hover:bg-blue-50 transition-colors cursor-pointer group"
                       >
@@ -1186,7 +1187,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
             <h3 className="font-bold text-gray-800 flex items-center gap-2 mb-6">
               <Activity className="w-5 h-5 text-blue-600" /> Resumo Operacional
             </h3>
-            
+
             <div className="space-y-6">
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-bold">
@@ -1325,11 +1326,10 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
               <div className="flex flex-wrap gap-1.5 w-full md:w-auto">
                 <button
                   onClick={() => setSelectedConsultorModal('todos')}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                    selectedConsultorModal === 'todos' 
-                      ? 'bg-blue-600 text-white shadow-md' 
-                      : 'bg-white text-gray-600 hover:bg-gray-200 border border-gray-200'
-                  }`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${selectedConsultorModal === 'todos'
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-white text-gray-600 hover:bg-gray-200 border border-gray-200'
+                    }`}
                 >
                   Todos os Consultores
                 </button>
@@ -1341,11 +1341,10 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                     <button
                       key={cNome}
                       onClick={() => setSelectedConsultorModal(cNome)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                        isSelected 
-                          ? 'bg-blue-600 text-white shadow-md' 
-                          : 'bg-white text-gray-600 hover:bg-gray-200 border border-gray-200'
-                      }`}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${isSelected
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'bg-white text-gray-600 hover:bg-gray-200 border border-gray-200'
+                        }`}
                     >
                       {shortName} ({new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(info.valor || 0)})
                     </button>
@@ -1372,8 +1371,8 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
               {(() => {
                 const filteredItems = microDespesasData.items.filter(item => {
                   const matchConsultor = selectedConsultorModal === 'todos' || item.consultor === selectedConsultorModal;
-                  const matchSearch = !searchTermModal || 
-                    item.categoria.toLowerCase().includes(searchTermModal.toLowerCase()) || 
+                  const matchSearch = !searchTermModal ||
+                    item.categoria.toLowerCase().includes(searchTermModal.toLowerCase()) ||
                     item.consultor.toLowerCase().includes(searchTermModal.toLowerCase());
                   return matchConsultor && matchSearch;
                 });
@@ -1514,9 +1513,8 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                                     <td className="px-5 py-3.5 font-bold text-gray-900">{item.consultor}</td>
                                     <td className="px-5 py-3.5 font-medium text-gray-700">{item.categoria}</td>
                                     <td className="px-4 py-3.5 text-center">
-                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                                        item.isViagem ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'
-                                      }`}>
+                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${item.isViagem ? 'bg-orange-100 text-orange-800' : 'bg-blue-100 text-blue-800'
+                                        }`}>
                                         {item.isViagem ? 'Viagem' : 'Local'}
                                       </span>
                                     </td>

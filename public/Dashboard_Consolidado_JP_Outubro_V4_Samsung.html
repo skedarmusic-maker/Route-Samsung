@@ -682,7 +682,7 @@
           </td>
           <td class="px-6 py-4 text-right font-black">
             ${custoHist > 0 ? `
-              <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold ${economizou ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-bold whitespace-nowrap ${economizou ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
                 ${economizou ? '' : '+'}${formatCurrency(variacao)}
               </span>
             ` : '—'}
@@ -705,7 +705,7 @@
           <td class="px-4 py-3.5 text-right text-blue-900 font-black bg-blue-50/50">${formatCurrency(totalOutCusto)}</td>
           <td class="px-4 py-3.5 text-right text-slate-800 font-black bg-slate-100/50">${formatCurrency(totalHistCustoAtivo)}</td>
           <td class="px-6 py-3.5 text-right">
-            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black bg-emerald-100 text-emerald-800">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-black whitespace-nowrap bg-emerald-100 text-emerald-800">
               ${diffTotalCusto < 0 ? '' : '+'}${formatCurrency(diffTotalCusto)}
             </span>
           </td>

@@ -37,7 +37,8 @@ const ROTA_MAP: Record<string, string> = {
   "ALEXANDRE RIBEIRO LIMA": "SPI_2",
   "DIOGO DO NASCIMENTO SANTOS": "RJ",
   "TATIANE SOUZA DOS SANTOS": "NE_1",
-  "LUIZ FALCAO DE SOUZA NETO": "NE_2"
+  "LUIZ FALCAO DE SOUZA NETO": "NE_2",
+  "GIOVANA": "SPI_1"
 };
 
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
