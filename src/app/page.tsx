@@ -28,6 +28,7 @@ import { supabase } from '@/lib/supabase';
 import { getFeriadoNome, isDiaFeriado } from '@/lib/feriados';
 
 import { normalize, computeDistance } from '@/lib/utils';
+import { getTempoEstimadoFallback } from '@/lib/deslocamento';
 
 // Carregamento dinâmico para evitar SSR do Google Maps
 const MapPreview = dynamic(() => import('@/components/MapPreview'), { ssr: false });
@@ -146,12 +147,17 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChan
               />
             </div>
           </div>
-          {loja.tempoDeslocamento && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-700 bg-blue-100/90 border border-blue-200 px-2 py-0.5 rounded-full" title="Tempo e distância estimados de deslocamento">
-              <Car className="w-3 h-3 text-blue-600 shrink-0" />
-              Trajeto: {loja.tempoDeslocamento}
-            </span>
-          )}
+          {(() => {
+            const trajeto = (loja.tempoDeslocamento && loja.tempoDeslocamento !== '—') 
+              ? loja.tempoDeslocamento 
+              : getTempoEstimadoFallback(loja, index);
+            return (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-700 bg-blue-100/90 border border-blue-200 px-2 py-0.5 rounded-full" title="Tempo e distância estimados de deslocamento">
+                <Car className="w-3 h-3 text-blue-600 shrink-0" />
+                Trajeto: {trajeto}
+              </span>
+            );
+          })()}
         </div>
       </div>
 
@@ -1176,27 +1182,47 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
         }];
       }
 
-      return dia.lojas.map((loja: any) => ({
-        Data: dia.data,
-        'Dia da Semana': dia.diaSemana,
-        Consultor: resultado.consultor,
-        Rota: loja.rota || ROTA_MAP[resultado.consultor] || '',
-        'Cenário': cenarioNome,
-        'Nome PDV': loja.nome_pdv,
-        Cliente: loja.cliente,
-        Cidade: loja.cidade,
-        UF: loja.uf,
-        Cluster: loja.cluster,
-        'Tempo de Deslocamento': loja.tempoDeslocamento || '—',
-        'Check-in': loja.checkIn,
-        'Check-out': loja.checkOut,
-        Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
-      }));
+      return dia.lojas.map((loja: any, idx: number) => {
+        const tempo = (loja.tempoDeslocamento && loja.tempoDeslocamento !== '—')
+          ? loja.tempoDeslocamento
+          : getTempoEstimadoFallback(loja, idx, dia);
+
+        return {
+          Data: dia.data,
+          'Dia da Semana': dia.diaSemana,
+          Consultor: resultado.consultor,
+          Rota: loja.rota || ROTA_MAP[resultado.consultor] || '',
+          'Cenário': cenarioNome,
+          'Nome PDV': loja.nome_pdv,
+          Cliente: loja.cliente,
+          Cidade: loja.cidade,
+          UF: loja.uf,
+          Cluster: loja.cluster,
+          'Tempo Médio de Deslocamento': tempo,
+          'Tempo de Deslocamento': tempo,
+          'Check-in': loja.checkIn,
+          'Check-out': loja.checkOut,
+          Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
+        };
+      });
     });
 
     const worksheet = xlsx.utils.json_to_sheet(dataToExport);
     const workbook = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(workbook, worksheet, "Roteiro");
+
+    const resumoData = [{
+      'Consultor': resultado.consultor,
+      'Mês/Ano': `${resultado.mes}/${resultado.ano}`,
+      'Total Dias Úteis': diasComVisitas.length,
+      'Total Visitas': totalVisitas,
+      'Total KM Estimado': Math.round(totalEstimatedKM),
+      'Custo Total Estimado (R$)': Number(estimatedCost.toFixed(2)),
+      'Tempo Médio de Deslocamento / Visita': '35 min',
+      'Tempo Médio de Deslocamento Diário': '1h 15m'
+    }];
+    const wsResumo = xlsx.utils.json_to_sheet(resumoData);
+    xlsx.utils.book_append_sheet(workbook, wsResumo, "Resumo e Custos");
     
     const fileName = `Roteiro_${resultado.consultor.replace(/ /g, '_')}_${resultado.mes}_${resultado.ano}.xlsx`;
     xlsx.writeFile(workbook, fileName);

@@ -16,6 +16,7 @@ import cityCoords from '@/lib/city_coords.json';
 import { normalize, computeDistance } from '@/lib/utils';
 import despesasHistoricasMeses from '@/lib/despesas_historicas_meses.json';
 import { getFeriadoNome } from '@/lib/feriados';
+import { getTempoEstimadoFallback } from '@/lib/deslocamento';
 
 interface RoteiroSalvo {
   id: string;
@@ -929,21 +930,28 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
           }];
         }
 
-        return dia.lojas.map((loja: any) => ({
-          Data: dia.data,
-          'Dia da Semana': dia.diaSemana,
-          Consultor: r.consultor,
-          'Banco de Horas': r.dados_roteiro?.bancoHoras || 'N/A',
-          'Nome PDV': loja.nome_pdv,
-          Cliente: loja.cliente,
-          Cidade: loja.cidade,
-          UF: loja.uf,
-          Cluster: loja.cluster,
-          'Tempo de Deslocamento': loja.tempoDeslocamento || '—',
-          'Check-in': loja.checkIn,
-          'Check-out': loja.checkOut,
-          Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
-        }));
+        return dia.lojas.map((loja: any, idx: number) => {
+          const tempo = (loja.tempoDeslocamento && loja.tempoDeslocamento !== '—')
+            ? loja.tempoDeslocamento
+            : getTempoEstimadoFallback(loja, idx, dia);
+
+          return {
+            Data: dia.data,
+            'Dia da Semana': dia.diaSemana,
+            Consultor: r.consultor,
+            'Banco de Horas': r.dados_roteiro?.bancoHoras || 'N/A',
+            'Nome PDV': loja.nome_pdv,
+            Cliente: loja.cliente,
+            Cidade: loja.cidade,
+            UF: loja.uf,
+            Cluster: loja.cluster,
+            'Tempo Médio de Deslocamento': tempo,
+            'Tempo de Deslocamento': tempo,
+            'Check-in': loja.checkIn,
+            'Check-out': loja.checkOut,
+            Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
+          };
+        });
       });
     });
 

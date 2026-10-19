@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import * as xlsx from 'xlsx';
 import { getFeriadoNome } from '@/lib/feriados';
+import { getTempoEstimadoFallback } from '@/lib/deslocamento';
 
 interface RoteiroSalvo {
   id: string;
@@ -177,16 +178,23 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
         if (feriadoNome) {
           return [{ Data: dia.data, 'Dia da Semana': dia.diaSemana, Consultor: resultado.consultor, Rota: ROTA_MAP[resultado.consultor] || '', Versão: versaoNome, Cenário: r.cenario || 'Principal', 'Nome PDV': feriadoNome, Status: 'FERIADO/FOLGA' }];
         }
-        return (dia.lojas || []).map((loja: any) => ({
-          Data: dia.data, 'Dia da Semana': dia.diaSemana,
-          Consultor: resultado.consultor, Rota: loja.rota || ROTA_MAP[resultado.consultor] || '',
-          Versão: versaoNome, Cenário: r.cenario || 'Principal',
-          'Nome PDV': loja.nome_pdv, Cliente: loja.cliente,
-          Cidade: loja.cidade, UF: loja.uf, Cluster: loja.cluster,
-          'Tempo de Deslocamento': loja.tempoDeslocamento || '—',
-          'Check-in': loja.checkIn, 'Check-out': loja.checkOut,
-          Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
-        }));
+        return (dia.lojas || []).map((loja: any, idx: number) => {
+          const tempo = (loja.tempoDeslocamento && loja.tempoDeslocamento !== '—')
+            ? loja.tempoDeslocamento
+            : getTempoEstimadoFallback(loja, idx, dia);
+
+          return {
+            Data: dia.data, 'Dia da Semana': dia.diaSemana,
+            Consultor: resultado.consultor, Rota: loja.rota || ROTA_MAP[resultado.consultor] || '',
+            Versão: versaoNome, Cenário: r.cenario || 'Principal',
+            'Nome PDV': loja.nome_pdv, Cliente: loja.cliente,
+            Cidade: loja.cidade, UF: loja.uf, Cluster: loja.cluster,
+            'Tempo Médio de Deslocamento': tempo,
+            'Tempo de Deslocamento': tempo,
+            'Check-in': loja.checkIn, 'Check-out': loja.checkOut,
+            Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
+          };
+        });
       });
     });
 
@@ -217,6 +225,8 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
         'Custo KM (R$ 0,80)': Number(custoKM.toFixed(2)),
         'Custos Extras / Eventos (R$)': Number(parking.toFixed(2)),
         'Custo Total Estimado (R$)': Number(totalCost.toFixed(2)),
+        'Tempo Médio de Deslocamento / Visita': '35 min',
+        'Tempo Médio de Deslocamento Diário': '1h 15m',
         'Observações': obs.join(' | ') || 'Nenhum'
       };
     });
