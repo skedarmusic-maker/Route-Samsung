@@ -183,6 +183,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
           Versão: versaoNome, Cenário: r.cenario || 'Principal',
           'Nome PDV': loja.nome_pdv, Cliente: loja.cliente,
           Cidade: loja.cidade, UF: loja.uf, Cluster: loja.cluster,
+          'Tempo de Deslocamento': loja.tempoDeslocamento || '—',
           'Check-in': loja.checkIn, 'Check-out': loja.checkOut,
           Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
         }));

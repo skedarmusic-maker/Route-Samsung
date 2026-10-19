@@ -939,6 +939,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
           Cidade: loja.cidade,
           UF: loja.uf,
           Cluster: loja.cluster,
+          'Tempo de Deslocamento': loja.tempoDeslocamento || '—',
           'Check-in': loja.checkIn,
           'Check-out': loja.checkOut,
           Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
