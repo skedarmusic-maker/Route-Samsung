@@ -13,6 +13,8 @@ export interface LojaVisita {
   rota?: string;
   lat?: number;
   lng?: number;
+  tempoDeslocamento?: string;
+  kmTrecho?: number;
 }
 
 export interface RoteiroDia {

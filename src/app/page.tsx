@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 import {
   Calendar, Map as MapLucide, CheckCircle, Users, Loader2, AlertCircle,
   Clock, MapPin, Building2, Tag, Plane, ArrowLeft, Navigation, Save, Download,
-  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe, Hotel
+  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe, Hotel, Car
 } from 'lucide-react';
 import SugestaoJourney from '@/components/SugestaoJourney';
 import RoteirosSalvos from '@/components/RoteirosSalvos';
@@ -122,28 +122,36 @@ function LojaCard({ loja, index, onBuscarVoo, chosenFlight, onRemove, onTimeChan
         <span className="flex items-center gap-1"><Tag className="w-3 h-3 shrink-0" />Cluster: {loja.cluster}</span>
         <span className="flex items-center gap-1 col-span-2"><MapPin className="w-3 h-3 shrink-0" />{loja.cidade} - {loja.uf}</span>
         
-        <div className="flex items-center gap-1 col-span-2 mt-0.5">
-          <Clock className="w-3 h-3 shrink-0" />
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            className="flex items-center gap-0.5 bg-white/50 border border-gray-200 rounded px-1 px-1.5 py-0.5"
-          >
-            <input 
-              type="text" 
-              value={loja.checkIn} 
-              onChange={(e) => onTimeChange?.(e.target.value, loja.checkOut)}
-              className="w-9 bg-transparent border-none outline-none text-[11px] font-bold text-gray-700 text-center focus:ring-0 p-0"
-              maxLength={5}
-            />
-            <span className="text-gray-400">→</span>
-            <input 
-              type="text" 
-              value={loja.checkOut} 
-              onChange={(e) => onTimeChange?.(loja.checkIn, e.target.value)}
-              className="w-9 bg-transparent border-none outline-none text-[11px] font-bold text-gray-700 text-center focus:ring-0 p-0"
-              maxLength={5}
-            />
+        <div className="flex flex-wrap items-center gap-2 col-span-2 mt-0.5">
+          <div className="flex items-center gap-1">
+            <Clock className="w-3 h-3 shrink-0" />
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="flex items-center gap-0.5 bg-white/50 border border-gray-200 rounded px-1.5 py-0.5"
+            >
+              <input 
+                type="text" 
+                value={loja.checkIn} 
+                onChange={(e) => onTimeChange?.(e.target.value, loja.checkOut)}
+                className="w-9 bg-transparent border-none outline-none text-[11px] font-bold text-gray-700 text-center focus:ring-0 p-0"
+                maxLength={5}
+              />
+              <span className="text-gray-400">→</span>
+              <input 
+                type="text" 
+                value={loja.checkOut} 
+                onChange={(e) => onTimeChange?.(loja.checkIn, e.target.value)}
+                className="w-9 bg-transparent border-none outline-none text-[11px] font-bold text-gray-700 text-center focus:ring-0 p-0"
+                maxLength={5}
+              />
+            </div>
           </div>
+          {loja.tempoDeslocamento && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-700 bg-blue-100/90 border border-blue-200 px-2 py-0.5 rounded-full" title="Tempo e distância estimados de deslocamento">
+              <Car className="w-3 h-3 text-blue-600 shrink-0" />
+              Trajeto: {loja.tempoDeslocamento}
+            </span>
+          )}
         </div>
       </div>
 
