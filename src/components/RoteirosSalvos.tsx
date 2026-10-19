@@ -105,11 +105,31 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
   const versaoAtivaObj = todasVersoesAgrupadas.find(v => v.id === versaoAtiva);
 
   const calcKmTotal = (rots: RoteiroSalvo[]) => {
-    return rots.reduce((sum, r) => sum + (r.dados_roteiro?.totalEstimatedKM || 0), 0);
+    return rots.reduce((sum, r) => {
+      const d = r.dados_roteiro;
+      if (!d) return sum;
+      let km = d.totalEstimatedKM || d.resumoDeslocamentos?.totalKm || 0;
+      if (!km && d.roteiro && Array.isArray(d.roteiro)) {
+        km = d.roteiro.reduce((dSum: number, dia: any) => dSum + (dia.distancia || 0), 0);
+      }
+      return sum + km;
+    }, 0);
   };
 
   const calcCustoTotal = (rots: RoteiroSalvo[]) => {
-    return rots.reduce((sum, r) => sum + (r.dados_roteiro?.estimatedCost || 0), 0);
+    return rots.reduce((sum, r) => {
+      const d = r.dados_roteiro;
+      if (!d) return sum;
+      let custo = d.estimatedCost || d.resumoDeslocamentos?.custoKm || 0;
+      if (!custo) {
+        let km = d.totalEstimatedKM || d.resumoDeslocamentos?.totalKm || 0;
+        if (!km && d.roteiro && Array.isArray(d.roteiro)) {
+          km = d.roteiro.reduce((dSum: number, dia: any) => dSum + (dia.distancia || 0), 0);
+        }
+        custo = km * 0.80;
+      }
+      return sum + custo;
+    }, 0);
   };
 
   const handleDelete = async (id: string, consultor: string) => {
@@ -175,11 +195,15 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
 
     const resumoCustosData = alvo.map((r) => {
       const d = r.dados_roteiro || {};
-      const kmEst = Math.round(d.totalEstimatedKM || 0);
-      const custoKM = (d.totalEstimatedKM || 0) * 0.80;
+      let kmEstRaw = d.totalEstimatedKM || d.resumoDeslocamentos?.totalKm || 0;
+      if (!kmEstRaw && d.roteiro && Array.isArray(d.roteiro)) {
+        kmEstRaw = d.roteiro.reduce((dSum: number, dia: any) => dSum + (dia.distancia || 0), 0);
+      }
+      const kmEst = Math.round(kmEstRaw);
+      const custoKM = kmEstRaw * 0.80;
       const extraCosts = d.extraCosts || {};
       const parking = extraCosts.parking || extraCosts.other || 0;
-      const totalCost = d.estimatedCost || (custoKM + parking);
+      const totalCost = d.estimatedCost || d.resumoDeslocamentos?.custoKm || (custoKM + parking);
 
       let obs = [];
       if (parking > 0) obs.push(`Estacionamento/Eventos: R$ ${parking.toFixed(2)} (Febrava)`);

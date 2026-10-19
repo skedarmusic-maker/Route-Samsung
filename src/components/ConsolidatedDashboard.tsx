@@ -203,7 +203,10 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
       const d = r.dados_roteiro;
       if (!d) return;
 
-      let km = d.totalEstimatedKM || 0;
+      let km = d.totalEstimatedKM || d.resumoDeslocamentos?.totalKm || 0;
+      if (!km && d.roteiro && Array.isArray(d.roteiro)) {
+        km = d.roteiro.reduce((dSum: number, dia: any) => dSum + (dia.distancia || 0), 0);
+      }
 
       // FALLBACK: Se o KM não estiver no JSON (roteiros antigos), calculamos agora
       if (km === 0 && d.roteiro) {
