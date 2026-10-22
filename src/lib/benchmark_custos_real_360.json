@@ -1,0 +1,255 @@
+{
+  "geral_operacao_samsung_ac": {
+    "total_visitas_checkin": 1801,
+    "total_despesas_vexx_ano": 145035.13,
+    "total_km_rodado_ano": 143145.2,
+    "custo_medio_por_visita_brasil": 80.53,
+    "km_medio_por_visita_brasil": 79.5,
+    "taxa_reembolso_km": 0.8,
+    "jantar_viagem_medio": 43.91,
+    "cafe_viagem_medio": 16.33,
+    "diaria_alimentacao_viagem": 60.24,
+    "estacionamento_medio_pago": 32.05,
+    "pedagio_praca_medio": 8.76
+  },
+  "consultores": {
+    "ALEXANDRE RIBEIRO LIMA": {
+      "visitas_checkin_realizadas": 195,
+      "valor_total_vexx": 30429.03,
+      "custo_medio_visita": 156.05,
+      "km_total_rodado": 33147.2,
+      "km_medio_visita": 170.0,
+      "pedagio_total": 2052.5,
+      "estacionamento_total": 500.0,
+      "refeicoes_total": 1286.56
+    },
+    "BIBIANO NETO": {
+      "visitas_checkin_realizadas": 84,
+      "valor_total_vexx": 3335.03,
+      "custo_medio_visita": 39.7,
+      "km_total_rodado": 2516.4,
+      "km_medio_visita": 30.0,
+      "pedagio_total": 182.4,
+      "estacionamento_total": 83.0,
+      "refeicoes_total": 0.0
+    },
+    "CIBELE ARAUJO": {
+      "visitas_checkin_realizadas": 3,
+      "valor_total_vexx": 405.05,
+      "custo_medio_visita": 135.02,
+      "km_total_rodado": 325.0,
+      "km_medio_visita": 108.3,
+      "pedagio_total": 0.0,
+      "estacionamento_total": 15.0,
+      "refeicoes_total": 0.0
+    },
+    "DIOGO DO NASCIMENTO SANTOS": {
+      "visitas_checkin_realizadas": 279,
+      "valor_total_vexx": 26306.18,
+      "custo_medio_visita": 94.29,
+      "km_total_rodado": 24639.1,
+      "km_medio_visita": 88.3,
+      "pedagio_total": 1025.75,
+      "estacionamento_total": 3980.5,
+      "refeicoes_total": 1424.48
+    },
+    "LIEDY AQUINO GOMES DOS SANTOS": {
+      "visitas_checkin_realizadas": 284,
+      "valor_total_vexx": 17989.83,
+      "custo_medio_visita": 63.34,
+      "km_total_rodado": 15793.7,
+      "km_medio_visita": 55.6,
+      "pedagio_total": 1693.85,
+      "estacionamento_total": 3009.0,
+      "refeicoes_total": 559.46
+    },
+    "LUIZ FALCAO DE SOUZA NETO": {
+      "visitas_checkin_realizadas": 299,
+      "valor_total_vexx": 17492.45,
+      "custo_medio_visita": 58.5,
+      "km_total_rodado": 18889.4,
+      "km_medio_visita": 63.2,
+      "pedagio_total": 0.0,
+      "estacionamento_total": 427.0,
+      "refeicoes_total": 1933.9
+    },
+    "MARCIO JOSE FLORES PEREIRA": {
+      "visitas_checkin_realizadas": 313,
+      "valor_total_vexx": 11549.36,
+      "custo_medio_visita": 36.9,
+      "km_total_rodado": 12729.7,
+      "km_medio_visita": 40.7,
+      "pedagio_total": 94.76,
+      "estacionamento_total": 903.2,
+      "refeicoes_total": 347.7
+    },
+    "MAURICIO CERONI RANDO": {
+      "visitas_checkin_realizadas": 29,
+      "valor_total_vexx": 2863.65,
+      "custo_medio_visita": 98.75,
+      "km_total_rodado": 2760.8,
+      "km_medio_visita": 95.2,
+      "pedagio_total": 586.1,
+      "estacionamento_total": 69.0,
+      "refeicoes_total": 0.0
+    },
+    "TATIANE SOUZA DOS SANTOS": {
+      "visitas_checkin_realizadas": 315,
+      "valor_total_vexx": 13947.41,
+      "custo_medio_visita": 44.28,
+      "km_total_rodado": 16830.5,
+      "km_medio_visita": 53.4,
+      "pedagio_total": 0.0,
+      "estacionamento_total": 0.0,
+      "refeicoes_total": 100.0
+    }
+  },
+  "hospedagem_homologada_compras": {
+    "ARAÇATUBA": {
+      "media_diaria": 384.0,
+      "min_diaria": 372.0,
+      "max_diaria": 390.0,
+      "amostras": 3
+    },
+    "BELO HORIZONTE": {
+      "media_diaria": 399.0,
+      "min_diaria": 360.0,
+      "max_diaria": 510.0,
+      "amostras": 5
+    },
+    "BRASÍLIA": {
+      "media_diaria": 390.33,
+      "min_diaria": 350.0,
+      "max_diaria": 450.0,
+      "amostras": 3
+    },
+    "CAMPINAS": {
+      "media_diaria": 335.67,
+      "min_diaria": 327.0,
+      "max_diaria": 340.0,
+      "amostras": 3
+    },
+    "CAMPOS DE GOYTACAZES": {
+      "media_diaria": 330.0,
+      "min_diaria": 330.0,
+      "max_diaria": 330.0,
+      "amostras": 1
+    },
+    "CAMPOS DOS GOYTACAZES": {
+      "media_diaria": 330.0,
+      "min_diaria": 330.0,
+      "max_diaria": 330.0,
+      "amostras": 1
+    },
+    "CURITIBA": {
+      "media_diaria": 380.0,
+      "min_diaria": 380.0,
+      "max_diaria": 380.0,
+      "amostras": 1
+    },
+    "FLORIANÓPOLIS": {
+      "media_diaria": 413.5,
+      "min_diaria": 352.0,
+      "max_diaria": 475.0,
+      "amostras": 2
+    },
+    "FORTALEZA": {
+      "media_diaria": 366.67,
+      "min_diaria": 340.0,
+      "max_diaria": 405.0,
+      "amostras": 3
+    },
+    "GOIÂNIA": {
+      "media_diaria": 361.33,
+      "min_diaria": 320.0,
+      "max_diaria": 410.0,
+      "amostras": 3
+    },
+    "JOAO PESSOA": {
+      "media_diaria": 380.0,
+      "min_diaria": 380.0,
+      "max_diaria": 380.0,
+      "amostras": 1
+    },
+    "JOÃO PESSOA": {
+      "media_diaria": 310.0,
+      "min_diaria": 310.0,
+      "max_diaria": 310.0,
+      "amostras": 1
+    },
+    "JUIZ DE FORA": {
+      "media_diaria": 360.0,
+      "min_diaria": 340.0,
+      "max_diaria": 380.0,
+      "amostras": 2
+    },
+    "LONDRINA": {
+      "media_diaria": 370.0,
+      "min_diaria": 370.0,
+      "max_diaria": 370.0,
+      "amostras": 1
+    },
+    "MACEIÓ": {
+      "media_diaria": 388.33,
+      "min_diaria": 350.0,
+      "max_diaria": 410.0,
+      "amostras": 3
+    },
+    "RIO DE JANEIRO": {
+      "media_diaria": 410.0,
+      "min_diaria": 410.0,
+      "max_diaria": 410.0,
+      "amostras": 1
+    },
+    "SOROCABA": {
+      "media_diaria": 390.0,
+      "min_diaria": 390.0,
+      "max_diaria": 390.0,
+      "amostras": 1
+    },
+    "SÃO LUIS": {
+      "media_diaria": 360.0,
+      "min_diaria": 360.0,
+      "max_diaria": 360.0,
+      "amostras": 1
+    },
+    "VITÓRIA": {
+      "media_diaria": 395.0,
+      "min_diaria": 390.0,
+      "max_diaria": 405.0,
+      "amostras": 4
+    }
+  },
+  "locacao_veiculos_compras": {
+    "BELO HORIZONTE": {
+      "media_diaria": 185.0,
+      "amostras": 2
+    },
+    "BRASÍLIA": {
+      "media_diaria": 293.33,
+      "amostras": 3
+    },
+    "CAMPINAS": {
+      "media_diaria": 145.0,
+      "amostras": 2
+    },
+    "SÃO LUIZ": {
+      "media_diaria": 210.0,
+      "amostras": 1
+    }
+  },
+  "rodoviario_compras": {
+    "ARAÇATUBA -> SÃO PAULO": {
+      "media_trecho": 593.0,
+      "amostras": 2
+    },
+    "LONDRINA -> MARINGÁ": {
+      "media_trecho": 85.0,
+      "amostras": 1
+    },
+    "SÃO PAULO -> ARAÇATUBA": {
+      "media_trecho": 593.0,
+      "amostras": 2
+    }
+  }
+}

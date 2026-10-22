@@ -29,6 +29,7 @@ import { getFeriadoNome, isDiaFeriado } from '@/lib/feriados';
 
 import { normalize, computeDistance } from '@/lib/utils';
 import { getTempoEstimadoFallback } from '@/lib/deslocamento';
+import { calcularCustoRealEstimado } from '@/lib/calculoCustoReal';
 
 // Carregamento dinâmico para evitar SSR do Google Maps
 const MapPreview = dynamic(() => import('@/components/MapPreview'), { ssr: false });
@@ -1162,8 +1163,20 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const variacaoKM = histKM ? totalEstimatedKM - histKM : null;
   const economizouKM = variacaoKM ? variacaoKM < 0 : false;
   
+  // Inteligência de Custos Reais 360° (KM + Pedágios + Estacionamentos + Refeições Viagem + Hotéis + Passagens)
+  const custoRealBreakdown = useMemo(() => {
+    return calcularCustoRealEstimado(
+      resultado.consultor,
+      roteiroState,
+      totalEstimatedKM,
+      chosenFlights,
+      chosenHotels,
+      manualFlights
+    );
+  }, [resultado.consultor, roteiroState, totalEstimatedKM, chosenFlights, chosenHotels, manualFlights]);
+
   const costPerKm = 0.80; // Reembolso fixado em R$ 0,80 por KM rodado
-  const estimatedCost = (totalEstimatedKM * costPerKm) + extraCostsTotal;
+  const estimatedCost = custoRealBreakdown.totalEstimadoReal;
   const variacaoCusto = histValor ? estimatedCost - histValor : null;
   const economizouCusto = variacaoCusto ? variacaoCusto < 0 : false;
 
@@ -1217,7 +1230,13 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
       'Total Dias Úteis': diasComVisitas.length,
       'Total Visitas': totalVisitas,
       'Total KM Estimado': Math.round(totalEstimatedKM),
-      'Custo Total Estimado (R$)': Number(estimatedCost.toFixed(2)),
+      'Custo Total Estimado Real (R$)': Number(estimatedCost.toFixed(2)),
+      'KM Reembolsável (R$)': custoRealBreakdown.kmCost,
+      'Pedágios Projetados (R$)': custoRealBreakdown.pedagioCost,
+      'Estacionamento Projetado (R$)': custoRealBreakdown.estacionamentoCost,
+      'Refeições em Viagem (R$)': custoRealBreakdown.refeicoesCost,
+      'Hospedagem / Passagens (R$)': Number((custoRealBreakdown.hospedagemCost + custoRealBreakdown.passagensCost).toFixed(2)),
+      'Custo Médio / Visita Real (R$)': custoRealBreakdown.custoMedioPorVisita,
       'Tempo Médio de Deslocamento / Visita': '35 min',
       'Tempo Médio de Deslocamento Diário': '1h 15m'
     }];
@@ -1439,6 +1458,42 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
                     <p className="text-lg font-black text-gray-800">
                       {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(estimatedCost)}
                     </p>
+                  </div>
+                </div>
+
+                {/* Breakdown Calibrado 360° (VExpenses x Compras x Checkin) */}
+                <div className="mb-3 p-2.5 bg-gray-50 border border-gray-200 rounded-lg space-y-1.5 text-[11px]">
+                  <div className="flex justify-between items-center text-gray-600">
+                    <span>🚗 KM Reembolsável (R$ 0,80)</span>
+                    <span className="font-semibold text-gray-800">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoRealBreakdown.kmCost)}</span>
+                  </div>
+                  {custoRealBreakdown.pedagioCost > 0 && (
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>🛣️ Pedágios Mapeados</span>
+                      <span className="font-semibold text-gray-800">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoRealBreakdown.pedagioCost)}</span>
+                    </div>
+                  )}
+                  {custoRealBreakdown.estacionamentoCost > 0 && (
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>🅿️ Estacionamento PDV</span>
+                      <span className="font-semibold text-gray-800">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoRealBreakdown.estacionamentoCost)}</span>
+                    </div>
+                  )}
+                  {custoRealBreakdown.refeicoesCost > 0 && (
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>🍽️ Refeições em Viagem</span>
+                      <span className="font-semibold text-gray-800">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoRealBreakdown.refeicoesCost)}</span>
+                    </div>
+                  )}
+                  {(custoRealBreakdown.hospedagemCost > 0 || custoRealBreakdown.passagensCost > 0) && (
+                    <div className="flex justify-between items-center text-gray-600">
+                      <span>✈️🏨 Passagens / Hospedagem</span>
+                      <span className="font-semibold text-gray-800">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoRealBreakdown.hospedagemCost + custoRealBreakdown.passagensCost)}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between items-center pt-1.5 border-t border-gray-200 font-bold text-gray-800">
+                    <span className="text-gray-700">Média Real / Visita</span>
+                    <span className="text-blue-700">{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(custoRealBreakdown.custoMedioPorVisita)}</span>
                   </div>
                 </div>
 
