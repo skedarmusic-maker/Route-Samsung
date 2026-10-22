@@ -13,6 +13,7 @@ interface ConsultorDistancia {
   nome: string;
   endereco: string;
   distanciaKm: number;
+  durationHours?: number;
   estimativaCusto: {
     total: number;
     voo: number;
@@ -22,6 +23,8 @@ interface ConsultorDistancia {
     tipo: 'Aéreo' | 'Terrestre';
     isRealPrice?: boolean;
     isRealHotel?: boolean;
+    sourceVoo?: string;
+    isRoad?: boolean;
   };
 }
 
@@ -143,9 +146,11 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
                 </div>
 
                 <div className="space-y-2 mb-4 bg-white/50 rounded-xl p-3 border border-white/50">
-                  <div className="flex justify-between text-xs">
+                  <div className="flex justify-between text-xs items-center">
                     <span className="text-gray-500">Distância Total:</span>
-                    <span className="font-bold text-gray-700">{s.distanciaKm} km</span>
+                    <span className="font-bold text-gray-700">
+                      {s.distanciaKm} km {s.estimativaCusto.isRoad ? <span className="text-[10px] font-normal text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">Rodoviário</span> : ''}
+                    </span>
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span className="text-gray-400">
@@ -158,13 +163,11 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
                   {s.estimativaCusto.voo > 0 && (
                     <div className="flex justify-between text-[11px] font-medium items-center">
                       <span className="text-blue-600">✈️ Passagem Aérea:</span>
-                      <div className="flex items-center gap-2">
-                        {s.estimativaCusto.isRealPrice ? (
-                          <span className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-bold">GOOGLE FLIGHTS</span>
-                        ) : (
-                          <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">ESTIMATIVA</span>
-                        )}
-                        <span className="text-blue-600">R$ {s.estimativaCusto.voo}</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${s.estimativaCusto.isRealPrice ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
+                          {s.estimativaCusto.sourceVoo || (s.estimativaCusto.isRealPrice ? 'GOOGLE FLIGHTS' : 'ESTIMATIVA')}
+                        </span>
+                        <span className="text-blue-600 font-bold">R$ {s.estimativaCusto.voo}</span>
                       </div>
                     </div>
                   )}
@@ -183,7 +186,9 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
                   )}
                 </div>
 
-                <p className="text-[10px] text-gray-400 italic mb-1">Base: {s.endereco?.split(',')[1] || 'Cidade Base'}</p>
+                <p className="text-[10px] text-gray-500 font-medium mb-1">
+                  📍 Base: <span className="text-gray-700 font-bold">{s.endereco || 'Cidade Base'}</span>
+                </p>
 
                 {idx === 0 && (
                   <div className="mt-4 pt-3 border-t border-indigo-100 flex items-center justify-between">

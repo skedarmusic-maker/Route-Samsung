@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import cityCoords from '@/lib/city_coords.json';
 import airports from '@/lib/airports.json';
+import benchmark360 from '@/lib/benchmark_custos_real_360.json';
 import axios from 'axios';
 
-// Função Haversine para cálculo de distância
-function computeDistance(p1: { lat: number; lng: number }, p2: { lat: number; lng: number }): number {
+// Função Haversine pura (linha reta)
+function computeHaversine(p1: { lat: number; lng: number }, p2: { lat: number; lng: number }): number {
   const R = 6371; // Raio da Terra em km
   const dLat = ((p2.lat - p1.lat) * Math.PI) / 180;
   const dLng = ((p2.lng - p1.lng) * Math.PI) / 180;
@@ -19,141 +20,156 @@ function computeDistance(p1: { lat: number; lng: number }, p2: { lat: number; ln
   return R * c;
 }
 
-async function fetchHotelPrice(cidade: string, uf: string) {
-  const rapidApiKey = process.env.RAPIDAPI_KEY;
-  const bookingHost = process.env.BOOKING_RAPIDAPI_HOST;
-
-  if (!rapidApiKey || !bookingHost) {
-    console.warn('[HotelAPI] Credenciais ausentes');
-    return 350;
-  }
-
+// Obter distância rodoviária real via OSRM (com fallback para Haversine calibrado em 1.38x)
+async function getRoadDistance(
+  p1: { lat: number; lng: number },
+  p2: { lat: number; lng: number }
+): Promise<{ km: number; isRoad: boolean; durationHours: number }> {
   try {
-    // 1. Buscar dest_id da cidade
-    console.log(`[HotelAPI] Buscando localização: ${cidade}, ${uf}`);
-    const locRes = await axios.get(`https://${bookingHost}/v1/hotels/locations`, {
-      params: {
-        name: `${cidade}`,
-        locale: 'pt-br',
-      },
-      headers: {
-        'x-rapidapi-key': rapidApiKey,
-        'x-rapidapi-host': bookingHost,
-      },
-      timeout: 10000,
-    });
-
-    console.log(`[HotelAPI] Locations status: ${locRes.status}, count: ${locRes.data?.length}`);
-    
-    // Buscar resultado de cidade — preferindo city_ufi como ID da cidade
-    const anyResult = locRes.data?.[0];
-    if (!anyResult) {
-      console.warn('[HotelAPI] Nenhum resultado encontrado');
-      return 350;
+    const url = `https://router.project-osrm.org/route/v1/driving/${p1.lng},${p1.lat};${p2.lng},${p2.lat}?overview=false`;
+    const res = await axios.get(url, { timeout: 3500 });
+    if (res.data?.routes?.[0]?.distance) {
+      const km = Math.round(res.data.routes[0].distance / 1000);
+      const durationHours = Math.round((res.data.routes[0].duration / 3600) * 10) / 10;
+      return { km, isRoad: true, durationHours };
     }
-
-    // city_ufi é o ID real da cidade no Booking.com
-    const cityUfi = anyResult?.city_ufi;
-    const destId = cityUfi ? String(cityUfi) : anyResult?.dest_id;
-    const destType = cityUfi ? 'city' : (anyResult?.dest_type || 'city');
-
-    if (!destId) {
-      console.warn('[HotelAPI] dest_id não encontrado');
-      return 350;
-    }
-    console.log(`[HotelAPI] dest_id: ${destId}, dest_type: ${destType}`);
-
-    // 2. Buscar hotéis mais baratos
-    const checkin = new Date();
-    checkin.setDate(checkin.getDate() + 14);
-    const checkout = new Date(checkin);
-    checkout.setDate(checkout.getDate() + 1);
-
-    const searchRes = await axios.get(`https://${bookingHost}/v1/hotels/search`, {
-      params: {
-        dest_id: destId,
-        dest_type: destType,
-        checkin_date: checkin.toISOString().split('T')[0],
-        checkout_date: checkout.toISOString().split('T')[0],
-        order_by: 'price',
-        adults_number: '1',
-        room_number: '1',
-        filter_by_currency: 'BRL',
-        locale: 'pt-br',
-        page_number: '0',
-        include_adjacency: 'true',
-        units: 'metric',
-      },
-      headers: {
-        'x-rapidapi-key': rapidApiKey,
-        'x-rapidapi-host': bookingHost,
-      },
-      timeout: 15000,
-    });
-
-    console.log(`[HotelAPI] Search status: ${searchRes.status}, hotéis: ${searchRes.data?.result?.length}`);
-    const cheapest = searchRes.data?.result?.[0]?.min_total_price;
-    console.log(`[HotelAPI] Menor preço encontrado: ${cheapest}`);
-
-    return cheapest ? Math.round(cheapest) : 350;
-  } catch (err: any) {
-    console.error('[HotelAPI] Erro:', err?.response?.status, err?.response?.data || err?.message);
-    return 350;
+  } catch (err) {
+    // Falha silenciosa, usa fallback geométrico calibrado
   }
+
+  const straight = computeHaversine(p1, p2);
+  const km = Math.round(straight * 1.38); // Fator de curvas de rodovias no Brasil
+  const durationHours = Math.round((km / 75) * 10) / 10; // Média de 75 km/h
+  return { km, isRoad: false, durationHours };
 }
 
-async function fetchRealFlightPrice(originUf: string, destUf: string, destCidade: string) {
-  try {
-    const originIata = (airports as any)[originUf.toUpperCase()] || (airports as any)['SAO PAULO'];
-    const destIata = (airports as any)[destCidade.toUpperCase()] || (airports as any)[destUf.toUpperCase()] || (airports as any)['SAO PAULO'];
-    
-    console.log(`[FlightAPI] Buscando: ${originIata} -> ${destIata}`);
+// Mapeador Inteligente de Aeroportos
+function getIataAirport(cidade: string, uf: string): string {
+  const cleanCidade = (cidade || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .trim();
+  const cleanUf = (uf || '').toUpperCase().trim();
 
-    if (originIata === destIata) return 0;
+  const cityMap: Record<string, string> = {
+    'FOZ DO IGUACU': 'IGU',
+    'MARINGA': 'MGF',
+    'LONDRINA': 'LDB',
+    'CASCAVEL': 'CAC',
+    'PORTO ALEGRE': 'POA',
+    'CURITIBA': 'CWB',
+    'SAO PAULO': 'GRU',
+    'DIADEMA': 'CGH',
+    'CAMPINAS': 'VCP',
+    'RIO DE JANEIRO': 'GIG',
+    'DUQUE DE CAXIAS': 'GIG',
+    'SALVADOR': 'SSA',
+    'RECIFE': 'REC',
+    'PAULISTA': 'REC',
+    'BRASILIA': 'BSB',
+    'GOIANIA': 'GYN',
+    'FLORIANOPOLIS': 'FLN',
+    'JOINVILLE': 'JOI',
+    'NAVEGANTES': 'NVT',
+    'BELO HORIZONTE': 'CNF',
+    'VITORIA': 'VIX'
+  };
 
-    const date = new Date();
-    date.setDate(date.getDate() + 14);
-    const dateStr = date.toISOString().split('T')[0];
+  if (cityMap[cleanCidade]) return cityMap[cleanCidade];
+  if ((airports as any)[cleanCidade]) return (airports as any)[cleanCidade];
+  if ((airports as any)[cleanUf]) return (airports as any)[cleanUf];
+  return 'GRU';
+}
 
-    const options = {
-      method: 'GET',
-      url: `https://${process.env.RAPIDAPI_HOST}/api/v1/searchFlights`,
-      params: {
-        departure_id: originIata,
-        arrival_id: destIata,
-        outbound_date: dateStr,
-        currency: 'BRL',
-        travel_class: 'ECONOMY',
-        adults: '1',
-        show_hidden: '1',
-        language_code: 'pt-BR',
-        country_code: 'BR',
-        search_type: 'best'
-      },
-      headers: {
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY,
-        'x-rapidapi-host': process.env.RAPIDAPI_HOST
-      },
-      timeout: 15000 
-    };
+async function fetchRealFlightPrice(
+  originCidade: string,
+  originUf: string,
+  destCidade: string,
+  destUf: string
+): Promise<{ price: number; isRealPrice: boolean; source: string }> {
+  const originIata = getIataAirport(originCidade, originUf);
+  const destIata = getIataAirport(destCidade, destUf);
 
-    const response = await axios.request(options);
-    const itineraries = response.data?.data?.itineraries || {};
-    const allFlights = [
-      ...(itineraries.topFlights || []),
-      ...(itineraries.otherFlights || []),
-    ];
-    
-    const bestPrice = allFlights[0]?.price || response.data?.data?.priceHistory?.summary?.current;
-    
-    if (!bestPrice) {
-      return { error: `No price found. Structure: ${Object.keys(response.data?.data || {}).join(',')}` };
-    }
-    return { price: Math.round(bestPrice), source: 'Google Flights' };
-  } catch (error: any) {
-    console.error('[FlightAPI] Erro:', error.message);
-    return { error: error.message };
+  if (originIata === destIata) {
+    return { price: 0, isRealPrice: true, source: 'Mesmo Aeroporto' };
   }
+
+  const rapidApiKey = process.env.RAPIDAPI_KEY;
+  const rapidApiHost = process.env.RAPIDAPI_HOST || 'google-flights2.p.rapidapi.com';
+
+  if (rapidApiKey && rapidApiHost) {
+    try {
+      const date = new Date();
+      date.setDate(date.getDate() + 18);
+      const dateStr = date.toISOString().split('T')[0];
+
+      const res = await axios.get(`https://${rapidApiHost}/api/v1/searchFlights`, {
+        params: {
+          departure_id: originIata,
+          arrival_id: destIata,
+          outbound_date: dateStr,
+          currency: 'BRL',
+          travel_class: 'ECONOMY',
+          adults: '1',
+          show_hidden: '1',
+          language_code: 'pt-BR',
+          country_code: 'BR',
+          search_type: 'best'
+        },
+        headers: {
+          'x-rapidapi-key': rapidApiKey,
+          'x-rapidapi-host': rapidApiHost
+        },
+        timeout: 10000
+      });
+
+      const itineraries = res.data?.data?.itineraries || {};
+      const allFlights = [
+        ...(itineraries.topFlights || []),
+        ...(itineraries.otherFlights || [])
+      ];
+
+      const best = allFlights[0]?.price || res.data?.data?.priceHistory?.summary?.current;
+      if (best && Number(best) > 0) {
+        return { price: Math.round(Number(best)), isRealPrice: true, source: 'Google Flights' };
+      }
+    } catch (e: any) {
+      // Fallback para matriz de benchmark calibrada
+    }
+  }
+
+  // Matriz de Contingência Calibrada por Hub de Origem e Destino
+  const cleanDest = destCidade.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+  const cleanOrig = originCidade.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+  const origUfUpper = (originUf || '').toUpperCase();
+
+  // Foz do Iguaçu (IGU)
+  if (cleanDest === 'FOZ DO IGUACU') {
+    if (origUfUpper === 'SP') return { price: 732, isRealPrice: false, source: 'Benchmark Compras SP' };
+    if (origUfUpper === 'RS') return { price: 1018, isRealPrice: false, source: 'Benchmark Compras RS' };
+    if (origUfUpper === 'RJ') return { price: 850, isRealPrice: false, source: 'Benchmark Compras RJ' };
+    if (origUfUpper === 'PR') return { price: 1219, isRealPrice: false, source: 'Benchmark Compras PR' };
+    if (origUfUpper === 'BA' || origUfUpper === 'PE') return { price: 1550, isRealPrice: false, source: 'Benchmark Nordeste' };
+  }
+
+  // Maringá (MGF)
+  if (cleanDest === 'MARINGA') {
+    if (origUfUpper === 'SP') return { price: 791, isRealPrice: false, source: 'Benchmark Compras SP' };
+    if (origUfUpper === 'RS') return { price: 1069, isRealPrice: false, source: 'Benchmark Compras RS' };
+    if (origUfUpper === 'RJ') return { price: 880, isRealPrice: false, source: 'Benchmark Compras RJ' };
+    if (origUfUpper === 'PR') return { price: 959, isRealPrice: false, source: 'Benchmark Compras PR' };
+    if (origUfUpper === 'BA' || origUfUpper === 'PE') return { price: 1600, isRealPrice: false, source: 'Benchmark Nordeste' };
+  }
+
+  // Estimativa geral por região
+  if (origUfUpper === 'SP' || origUfUpper === 'RJ' || origUfUpper === 'DF') {
+    return { price: 780, isRealPrice: false, source: 'Estimativa Hub Sudeste' };
+  }
+  if (origUfUpper === 'RS' || origUfUpper === 'SC') {
+    return { price: 1050, isRealPrice: false, source: 'Estimativa Sul' };
+  }
+  return { price: 1450, isRealPrice: false, source: 'Estimativa Geral' };
 }
 
 export async function GET(request: Request) {
@@ -166,8 +182,10 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Faltam os parâmetros cidade e uf.' }, { status: 400 });
     }
 
-    const key = `${cidade.toUpperCase()}-${uf.toUpperCase()}`;
-    const coords = (cityCoords as any)[key];
+    const cleanCid = cidade.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
+    const cleanUf = uf.toUpperCase().trim();
+    const key = `${cleanCid}-${cleanUf}`;
+    const coords = (cityCoords as any)[key] || (cityCoords as any)[`${cidade.toUpperCase()}-${cleanUf}`];
 
     if (!coords) {
       return NextResponse.json({ error: 'Coordenadas da cidade não encontradas no cache.' }, { status: 404 });
@@ -176,95 +194,83 @@ export async function GET(request: Request) {
     const { data: dataC, error: errorC } = await supabase.from('consultores').select('*');
     if (errorC) throw errorC;
 
-    // Buscar custo real de hotel UMA VEZ para a cidade de destino
-    let custoHospedagemReal = 350;
-    let isRealHotel = false;
-    try {
-      const hotelPrice = await fetchHotelPrice(cidade, uf);
-      if (hotelPrice && hotelPrice !== 350) {
-        custoHospedagemReal = hotelPrice;
-        isRealHotel = true;
-      }
-    } catch (e) {
-      console.warn('Falha ao buscar hotel real, usando padrão.');
-    }
+    // Buscar custo de hotel homologado da praça no benchmark de Compras
+    const hoteisHomologados = (benchmark360 as any).hospedagem_homologada_compras || {};
+    const hotelInfo = hoteisHomologados[cleanCid] || hoteisHomologados[cidade.toUpperCase()];
+    const custoHospedagemPadrao = hotelInfo?.media_diaria || 350;
 
     const consultores = (dataC || []).map(c => ({
       nome: c.nome,
-      endereco: c.endereco_completo,
-      lat: c.lat,
-      lng: c.lng,
-      cidade: c.cidade_base,
-      ufBase: c.uf_base
+      endereco: `${c.cidade || ''} - ${c.uf || ''}`,
+      lat: Number(c.lat),
+      lng: Number(c.lng),
+      cidade: c.cidade || '',
+      ufBase: c.uf || ''
     }));
 
-    const consultoresComDistancia = await Promise.all(consultores.map(async (c) => {
-      const dist = computeDistance({ lat: c.lat, lng: c.lng }, coords);
-      const km = Math.round(dist);
-      
-      let custoVoo = 0;
-      let custoHospedagem = 0;
-      let custoKm = 0;
-      let kmCobrado = 0;
-      let isRealPrice = false;
-      let errorMessage = '';
-      
-      const outroEstado = c.ufBase && c.ufBase.toUpperCase() !== uf.toUpperCase();
-      const precisaVoo = (outroEstado && km > 300) || km > 550;
+    const consultoresComDistancia = await Promise.all(
+      consultores.map(async (c) => {
+        // Cálculo de distância rodoviária real
+        const roadInfo = await getRoadDistance({ lat: c.lat, lng: c.lng }, coords);
+        const kmReal = roadInfo.km;
+        const durationHours = roadInfo.durationHours;
 
-      if (precisaVoo) {
-        const flightData: any = await fetchRealFlightPrice(c.ufBase || 'SP', uf, cidade);
-        
-        if (flightData && flightData.price) {
-          custoVoo = flightData.price;
-          isRealPrice = true;
+        let custoVoo = 0;
+        let custoHospedagem = 0;
+        let custoKm = 0;
+        let kmCobrado = 0;
+        let isRealPrice = false;
+        let sourceVoo = 'Estimativa';
+
+        // Regra de necessidade de voo:
+        // Se a distância rodoviária for > 550 km OU mais de 6h30 de estrada OU se for outro estado distante
+        const outroEstado = c.ufBase && c.ufBase.toUpperCase() !== cleanUf;
+        const precisaVoo = kmReal > 550 || durationHours > 6.5 || (outroEstado && kmReal > 450);
+
+        if (precisaVoo) {
+          const flight = await fetchRealFlightPrice(c.cidade, c.ufBase, cidade, uf);
+          custoVoo = flight.price;
+          isRealPrice = flight.isRealPrice;
+          sourceVoo = flight.source;
+
+          custoHospedagem = custoHospedagemPadrao;
+          kmCobrado = 40; // Deslocamento local no destino
+          custoKm = kmCobrado * 0.80; // R$ 0,80 por KM
         } else {
-          errorMessage = flightData?.error || 'No flight price found';
-          const hubsPrincipais = ['SP', 'RJ', 'DF'];
-          const regioesNorteSul = ['RS', 'SC', 'AM', 'PA', 'CE', 'PE', 'RN'];
-          
-          if (hubsPrincipais.includes(c.ufBase?.toUpperCase() || '')) {
-            custoVoo = 780;
-          } else if (regioesNorteSul.includes(c.ufBase?.toUpperCase() || '')) {
-            custoVoo = 1450;
-          } else {
-            custoVoo = 1100;
+          // Deslocamento rodoviário (ida e volta)
+          kmCobrado = kmReal * 2;
+          custoKm = kmCobrado * 0.80; // R$ 0,80 por KM
+          if (kmReal > 200) {
+            custoHospedagem = custoHospedagemPadrao;
           }
         }
 
-        custoHospedagem = isRealHotel ? custoHospedagemReal : 350;
-        kmCobrado = 40; 
-        custoKm = kmCobrado * 1.10;
-      } else {
-        kmCobrado = km;
-        custoKm = km * 1.10;
-        if (km > 200) {
-          custoHospedagem = isRealHotel ? custoHospedagemReal : 350;
-        }
-      }
+        const custoTotal = custoVoo + custoKm + custoHospedagem;
 
-      const custoTotal = custoVoo + custoKm + custoHospedagem;
+        return {
+          ...c,
+          distanciaKm: kmReal,
+          durationHours,
+          estimativaCusto: {
+            total: Math.round(custoTotal),
+            voo: custoVoo,
+            km: Math.round(custoKm),
+            kmReferencia: kmCobrado,
+            hospedagem: custoHospedagem,
+            tipo: precisaVoo ? 'Aéreo' : 'Terrestre',
+            isRealPrice,
+            sourceVoo,
+            isRoad: roadInfo.isRoad
+          }
+        };
+      })
+    );
 
-      return {
-        ...c,
-        distanciaKm: km,
-        estimativaCusto: {
-          total: Math.round(custoTotal),
-          voo: custoVoo,
-          km: Math.round(custoKm),
-          kmReferencia: kmCobrado,
-          hospedagem: custoHospedagem,
-          tipo: precisaVoo ? 'Aéreo' : 'Terrestre',
-          isRealPrice,
-          isRealHotel,
-          errorMessage
-        }
-      };
-    }));
+    const sorted = consultoresComDistancia.sort(
+      (a, b) => (a.estimativaCusto.total - b.estimativaCusto.total) || (a.distanciaKm - b.distanciaKm)
+    );
 
-    const sorted = consultoresComDistancia.sort((a, b) => (a.estimativaCusto.total - b.estimativaCusto.total) || (a.distanciaKm - b.distanciaKm));
-
-    return NextResponse.json(sorted.slice(0, 5));
+    return NextResponse.json(sorted.slice(0, 6));
   } catch (error: any) {
     console.error('Erro na sugestão de journey:', error);
     return NextResponse.json({ error: error.message || 'Erro interno' }, { status: 500 });
