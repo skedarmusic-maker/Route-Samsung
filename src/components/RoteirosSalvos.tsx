@@ -37,6 +37,9 @@ const ROTA_MAP: Record<string, string> = {
   "DIOGO DO NASCIMENTO SANTOS": "RJ",
   "TATIANE SOUZA DOS SANTOS": "NE_1",
   "LUIZ FALCAO DE SOUZA NETO": "NE_2",
+  "GIOVANNA MENDES": "SPI_1",
+  "GIOVANNA OLIVEIRA MENDES": "SPI_1",
+  "GIOVANA MENDES": "SPI_1",
   "GIOVANA": "SPI_1"
 };
 
@@ -173,25 +176,45 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
     const dataToExport = alvo.flatMap((r) => {
       const resultado = r.dados_roteiro;
       if (!resultado || !resultado.roteiro) return [];
+      const consultorNome = resultado.consultor || r.consultor || '';
+      const rotaPadrao = ROTA_MAP[consultorNome] || (consultorNome.toUpperCase().includes('GIOVAN') ? 'SPI_1' : '');
+
       return resultado.roteiro.flatMap((dia: any) => {
         const feriadoNome = getFeriadoNome(dia.data, dia.feriado);
+        const diaSemana = dia.diaSemana || dia.dia_semana || '';
         if (feriadoNome) {
-          return [{ Data: dia.data, 'Dia da Semana': dia.diaSemana, Consultor: resultado.consultor, Rota: ROTA_MAP[resultado.consultor] || '', Versão: versaoNome, Cenário: r.cenario || 'Principal', 'Nome PDV': feriadoNome, Status: 'FERIADO/FOLGA' }];
+          return [{
+            Data: dia.data,
+            'Dia da Semana': diaSemana,
+            Consultor: consultorNome,
+            Rota: rotaPadrao,
+            Versão: versaoNome,
+            Cenário: r.cenario || 'Principal',
+            'Nome PDV': feriadoNome,
+            Status: 'FERIADO/FOLGA'
+          }];
         }
         return (dia.lojas || []).map((loja: any, idx: number) => {
           const tempo = (loja.tempoDeslocamento && loja.tempoDeslocamento !== '—')
             ? loja.tempoDeslocamento
-            : getTempoEstimadoFallback(loja, idx, dia);
+            : (loja.tempo_deslocamento || getTempoEstimadoFallback(loja, idx, dia));
 
           return {
-            Data: dia.data, 'Dia da Semana': dia.diaSemana,
-            Consultor: resultado.consultor, Rota: loja.rota || ROTA_MAP[resultado.consultor] || '',
-            Versão: versaoNome, Cenário: r.cenario || 'Principal',
-            'Nome PDV': loja.nome_pdv, Cliente: loja.cliente,
-            Cidade: loja.cidade, UF: loja.uf, Cluster: loja.cluster,
+            Data: dia.data,
+            'Dia da Semana': diaSemana,
+            Consultor: consultorNome,
+            Rota: loja.rota || rotaPadrao,
+            Versão: versaoNome,
+            Cenário: r.cenario || 'Principal',
+            'Nome PDV': loja.nome_pdv,
+            Cliente: loja.cliente,
+            Cidade: loja.cidade,
+            UF: loja.uf,
+            Cluster: loja.cluster,
             'Tempo Médio de Deslocamento': tempo,
             'Tempo de Deslocamento': tempo,
-            'Check-in': loja.checkIn, 'Check-out': loja.checkOut,
+            'Check-in': loja.checkIn,
+            'Check-out': loja.checkOut,
             Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
           };
         });
@@ -331,7 +354,12 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
                     <td className="px-6 py-4 text-blue-600 font-medium text-xs">{roteiro.cenario || 'Principal'}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-3">
-                        <button onClick={() => onEdit?.(roteiro.dados_roteiro)} className="text-blue-600 hover:text-blue-900 flex items-center gap-1 text-xs font-medium">
+                        <button onClick={() => onEdit?.({
+                          ...roteiro.dados_roteiro,
+                          consultor: roteiro.dados_roteiro?.consultor || roteiro.consultor,
+                          mes: roteiro.dados_roteiro?.mes || roteiro.mes || 11,
+                          ano: roteiro.dados_roteiro?.ano || roteiro.ano || 2026
+                        })} className="text-blue-600 hover:text-blue-900 flex items-center gap-1 text-xs font-medium">
                           <Edit className="w-3.5 h-3.5" /> Carregar
                         </button>
                         <button onClick={() => handleDelete(roteiro.id, roteiro.consultor)} className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs font-medium">

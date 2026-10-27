@@ -45,6 +45,18 @@ const MES_OPCOES = [
   { id: '03', label: 'Março/2026', short: 'Mar/26' },
 ];
 
+const ROTA_MAP: Record<string, string> = {
+  "LIEDY AQUINO GOMES DOS SANTOS": "SPC1",
+  "MARCIO JOSE FLORES PEREIRA": "SUL_1",
+  "DIOGO DO NASCIMENTO SANTOS": "RJ",
+  "TATIANE SOUZA DOS SANTOS": "NE_1",
+  "LUIZ FALCAO DE SOUZA NETO": "NE_2",
+  "GIOVANNA MENDES": "SPI_1",
+  "GIOVANNA OLIVEIRA MENDES": "SPI_1",
+  "GIOVANA MENDES": "SPI_1",
+  "GIOVANA": "SPI_1"
+};
+
 export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar, onSelectRoteiro }: ConsolidatedDashboardProps) {
   const [mesComparacao, setMesComparacao] = useState<string>('09');
   const [showModalDespesas, setShowModalDespesas] = useState<boolean>(false);
@@ -916,14 +928,18 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
     const dataToExport = roteiros.flatMap((r) => {
       const resultado = r.dados_roteiro;
       if (!resultado || !resultado.roteiro) return [];
+      const consultorNome = resultado.consultor || r.consultor || '';
+      const rotaPadrao = ROTA_MAP[consultorNome] || (consultorNome.toUpperCase().includes('GIOVAN') ? 'SPI_1' : '');
 
       return resultado.roteiro.flatMap((dia: any) => {
         const feriadoNome = getFeriadoNome(dia.data, dia.feriado);
+        const diaSemana = dia.diaSemana || dia.dia_semana || '';
         if (feriadoNome) {
           return [{
             Data: dia.data,
-            'Dia da Semana': dia.diaSemana,
-            Consultor: r.consultor,
+            'Dia da Semana': diaSemana,
+            Consultor: consultorNome,
+            Rota: rotaPadrao,
             'Banco de Horas': r.dados_roteiro?.bancoHoras || 'N/A',
             'Nome PDV': feriadoNome,
             'Status': 'FERIADO/FOLGA'
@@ -933,12 +949,13 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
         return dia.lojas.map((loja: any, idx: number) => {
           const tempo = (loja.tempoDeslocamento && loja.tempoDeslocamento !== '—')
             ? loja.tempoDeslocamento
-            : getTempoEstimadoFallback(loja, idx, dia);
+            : (loja.tempo_deslocamento || getTempoEstimadoFallback(loja, idx, dia));
 
           return {
             Data: dia.data,
-            'Dia da Semana': dia.diaSemana,
-            Consultor: r.consultor,
+            'Dia da Semana': diaSemana,
+            Consultor: consultorNome,
+            Rota: loja.rota || rotaPadrao,
             'Banco de Horas': r.dados_roteiro?.bancoHoras || 'N/A',
             'Nome PDV': loja.nome_pdv,
             Cliente: loja.cliente,
@@ -1145,7 +1162,12 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                     return (
                       <tr
                         key={nome}
-                        onClick={() => roteiroOriginal && onSelectRoteiro(roteiroOriginal.dados_roteiro)}
+                        onClick={() => roteiroOriginal && onSelectRoteiro({
+                          ...roteiroOriginal.dados_roteiro,
+                          consultor: roteiroOriginal.dados_roteiro?.consultor || roteiroOriginal.consultor,
+                          mes: roteiroOriginal.dados_roteiro?.mes || roteiroOriginal.mes || 11,
+                          ano: roteiroOriginal.dados_roteiro?.ano || roteiroOriginal.ano || 2026
+                        })}
                         className="hover:bg-blue-50 transition-colors cursor-pointer group"
                       >
                         <td className="px-5 py-4 font-bold text-gray-800 group-hover:text-blue-700">{nome}</td>

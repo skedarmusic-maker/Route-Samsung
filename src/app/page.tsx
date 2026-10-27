@@ -232,6 +232,9 @@ const ROTA_MAP: Record<string, string> = {
   "DIOGO DO NASCIMENTO SANTOS": "RJ",
   "TATIANE SOUZA DOS SANTOS": "NE_1",
   "LUIZ FALCAO DE SOUZA NETO": "NE_2",
+  "GIOVANNA MENDES": "SPI_1",
+  "GIOVANNA OLIVEIRA MENDES": "SPI_1",
+  "GIOVANA MENDES": "SPI_1",
   "GIOVANA": "SPI_1"
 };
 
@@ -778,10 +781,12 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
     return frequencyAudit.filter(item => item.status !== 'ok').length;
   }, [frequencyAudit]);
 
-  const totalVisitas = roteiroState.reduce((acc: number, d: RoteiroDia) => acc + d.lojas.length, 0);
-  const diasComVisitas = roteiroState.filter((d: RoteiroDia) => d.lojas.length > 0);
+  const totalVisitas = roteiroState.reduce((acc: number, d: RoteiroDia) => acc + (d.lojas?.length || 0), 0);
+  const diasComVisitas = roteiroState.filter((d: RoteiroDia) => d.lojas && d.lojas.length > 0);
   const feriadosDias = roteiroState.filter((d: RoteiroDia) => isDiaFeriado(d.data, d.feriado));
-  const mesNome = new Date(resultado.ano, resultado.mes - 1, 1).toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
+  const rAno = resultado?.ano || 2026;
+  const rMes = resultado?.mes || 11;
+  const mesNome = new Date(rAno, rMes - 1, 1).toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
 
   // Dia selecionado para o mapa — inicializa no primeiro dia com visitas
   const [diaSelecionado, setDiaSelecionado] = useState<RoteiroDia | null>(
@@ -1181,14 +1186,18 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   const economizouCusto = variacaoCusto ? variacaoCusto < 0 : false;
 
   const handleExport = () => {
+    const consultorNome = resultado?.consultor || '';
+    const rotaPadrao = ROTA_MAP[consultorNome] || (consultorNome.toUpperCase().includes('GIOVAN') ? 'SPI_1' : '');
+
     const dataToExport = roteiroState.flatMap((dia: any) => {
       const feriadoNome = getFeriadoNome(dia.data, dia.feriado);
+      const diaSemana = dia.diaSemana || dia.dia_semana || '';
       if (feriadoNome) {
         return [{
           Data: dia.data,
-          'Dia da Semana': dia.diaSemana,
-          Consultor: resultado.consultor,
-          Rota: ROTA_MAP[resultado.consultor] || '',
+          'Dia da Semana': diaSemana,
+          Consultor: consultorNome,
+          Rota: rotaPadrao,
           'Cenário': cenarioNome,
           'Nome PDV': feriadoNome,
           'Status': 'FERIADO/FOLGA'
@@ -1198,13 +1207,13 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
       return dia.lojas.map((loja: any, idx: number) => {
         const tempo = (loja.tempoDeslocamento && loja.tempoDeslocamento !== '—')
           ? loja.tempoDeslocamento
-          : getTempoEstimadoFallback(loja, idx, dia);
+          : (loja.tempo_deslocamento || getTempoEstimadoFallback(loja, idx, dia));
 
         return {
           Data: dia.data,
-          'Dia da Semana': dia.diaSemana,
-          Consultor: resultado.consultor,
-          Rota: loja.rota || ROTA_MAP[resultado.consultor] || '',
+          'Dia da Semana': diaSemana,
+          Consultor: consultorNome,
+          Rota: loja.rota || rotaPadrao,
           'Cenário': cenarioNome,
           'Nome PDV': loja.nome_pdv,
           Cliente: loja.cliente,
@@ -1242,8 +1251,8 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
     }];
     const wsResumo = xlsx.utils.json_to_sheet(resumoData);
     xlsx.utils.book_append_sheet(workbook, wsResumo, "Resumo e Custos");
-    
-    const fileName = `Roteiro_${resultado.consultor.replace(/ /g, '_')}_${resultado.mes}_${resultado.ano}.xlsx`;
+    const cNomeClean = (resultado?.consultor || 'Consultor').toString().replace(/ /g, '_');
+    const fileName = `Roteiro_${cNomeClean}_${resultado?.mes || 11}_${resultado?.ano || 2026}.xlsx`;
     xlsx.writeFile(workbook, fileName);
   };
 
@@ -2293,8 +2302,14 @@ export default function ConfigurationPanel() {
         consultores={consultores} 
         onVoltar={() => setConsolidatedRoutes(null)}
         onSelectRoteiro={(dados) => {
-          setConsultorInfo(consultores.find(c => normalize(c.nome) === normalize(dados.consultor)));
-          setResultado(dados);
+          const cNome = dados?.consultor || '';
+          setConsultorInfo(consultores.find(c => normalize(c.nome) === normalize(cNome)));
+          setResultado({
+            ...dados,
+            consultor: cNome,
+            mes: dados?.mes || 11,
+            ano: dados?.ano || 2026
+          });
           setConsolidatedRoutes(null); // Fecha o consolidado ao abrir o detalhe
         }}
       />
@@ -2763,8 +2778,14 @@ export default function ConfigurationPanel() {
           <div className="mt-8 pt-8 border-t border-gray-200">
             <RoteirosSalvos 
               onEdit={(dados) => {
-                setConsultorInfo(consultores.find(c => normalize(c.nome) === normalize(dados.consultor)));
-                setResultado(dados);
+                const cNome = dados?.consultor || '';
+                setConsultorInfo(consultores.find(c => normalize(c.nome) === normalize(cNome)));
+                setResultado({
+                  ...dados,
+                  consultor: cNome,
+                  mes: dados?.mes || 11,
+                  ano: dados?.ano || 2026
+                });
               }} 
               onViewConsolidated={(roteiros) => setConsolidatedRoutes(roteiros)}
             />
