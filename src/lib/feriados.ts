@@ -20,8 +20,8 @@ export const FERIADOS_CALENDARIO: Record<string, string> = {
   '2026-12-25': 'Feriado Nacional - Natal',
 };
 
-export function getFeriadoNome(data: string, feriadoExistente?: string | null): string | null {
-  if (feriadoExistente && !feriadoExistente.startsWith('__viagem_')) {
+export function getFeriadoNome(data: string, feriadoExistente?: any): string | null {
+  if (typeof feriadoExistente === 'string' && feriadoExistente && !feriadoExistente.startsWith('__viagem_')) {
     return feriadoExistente;
   }
   return FERIADOS_CALENDARIO[data] || null;
