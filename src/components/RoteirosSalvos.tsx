@@ -5,11 +5,12 @@ import { supabase } from '@/lib/supabase';
 import {
   Loader2, Download, RefreshCw, FileText, Calendar as CalendarIcon,
   User, Edit, Trash2, Activity, ChevronRight, ChevronLeft, Tag,
-  BarChart3, Package, Clock, AlertCircle
+  BarChart3, Package, Clock, AlertCircle, Send, CheckCircle2, AlertTriangle
 } from 'lucide-react';
 import * as xlsx from 'xlsx';
 import { getFeriadoNome } from '@/lib/feriados';
 import { getTempoEstimadoFallback } from '@/lib/deslocamento';
+import ModalApontamentosValidacao from './ModalApontamentosValidacao';
 
 interface RoteiroSalvo {
   id: string;
@@ -55,6 +56,103 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
   const [versaoAtiva, setVersaoAtiva] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deletingVersaoId, setDeletingVersaoId] = useState<string | null>(null);
+
+  // Estados de Validação dos Consultores (Alteraai)
+  const [validacoes, setValidacoes] = useState<any[]>([]);
+  const [loadingValidacoes, setLoadingValidacoes] = useState(false);
+  const [enviandoValidacao, setEnviandoValidacao] = useState(false);
+  const [enviandoConsultor, setEnviandoConsultor] = useState<string | null>(null);
+  const [modalValidacaoData, setModalValidacaoData] = useState<any | null>(null);
+
+  const validacoesMap = useMemo(() => {
+    const map = new Map<string, any>();
+    validacoes.forEach(v => {
+      if (v.consultor) map.set(v.consultor, v);
+    });
+    return map;
+  }, [validacoes]);
+
+  const fetchValidacoes = async (vid: string) => {
+    if (!vid) return;
+    setLoadingValidacoes(true);
+    try {
+      const res = await fetch(`/api/validacao?versao_id=${encodeURIComponent(vid)}`);
+      const data = await res.json();
+      if (data.success) {
+        setValidacoes(data.validacoes || []);
+      }
+    } catch (err) {
+      console.error('Erro ao buscar validações:', err);
+    } finally {
+      setLoadingValidacoes(false);
+    }
+  };
+
+  useEffect(() => {
+    if (versaoAtiva) {
+      fetchValidacoes(versaoAtiva);
+    } else {
+      setValidacoes([]);
+    }
+  }, [versaoAtiva]);
+
+  const handleEnviarTodosValidacao = async (versaoId: string, versaoNome: string) => {
+    if (!window.confirm(`Deseja enviar todos os roteiros da versão "${versaoNome}" para validação prévia dos consultores no aplicativo Alteraai?`)) return;
+    setEnviandoValidacao(true);
+    try {
+      const res = await fetch('/api/validacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ versao_id: versaoId, versao_nome: versaoNome, todos: true })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        if (data.tableNotFound) {
+          alert('⚠️ ATENÇÃO: A tabela de validações ainda precisa ser criada no Supabase do Alteraai.\n\nExecute o script "criar_tabela_validacao_alteraai.sql" no SQL Editor do Supabase.');
+        } else {
+          alert(`Erro ao enviar: ${data.error || 'Falha ao processar'}`);
+        }
+        return;
+      }
+      alert(`✅ ${data.message || 'Roteiros enviados com sucesso para validação dos consultores!'}`);
+      await fetchValidacoes(versaoId);
+    } catch (err: any) {
+      alert(`Erro ao conectar com API de validação: ${err.message}`);
+    } finally {
+      setEnviandoValidacao(false);
+    }
+  };
+
+  const handleEnviarIndividualValidacao = async (roteiro: RoteiroSalvo, versaoNome: string) => {
+    if (!window.confirm(`Enviar o roteiro de ${roteiro.consultor} para validação no aplicativo Alteraai?`)) return;
+    setEnviandoConsultor(roteiro.consultor);
+    try {
+      const res = await fetch('/api/validacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          versao_id: roteiro.versao_id,
+          versao_nome: versaoNome,
+          consultor: roteiro.consultor
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        if (data.tableNotFound) {
+          alert('⚠️ ATENÇÃO: A tabela de validações ainda precisa ser criada no Supabase do Alteraai.');
+        } else {
+          alert(`Erro ao enviar: ${data.error}`);
+        }
+        return;
+      }
+      alert(`✅ Roteiro de ${roteiro.consultor} enviado com sucesso para validação no Alteraai!`);
+      if (roteiro.versao_id) await fetchValidacoes(roteiro.versao_id);
+    } catch (err: any) {
+      alert(`Erro ao enviar: ${err.message}`);
+    } finally {
+      setEnviandoConsultor(null);
+    }
+  };
 
   const fetchTudo = async () => {
     setLoading(true);
@@ -287,6 +385,15 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => handleEnviarTodosValidacao(versaoAtiva, versaoAtivaObj?.nome || '')}
+              disabled={rots.length === 0 || enviandoValidacao}
+              className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 shadow-sm"
+              title="Enviar todos os roteiros desta versão para validação dos consultores no aplicativo Alteraai"
+            >
+              {enviandoValidacao ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              Enviar para Validação (Alteraai)
+            </button>
             <button onClick={() => onViewConsolidated?.(selecionados.length > 0 ? selecionados : rots)} disabled={rots.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
               <Activity className="w-4 h-4" /> Dashboard {selecionados.length > 0 && `(${selecionados.length})`}
             </button>
@@ -331,51 +438,117 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
                   <th className="px-6 py-3">Consultor</th>
                   <th className="px-6 py-3">Referência</th>
                   <th className="px-6 py-3">Cenário</th>
+                  <th className="px-6 py-3 text-center">Validação (Alteraai)</th>
                   <th className="px-6 py-3 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
-                {rots.map((roteiro: RoteiroSalvo) => (
-                  <tr key={roteiro.id} className={`border-b hover:bg-gray-50 transition-colors ${selectedIds.has(roteiro.id) ? 'bg-blue-50/40' : 'bg-white'}`}>
-                    <td className="px-4 py-4">
-                      <input type="checkbox" checked={selectedIds.has(roteiro.id)} onChange={e => {
-                        const next = new Set(selectedIds);
-                        e.target.checked ? next.add(roteiro.id) : next.delete(roteiro.id);
-                        setSelectedIds(next);
-                      }} className="rounded border-gray-300 text-blue-600 cursor-pointer" />
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">
-                      <div className="flex items-center gap-2">
-                        <User className="w-4 h-4 text-gray-400 shrink-0" />
-                        <span className="truncate max-w-[180px]">{roteiro.consultor}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">{MESES[(roteiro.mes || 1) - 1]}/{roteiro.ano}</td>
-                    <td className="px-6 py-4 text-blue-600 font-medium text-xs">{roteiro.cenario || 'Principal'}</td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-3">
-                        <button onClick={() => onEdit?.({
-                          ...roteiro.dados_roteiro,
-                          consultor: roteiro.dados_roteiro?.consultor || roteiro.consultor,
-                          mes: roteiro.dados_roteiro?.mes || roteiro.mes || 11,
-                          ano: roteiro.dados_roteiro?.ano || roteiro.ano || 2026
-                        })} className="text-blue-600 hover:text-blue-900 flex items-center gap-1 text-xs font-medium">
-                          <Edit className="w-3.5 h-3.5" /> Carregar
-                        </button>
-                        <button onClick={() => handleDelete(roteiro.id, roteiro.consultor)} className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs font-medium">
-                          <Trash2 className="w-3.5 h-3.5" /> Apagar
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {rots.map((roteiro: RoteiroSalvo) => {
+                  const val = validacoesMap.get(roteiro.consultor);
+                  const isEnviandoEste = enviandoConsultor === roteiro.consultor;
+
+                  return (
+                    <tr key={roteiro.id} className={`border-b hover:bg-gray-50 transition-colors ${selectedIds.has(roteiro.id) ? 'bg-blue-50/40' : 'bg-white'}`}>
+                      <td className="px-4 py-4">
+                        <input type="checkbox" checked={selectedIds.has(roteiro.id)} onChange={e => {
+                          const next = new Set(selectedIds);
+                          e.target.checked ? next.add(roteiro.id) : next.delete(roteiro.id);
+                          setSelectedIds(next);
+                        }} className="rounded border-gray-300 text-blue-600 cursor-pointer" />
+                      </td>
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-gray-400 shrink-0" />
+                          <span className="truncate max-w-[180px]">{roteiro.consultor}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">{MESES[(roteiro.mes || 1) - 1]}/{roteiro.ano}</td>
+                      <td className="px-6 py-4 text-blue-600 font-medium text-xs">{roteiro.cenario || 'Principal'}</td>
+                      
+                      {/* Coluna Validação Alteraai */}
+                      <td className="px-6 py-4 text-center">
+                        {loadingValidacoes ? (
+                          <span className="inline-flex items-center gap-1 text-xs text-gray-400">
+                            <Loader2 className="w-3 h-3 animate-spin" /> Verificando...
+                          </span>
+                        ) : !val ? (
+                          <button
+                            onClick={() => handleEnviarIndividualValidacao(roteiro, versaoAtivaObj?.nome || '')}
+                            disabled={isEnviandoEste}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
+                            title="Enviar roteiro para validação prévia deste consultor no Alteraai"
+                          >
+                            {isEnviandoEste ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                            Enviar
+                          </button>
+                        ) : val.status === 'Pendente' ? (
+                          <div className="inline-flex items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+                              <Clock className="w-3 h-3 text-amber-500 animate-pulse" /> Pendente
+                            </span>
+                            <button
+                              onClick={() => handleEnviarIndividualValidacao(roteiro, versaoAtivaObj?.nome || '')}
+                              disabled={isEnviandoEste}
+                              className="p-1 text-slate-400 hover:text-blue-600 rounded transition-colors cursor-pointer"
+                              title="Reenviar roteiro para a tela do consultor"
+                            >
+                              {isEnviandoEste ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
+                            </button>
+                          </div>
+                        ) : val.status === 'Validado' ? (
+                          <button
+                            onClick={() => setModalValidacaoData(val)}
+                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer"
+                            title="Consultor validou 100% das visitas. Clique para ver detalhes."
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> 100% Validado
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setModalValidacaoData(val)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 transition-all cursor-pointer shadow-xs animate-pulse"
+                            title="O consultor fez apontamentos em visitas. Clique para ver as justificativas!"
+                          >
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
+                            {val.visitas_reavaliar || 1} Apontamento(s)
+                          </button>
+                        )}
+                      </td>
+
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-3">
+                          <button onClick={() => onEdit?.({
+                            ...roteiro.dados_roteiro,
+                            consultor: roteiro.dados_roteiro?.consultor || roteiro.consultor,
+                            mes: roteiro.dados_roteiro?.mes || roteiro.mes || 11,
+                            ano: roteiro.dados_roteiro?.ano || roteiro.ano || 2026
+                          })} className="text-blue-600 hover:text-blue-900 flex items-center gap-1 text-xs font-medium cursor-pointer">
+                            <Edit className="w-3.5 h-3.5" /> Carregar
+                          </button>
+                          <button onClick={() => handleDelete(roteiro.id, roteiro.consultor)} className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs font-medium cursor-pointer">
+                            <Trash2 className="w-3.5 h-3.5" /> Apagar
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
+
+        {/* Modal de Detalhes dos Apontamentos da Validação */}
+        {modalValidacaoData && (
+          <ModalApontamentosValidacao
+            validacao={modalValidacaoData}
+            onClose={() => setModalValidacaoData(null)}
+          />
+        )}
       </div>
     );
   }
+
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">

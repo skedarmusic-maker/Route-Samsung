@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 import {
   Calendar, Map as MapLucide, CheckCircle, Users, Loader2, AlertCircle,
   Clock, MapPin, Building2, Tag, Plane, ArrowLeft, Navigation, Save, Download,
-  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe, Hotel, Car
+  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe, Hotel, Car, Send
 } from 'lucide-react';
 import SugestaoJourney from '@/components/SugestaoJourney';
 import RoteirosSalvos from '@/components/RoteirosSalvos';
@@ -910,6 +910,41 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
 
   // Estado para modal de adicionar loja
   const [addStoreDia, setAddStoreDia] = useState<RoteiroDia | null>(null);
+  const [enviandoValidacaoPreview, setEnviandoValidacaoPreview] = useState(false);
+
+  const handleEnviarParaValidacaoPreview = async () => {
+    if (!resultado.versao_id) {
+      alert('Por favor, salve o roteiro em uma versão antes de enviar para validação no Alteraai.');
+      return;
+    }
+    if (!window.confirm(`Enviar o roteiro de ${resultado.consultor} para validação prévia no aplicativo Alteraai?`)) return;
+    setEnviandoValidacaoPreview(true);
+    try {
+      const res = await fetch('/api/validacao', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          versao_id: resultado.versao_id,
+          versao_nome: resultado.versao_nome || resultado.versao_id,
+          consultor: resultado.consultor
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        if (data.tableNotFound) {
+          alert('⚠️ ATENÇÃO: A tabela de validações ainda precisa ser criada no Supabase do Alteraai.\n\nExecute o script "criar_tabela_validacao_alteraai.sql" no SQL Editor do Supabase.');
+        } else {
+          alert(`Erro ao enviar: ${data.error || 'Falha ao processar'}`);
+        }
+        return;
+      }
+      alert(`✅ Roteiro de ${resultado.consultor} enviado com sucesso para validação no Alteraai!`);
+    } catch (err: any) {
+      alert(`Erro ao enviar: ${err.message}`);
+    } finally {
+      setEnviandoValidacaoPreview(false);
+    }
+  };
 
   const handleRemoveLoja = (data: string, lojaNome: string) => {
     if (!window.confirm(`Deseja remover a visita à loja "${lojaNome}"?`)) return;
@@ -1428,6 +1463,16 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
                 className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all shadow-sm active:scale-95 disabled:opacity-50"
               >
                 Salvar como Nova Versão...
+              </button>
+
+              <button 
+                onClick={handleEnviarParaValidacaoPreview}
+                disabled={enviandoValidacaoPreview}
+                className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all shadow-md shrink-0 active:scale-95 disabled:opacity-50"
+                title="Enviar roteiro para validação prévia deste consultor no Alteraai"
+              >
+                {enviandoValidacaoPreview ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                Enviar p/ Validação (Alteraai)
               </button>
             </>
           ) : (
