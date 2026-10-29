@@ -178,3 +178,52 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
+
+// PATCH: Salva a decisão do gestor (aceito / negado) para os apontamentos do consultor
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, roteiro, status_gestor, observacao_gestor } = body;
+
+    if (!id || !roteiro) {
+      return NextResponse.json(
+        { success: false, error: 'Parâmetros id e roteiro são obrigatórios.' },
+        { status: 400 }
+      );
+    }
+
+    const updatePayload: any = {
+      roteiro,
+      updated_at: new Date().toISOString()
+    };
+
+    if (status_gestor !== undefined) {
+      updatePayload.status_gestor = status_gestor; // 'Ajustes Aceitos' | 'Ajustes Parciais' | 'Ajustes Negados' | 'Em Análise'
+    }
+
+    if (observacao_gestor !== undefined) {
+      updatePayload.observacao_gestor = observacao_gestor;
+    }
+
+    const { data, error } = await alteraaiAdminSupabase
+      .from('jp_validacoes')
+      .update(updatePayload)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Erro ao atualizar decisão do gestor:', error);
+      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Avaliação do gestor salva com sucesso!',
+      validacao: data
+    });
+  } catch (err: any) {
+    console.error('Erro no PATCH /api/validacao:', err);
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
+}

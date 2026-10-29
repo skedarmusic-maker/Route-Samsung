@@ -543,11 +543,32 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
           <ModalApontamentosValidacao
             validacao={modalValidacaoData}
             onClose={() => setModalValidacaoData(null)}
+            onDecisaoSalva={(atualizada) => {
+              setValidacoes(prev => prev.map(v => v.id === atualizada.id ? atualizada : v));
+              setModalValidacaoData(atualizada);
+            }}
+            onAplicarAjustes={(roteiroComAjustes) => {
+              // Carrega o roteiro original deste consultor no editor, aplicando os apontamentos
+              const rotOriginal = rots.find((r: RoteiroSalvo) => r.consultor === roteiroComAjustes.consultor);
+              if (rotOriginal && onEdit) {
+                const dadosOriginais = rotOriginal.dados_roteiro || {};
+                onEdit({
+                  ...dadosOriginais,
+                  consultor: rotOriginal.consultor,
+                  mes: rotOriginal.mes || dadosOriginais.mes || 11,
+                  ano: rotOriginal.ano || dadosOriginais.ano || 2026,
+                  cenario: `Pós Validação (${roteiroComAjustes.consultor.split(' ')[0]})`,
+                  roteiro: roteiroComAjustes.roteiro,
+                  validacaoOrigem: roteiroComAjustes
+                });
+              }
+            }}
           />
         )}
       </div>
     );
   }
+
 
 
   return (
