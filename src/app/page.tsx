@@ -29,6 +29,7 @@ import { getFeriadoNome, isDiaFeriado } from '@/lib/feriados';
 
 import { normalize, computeDistance } from '@/lib/utils';
 import { getTempoEstimadoFallback } from '@/lib/deslocamento';
+import { getNomePdvAntigo } from '@/lib/lojasDePara';
 import { calcularCustoRealEstimado } from '@/lib/calculoCustoReal';
 
 // Carregamento dinâmico para evitar SSR do Google Maps
@@ -1250,7 +1251,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
           Consultor: consultorNome,
           Rota: loja.rota || rotaPadrao,
           'Cenário': cenarioNome,
-          'Nome PDV': loja.nome_pdv,
+          'Nome PDV': getNomePdvAntigo(loja),
           Cliente: loja.cliente,
           Cidade: loja.cidade,
           UF: loja.uf,

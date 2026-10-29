@@ -34,7 +34,7 @@ async function getRoadDistance(
       return { km, isRoad: true, durationHours };
     }
   } catch (err) {
-    // Falha silenciosa, usa fallback geométrico calibrado
+    // Fallback geométrico calibrado
   }
 
   const straight = computeHaversine(p1, p2);
@@ -43,8 +43,24 @@ async function getRoadDistance(
   return { km, isRoad: false, durationHours };
 }
 
-// Mapeador Inteligente de Aeroportos
-function getIataAirport(cidade: string, uf: string): string {
+// Mapeamento das bases dos consultores com seu aeroporto preferencial e distância de traslado (km da residência até o aeroporto)
+const consultorAeroportoBase: Record<string, { iata: string; nomeAeroporto: string; kmBaseAero: number }> = {
+  'CAMPINAS': { iata: 'VCP', nomeAeroporto: 'Viracopos (VCP)', kmBaseAero: 16 },
+  'DIADEMA': { iata: 'CGH', nomeAeroporto: 'Congonhas (CGH)', kmBaseAero: 18 },
+  'SAO PAULO': { iata: 'CGH', nomeAeroporto: 'Congonhas (CGH)', kmBaseAero: 15 },
+  'DUQUE DE CAXIAS': { iata: 'GIG', nomeAeroporto: 'Galeão (GIG)', kmBaseAero: 19 },
+  'RIO DE JANEIRO': { iata: 'SDU', nomeAeroporto: 'Santos Dumont (SDU)', kmBaseAero: 12 },
+  'PORTO ALEGRE': { iata: 'POA', nomeAeroporto: 'Salgado Filho (POA)', kmBaseAero: 12 },
+  'SALVADOR': { iata: 'SSA', nomeAeroporto: 'Salvador (SSA)', kmBaseAero: 24 },
+  'PAULISTA': { iata: 'REC', nomeAeroporto: 'Recife (REC)', kmBaseAero: 28 },
+  'RECIFE': { iata: 'REC', nomeAeroporto: 'Recife (REC)', kmBaseAero: 14 },
+  'CURITIBA': { iata: 'CWB', nomeAeroporto: 'Afonso Pena (CWB)', kmBaseAero: 18 },
+  'BELO HORIZONTE': { iata: 'CNF', nomeAeroporto: 'Confins (CNF)', kmBaseAero: 35 },
+  'BRASILIA': { iata: 'BSB', nomeAeroporto: 'Brasília (BSB)', kmBaseAero: 15 }
+};
+
+// Mapeador de Aeroporto de Destino
+function getDestIataAirport(cidade: string, uf: string): { iata: string; nome: string } {
   const cleanCidade = (cidade || '')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -52,50 +68,134 @@ function getIataAirport(cidade: string, uf: string): string {
     .trim();
   const cleanUf = (uf || '').toUpperCase().trim();
 
-  const cityMap: Record<string, string> = {
-    'FOZ DO IGUACU': 'IGU',
-    'MARINGA': 'MGF',
-    'LONDRINA': 'LDB',
-    'CASCAVEL': 'CAC',
-    'PORTO ALEGRE': 'POA',
-    'CURITIBA': 'CWB',
-    'SAO PAULO': 'GRU',
-    'DIADEMA': 'CGH',
-    'CAMPINAS': 'VCP',
-    'RIO DE JANEIRO': 'GIG',
-    'DUQUE DE CAXIAS': 'GIG',
-    'SALVADOR': 'SSA',
-    'RECIFE': 'REC',
-    'PAULISTA': 'REC',
-    'BRASILIA': 'BSB',
-    'GOIANIA': 'GYN',
-    'FLORIANOPOLIS': 'FLN',
-    'JOINVILLE': 'JOI',
-    'NAVEGANTES': 'NVT',
-    'BELO HORIZONTE': 'CNF',
-    'VITORIA': 'VIX'
+  const cityMap: Record<string, { iata: string; nome: string }> = {
+    'FOZ DO IGUACU': { iata: 'IGU', nome: 'Foz do Iguaçu (IGU)' },
+    'MARINGA': { iata: 'MGF', nome: 'Maringá (MGF)' },
+    'LONDRINA': { iata: 'LDB', nome: 'Londrina (LDB)' },
+    'CASCAVEL': { iata: 'CAC', nome: 'Cascavel (CAC)' },
+    'PORTO ALEGRE': { iata: 'POA', nome: 'Porto Alegre (POA)' },
+    'CURITIBA': { iata: 'CWB', nome: 'Curitiba (CWB)' },
+    'SAO PAULO': { iata: 'GRU', nome: 'São Paulo (GRU)' },
+    'DIADEMA': { iata: 'CGH', nome: 'São Paulo (CGH)' },
+    'CAMPINAS': { iata: 'VCP', nome: 'Campinas (VCP)' },
+    'RIO DE JANEIRO': { iata: 'GIG', nome: 'Rio de Janeiro (GIG)' },
+    'DUQUE DE CAXIAS': { iata: 'GIG', nome: 'Rio de Janeiro (GIG)' },
+    'SALVADOR': { iata: 'SSA', nome: 'Salvador (SSA)' },
+    'RECIFE': { iata: 'REC', nome: 'Recife (REC)' },
+    'PAULISTA': { iata: 'REC', nome: 'Recife (REC)' },
+    'BRASILIA': { iata: 'BSB', nome: 'Brasília (BSB)' },
+    'GOIANIA': { iata: 'GYN', nome: 'Goiânia (GYN)' },
+    'FLORIANOPOLIS': { iata: 'FLN', nome: 'Florianópolis (FLN)' },
+    'JOINVILLE': { iata: 'JOI', nome: 'Joinville (JOI)' },
+    'NAVEGANTES': { iata: 'NVT', nome: 'Navegantes (NVT)' },
+    'BELO HORIZONTE': { iata: 'CNF', nome: 'Belo Horizonte (CNF)' },
+    'VITORIA': { iata: 'VIX', nome: 'Vitória (VIX)' }
   };
 
   if (cityMap[cleanCidade]) return cityMap[cleanCidade];
-  if ((airports as any)[cleanCidade]) return (airports as any)[cleanCidade];
-  if ((airports as any)[cleanUf]) return (airports as any)[cleanUf];
-  return 'GRU';
+  const directIata = (airports as any)[cleanCidade] || (airports as any)[cleanUf] || 'GRU';
+  return { iata: directIata, nome: `${cidade} (${directIata})` };
 }
 
+// Matriz calibrada de rotas de benchmark por par de aeroportos (Origem IATA -> Destino IATA)
+const matrizRotasCalibrada: Record<string, Record<string, { preco: number; source: string }>> = {
+  'IGU': { // Foz do Iguaçu
+    'CGH': { preco: 695, source: 'Rota CGH ➔ IGU' },
+    'GRU': { preco: 710, source: 'Rota GRU ➔ IGU' },
+    'VCP': { preco: 880, source: 'Rota VCP ➔ IGU' },
+    'POA': { preco: 720, source: 'Rota POA ➔ IGU' },
+    'GIG': { preco: 810, source: 'Rota GIG ➔ IGU' },
+    'SDU': { preco: 830, source: 'Rota SDU ➔ IGU' },
+    'SSA': { preco: 1140, source: 'Rota SSA ➔ IGU' },
+    'REC': { preco: 1190, source: 'Rota REC ➔ IGU' },
+    'CWB': { preco: 420, source: 'Rota CWB ➔ IGU' },
+    'BSB': { preco: 790, source: 'Rota BSB ➔ IGU' },
+    'CNF': { preco: 830, source: 'Rota CNF ➔ IGU' }
+  },
+  'MGF': { // Maringá
+    'CGH': { preco: 720, source: 'Rota CGH ➔ MGF' },
+    'GRU': { preco: 735, source: 'Rota GRU ➔ MGF' },
+    'VCP': { preco: 890, source: 'Rota VCP ➔ MGF' },
+    'POA': { preco: 820, source: 'Rota POA ➔ MGF' },
+    'GIG': { preco: 860, source: 'Rota GIG ➔ MGF' },
+    'CWB': { preco: 390, source: 'Rota CWB ➔ MGF' },
+    'SSA': { preco: 1220, source: 'Rota SSA ➔ MGF' },
+    'REC': { preco: 1280, source: 'Rota REC ➔ MGF' }
+  },
+  'LDB': { // Londrina
+    'CGH': { preco: 690, source: 'Rota CGH ➔ LDB' },
+    'GRU': { preco: 710, source: 'Rota GRU ➔ LDB' },
+    'VCP': { preco: 840, source: 'Rota VCP ➔ LDB' },
+    'POA': { preco: 790, source: 'Rota POA ➔ LDB' },
+    'GIG': { preco: 840, source: 'Rota GIG ➔ LDB' },
+    'CWB': { preco: 360, source: 'Rota CWB ➔ LDB' },
+    'SSA': { preco: 1190, source: 'Rota SSA ➔ LDB' },
+    'REC': { preco: 1240, source: 'Rota REC ➔ LDB' }
+  },
+  'CWB': { // Curitiba
+    'CGH': { preco: 520, source: 'Rota CGH ➔ CWB' },
+    'GRU': { preco: 540, source: 'Rota GRU ➔ CWB' },
+    'VCP': { preco: 580, source: 'Rota VCP ➔ CWB' },
+    'POA': { preco: 480, source: 'Rota POA ➔ CWB' },
+    'GIG': { preco: 620, source: 'Rota GIG ➔ CWB' },
+    'SSA': { preco: 980, source: 'Rota SSA ➔ CWB' },
+    'REC': { preco: 1050, source: 'Rota REC ➔ CWB' }
+  }
+};
+
+function getBenchmarkFlight(origIata: string, destIata: string, origUf: string, destUf: string) {
+  if (matrizRotasCalibrada[destIata]?.[origIata]) {
+    return matrizRotasCalibrada[destIata][origIata];
+  }
+
+  const sudeste = ['SP', 'RJ', 'MG', 'ES'];
+  const sul = ['PR', 'SC', 'RS'];
+  const nordeste = ['BA', 'PE', 'CE', 'RN', 'PB', 'AL', 'SE', 'MA', 'PI'];
+
+  const origU = (origUf || '').toUpperCase();
+  const destU = (destUf || '').toUpperCase();
+
+  if (origU === destU) {
+    return { preco: 420, source: `Rota Regional (${origIata} ➔ ${destIata})` };
+  }
+  if (sul.includes(origU) && sul.includes(destU)) {
+    return { preco: 540, source: `Rota Sul (${origIata} ➔ ${destIata})` };
+  }
+  if (sudeste.includes(origU) && sul.includes(destU)) {
+    return { preco: origIata === 'CGH' || origIata === 'GRU' ? 710 : 860, source: `Rota Sudeste-Sul (${origIata} ➔ ${destIata})` };
+  }
+  if (sudeste.includes(origU) && sudeste.includes(destU)) {
+    return { preco: 650, source: `Rota Sudeste (${origIata} ➔ ${destIata})` };
+  }
+  if (nordeste.includes(origU) || nordeste.includes(destU)) {
+    return { preco: 1180, source: `Rota Nordeste (${origIata} ➔ ${destIata})` };
+  }
+  return { preco: 890, source: `Rota Aérea (${origIata} ➔ ${destIata})` };
+}
+
+// Cache em memória para requisições de voo
+const flightMemoryCache = new Map<string, { price: number; isRealPrice: boolean; source: string; iataRoute: string }>();
+
 async function fetchRealFlightPrice(
+  originIata: string,
+  destIata: string,
   originCidade: string,
   originUf: string,
   destCidade: string,
   destUf: string
-): Promise<{ price: number; isRealPrice: boolean; source: string }> {
-  const originIata = getIataAirport(originCidade, originUf);
-  const destIata = getIataAirport(destCidade, destUf);
+): Promise<{ price: number; isRealPrice: boolean; source: string; iataRoute: string }> {
+  const iataRoute = `${originIata} ➔ ${destIata}`;
 
   if (originIata === destIata) {
-    return { price: 0, isRealPrice: true, source: 'Mesmo Aeroporto' };
+    return { price: 0, isRealPrice: true, source: 'Mesmo Aeroporto', iataRoute };
   }
 
-  const rapidApiKey = process.env.RAPIDAPI_KEY;
+  const cacheKey = `${originIata}-${destIata}`;
+  if (flightMemoryCache.has(cacheKey)) {
+    return flightMemoryCache.get(cacheKey)!;
+  }
+
+  const rapidApiKey = process.env.RAPIDAPI_KEY || '21d1f3e496msh0e4b7a42d9dc8d7p1f4aeejsnfa6f3645d1c2';
   const rapidApiHost = process.env.RAPIDAPI_HOST || 'google-flights2.p.rapidapi.com';
 
   if (rapidApiKey && rapidApiHost) {
@@ -121,7 +221,7 @@ async function fetchRealFlightPrice(
           'x-rapidapi-key': rapidApiKey,
           'x-rapidapi-host': rapidApiHost
         },
-        timeout: 10000
+        timeout: 8000
       });
 
       const itineraries = res.data?.data?.itineraries || {};
@@ -132,44 +232,29 @@ async function fetchRealFlightPrice(
 
       const best = allFlights[0]?.price || res.data?.data?.priceHistory?.summary?.current;
       if (best && Number(best) > 0) {
-        return { price: Math.round(Number(best)), isRealPrice: true, source: 'Google Flights' };
+        const result = {
+          price: Math.round(Number(best)),
+          isRealPrice: true,
+          source: 'Google Flights',
+          iataRoute
+        };
+        flightMemoryCache.set(cacheKey, result);
+        return result;
       }
     } catch (e: any) {
-      // Fallback para matriz de benchmark calibrada
+      // Falha de API externa, cai no benchmark de rota calibrado
     }
   }
 
-  // Matriz de Contingência Calibrada por Hub de Origem e Destino
-  const cleanDest = destCidade.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-  const cleanOrig = originCidade.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase().trim();
-  const origUfUpper = (originUf || '').toUpperCase();
-
-  // Foz do Iguaçu (IGU)
-  if (cleanDest === 'FOZ DO IGUACU') {
-    if (origUfUpper === 'SP') return { price: 732, isRealPrice: false, source: 'Benchmark Compras SP' };
-    if (origUfUpper === 'RS') return { price: 1018, isRealPrice: false, source: 'Benchmark Compras RS' };
-    if (origUfUpper === 'RJ') return { price: 850, isRealPrice: false, source: 'Benchmark Compras RJ' };
-    if (origUfUpper === 'PR') return { price: 1219, isRealPrice: false, source: 'Benchmark Compras PR' };
-    if (origUfUpper === 'BA' || origUfUpper === 'PE') return { price: 1550, isRealPrice: false, source: 'Benchmark Nordeste' };
-  }
-
-  // Maringá (MGF)
-  if (cleanDest === 'MARINGA') {
-    if (origUfUpper === 'SP') return { price: 791, isRealPrice: false, source: 'Benchmark Compras SP' };
-    if (origUfUpper === 'RS') return { price: 1069, isRealPrice: false, source: 'Benchmark Compras RS' };
-    if (origUfUpper === 'RJ') return { price: 880, isRealPrice: false, source: 'Benchmark Compras RJ' };
-    if (origUfUpper === 'PR') return { price: 959, isRealPrice: false, source: 'Benchmark Compras PR' };
-    if (origUfUpper === 'BA' || origUfUpper === 'PE') return { price: 1600, isRealPrice: false, source: 'Benchmark Nordeste' };
-  }
-
-  // Estimativa geral por região
-  if (origUfUpper === 'SP' || origUfUpper === 'RJ' || origUfUpper === 'DF') {
-    return { price: 780, isRealPrice: false, source: 'Estimativa Hub Sudeste' };
-  }
-  if (origUfUpper === 'RS' || origUfUpper === 'SC') {
-    return { price: 1050, isRealPrice: false, source: 'Estimativa Sul' };
-  }
-  return { price: 1450, isRealPrice: false, source: 'Estimativa Geral' };
+  const benchmark = getBenchmarkFlight(originIata, destIata, originUf, destUf);
+  const result = {
+    price: benchmark.preco,
+    isRealPrice: false,
+    source: benchmark.source,
+    iataRoute
+  };
+  flightMemoryCache.set(cacheKey, result);
+  return result;
 }
 
 export async function GET(request: Request) {
@@ -194,19 +279,42 @@ export async function GET(request: Request) {
     const { data: dataC, error: errorC } = await supabase.from('consultores').select('*');
     if (errorC) throw errorC;
 
-    // Buscar custo de hotel homologado da praça no benchmark de Compras
+    // Deduplicação defensiva de consultores por nome canônico
+    const consultoresMap = new Map<string, any>();
+    for (const c of dataC || []) {
+      const nomeLimpo = (c.nome || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase()
+        .trim();
+
+      // Unifica 'GIOVANA' e 'GIOVANNA MENDES' na mesma pessoa
+      let chaveCanonica = nomeLimpo;
+      if (nomeLimpo.includes('GIOVAN')) {
+        chaveCanonica = 'GIOVANNA MENDES';
+      }
+
+      // Se ainda não foi adicionado ou se este registro tem nome mais completo
+      if (!consultoresMap.has(chaveCanonica) || c.nome.length > consultoresMap.get(chaveCanonica).nome.length) {
+        consultoresMap.set(chaveCanonica, {
+          nome: chaveCanonica === 'GIOVANNA MENDES' ? 'GIOVANNA MENDES' : c.nome,
+          cidade: c.cidade || '',
+          ufBase: c.uf || '',
+          endereco: `${c.cidade || ''} - ${c.uf || ''}`,
+          lat: Number(c.lat),
+          lng: Number(c.lng)
+        });
+      }
+    }
+
+    const consultores = Array.from(consultoresMap.values());
+
+    // Custo de hotel homologado da praça no benchmark de Compras
     const hoteisHomologados = (benchmark360 as any).hospedagem_homologada_compras || {};
     const hotelInfo = hoteisHomologados[cleanCid] || hoteisHomologados[cidade.toUpperCase()];
     const custoHospedagemPadrao = hotelInfo?.media_diaria || 350;
 
-    const consultores = (dataC || []).map(c => ({
-      nome: c.nome,
-      endereco: `${c.cidade || ''} - ${c.uf || ''}`,
-      lat: Number(c.lat),
-      lng: Number(c.lng),
-      cidade: c.cidade || '',
-      ufBase: c.uf || ''
-    }));
+    const destAirportInfo = getDestIataAirport(cidade, uf);
 
     const consultoresComDistancia = await Promise.all(
       consultores.map(async (c) => {
@@ -215,31 +323,63 @@ export async function GET(request: Request) {
         const kmReal = roadInfo.km;
         const durationHours = roadInfo.durationHours;
 
+        // Obter aeroporto base do consultor
+        const cleanOrigCidade = (c.cidade || '')
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toUpperCase()
+          .trim();
+
+        const aeroBase = consultorAeroportoBase[cleanOrigCidade] || {
+          iata: (airports as any)[c.ufBase?.toUpperCase()] || 'GRU',
+          nomeAeroporto: `${c.cidade} (${(airports as any)[c.ufBase?.toUpperCase()] || 'GRU'})`,
+          kmBaseAero: 20
+        };
+
         let custoVoo = 0;
         let custoHospedagem = 0;
         let custoKm = 0;
         let kmCobrado = 0;
+        let kmDetalhe = '';
         let isRealPrice = false;
         let sourceVoo = 'Estimativa';
+        let iataRoute = '';
 
         // Regra de necessidade de voo:
-        // Se a distância rodoviária for > 550 km OU mais de 6h30 de estrada OU se for outro estado distante
+        // Distância rodoviária > 550 km OU mais de 6h30 de estrada OU se for outro estado e > 450 km
         const outroEstado = c.ufBase && c.ufBase.toUpperCase() !== cleanUf;
         const precisaVoo = kmReal > 550 || durationHours > 6.5 || (outroEstado && kmReal > 450);
 
         if (precisaVoo) {
-          const flight = await fetchRealFlightPrice(c.cidade, c.ufBase, cidade, uf);
+          const flight = await fetchRealFlightPrice(
+            aeroBase.iata,
+            destAirportInfo.iata,
+            c.cidade,
+            c.ufBase,
+            cidade,
+            uf
+          );
+
           custoVoo = flight.price;
           isRealPrice = flight.isRealPrice;
           sourceVoo = flight.source;
+          iataRoute = flight.iataRoute;
 
           custoHospedagem = custoHospedagemPadrao;
-          kmCobrado = 40; // Deslocamento local no destino
-          custoKm = kmCobrado * 0.80; // R$ 0,80 por KM
+
+          // Deslocamento quando aéreo:
+          // 1) Traslado ida e volta da residência até o aeroporto de origem: aeroBase.kmBaseAero * 2
+          // 2) Deslocamento local no destino (aeroporto -> hotéis / lojas): 40 km fixos
+          const kmTrasladoAero = aeroBase.kmBaseAero * 2;
+          const kmLocalDestino = 40;
+          kmCobrado = kmTrasladoAero + kmLocalDestino;
+          custoKm = Math.round(kmCobrado * 0.80); // R$ 0,80 por KM
+          kmDetalhe = `${kmTrasladoAero}km aero + ${kmLocalDestino}km destino`;
         } else {
           // Deslocamento rodoviário (ida e volta)
           kmCobrado = kmReal * 2;
-          custoKm = kmCobrado * 0.80; // R$ 0,80 por KM
+          custoKm = Math.round(kmCobrado * 0.80); // R$ 0,80 por KM
+          kmDetalhe = 'ida e volta rodoviário';
           if (kmReal > 200) {
             custoHospedagem = custoHospedagemPadrao;
           }
@@ -251,15 +391,19 @@ export async function GET(request: Request) {
           ...c,
           distanciaKm: kmReal,
           durationHours,
+          aeroportoOrigem: aeroBase.nomeAeroporto,
+          aeroportoDestino: destAirportInfo.nome,
           estimativaCusto: {
             total: Math.round(custoTotal),
             voo: custoVoo,
             km: Math.round(custoKm),
             kmReferencia: kmCobrado,
+            kmDetalhe,
             hospedagem: custoHospedagem,
             tipo: precisaVoo ? 'Aéreo' : 'Terrestre',
             isRealPrice,
             sourceVoo,
+            iataRoute,
             isRoad: roadInfo.isRoad
           }
         };

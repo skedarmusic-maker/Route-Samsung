@@ -10,6 +10,7 @@ import {
 import * as xlsx from 'xlsx';
 import { getFeriadoNome } from '@/lib/feriados';
 import { getTempoEstimadoFallback } from '@/lib/deslocamento';
+import { getNomePdvAntigo } from '@/lib/lojasDePara';
 import ModalApontamentosValidacao from './ModalApontamentosValidacao';
 
 interface RoteiroSalvo {
@@ -304,7 +305,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
             Rota: loja.rota || rotaPadrao,
             Versão: versaoNome,
             Cenário: r.cenario || 'Principal',
-            'Nome PDV': loja.nome_pdv,
+            'Nome PDV': getNomePdvAntigo(loja),
             Cliente: loja.cliente,
             Cidade: loja.cidade,
             UF: loja.uf,

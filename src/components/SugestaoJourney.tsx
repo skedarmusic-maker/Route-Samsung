@@ -1,51 +1,84 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import axios from 'axios';
-import { MapPin, Navigation, Loader2, Users } from 'lucide-react';
+import { Navigation, Loader2, Users } from 'lucide-react';
 import { Loja } from '@/lib/dataParser';
+import cityCoords from '@/lib/city_coords.json';
 
 interface SugestaoJourneyProps {
-  lojas: Loja[];
+  lojas?: Loja[];
 }
 
-interface ConsultorDistancia {
+interface ConsultorSugestao {
   nome: string;
   endereco: string;
   distanciaKm: number;
   durationHours?: number;
+  aeroportoOrigem?: string;
+  aeroportoDestino?: string;
   estimativaCusto: {
     total: number;
     voo: number;
     km: number;
     kmReferencia: number;
+    kmDetalhe?: string;
     hospedagem: number;
     tipo: 'Aéreo' | 'Terrestre';
-    isRealPrice?: boolean;
-    isRealHotel?: boolean;
+    isRealPrice: boolean;
     sourceVoo?: string;
+    iataRoute?: string;
+    isRealHotel?: boolean;
     isRoad?: boolean;
   };
 }
 
-export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
+export default function SugestaoJourney({ lojas = [] }: SugestaoJourneyProps) {
   const [selectedUF, setSelectedUF] = useState<string>('');
   const [selectedCidade, setSelectedCidade] = useState<string>('');
-  const [sugestoes, setSugestoes] = useState<ConsultorDistancia[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [sugestoes, setSugestoes] = useState<ConsultorSugestao[]>([]);
+  const [error, setError] = useState<string>('');
 
   // Extrair UFs únicas
-  const ufsUnicas = Array.from(
-    new Set(lojas.filter(l => l.uf).map(l => l.uf))
-  ).sort();
+  const ufsUnicas = useMemo(() => {
+    if (lojas && lojas.length > 0) {
+      const ufs = new Set<string>();
+      lojas.forEach(l => {
+        if (l.uf) ufs.add(l.uf.toUpperCase().trim());
+      });
+      return Array.from(ufs).sort();
+    }
+    const ufs = new Set<string>();
+    Object.keys(cityCoords).forEach(key => {
+      const parts = key.split('-');
+      if (parts.length === 2 && parts[1]) {
+        ufs.add(parts[1].toUpperCase().trim());
+      }
+    });
+    return Array.from(ufs).sort();
+  }, [lojas]);
 
-  // Extrair cidades filtradas por UF
+  // Filtrar cidades com base na UF selecionada
   const cidadesFiltradas = useMemo(() => {
     if (!selectedUF) return [];
-    return Array.from(
-      new Set(lojas.filter(l => l.uf === selectedUF && l.cidade).map(l => l.cidade))
-    ).sort();
+    if (lojas && lojas.length > 0) {
+      const cidades = new Set<string>();
+      lojas.forEach(l => {
+        if (l.uf && l.uf.toUpperCase().trim() === selectedUF.toUpperCase().trim() && l.cidade) {
+          cidades.add(l.cidade.trim());
+        }
+      });
+      return Array.from(cidades).sort();
+    }
+    const cidades: string[] = [];
+    Object.keys(cityCoords).forEach(key => {
+      const parts = key.split('-');
+      if (parts.length === 2 && parts[1].toUpperCase().trim() === selectedUF.toUpperCase().trim()) {
+        cidades.push(parts[0].trim());
+      }
+    });
+    return cidades.sort();
   }, [selectedUF, lojas]);
 
   const handleBuscar = async () => {
@@ -154,10 +187,10 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
                   </div>
                   <div className="flex justify-between text-[11px]">
                     <span className="text-gray-400">
-                      {s.estimativaCusto.tipo === 'Aéreo' ? '🚗 Deslocamento Local:' : '🚗 Deslocamento KM:'}
+                      {s.estimativaCusto.tipo === 'Aéreo' ? '🚗 Deslocamento / Traslado:' : '🚗 Deslocamento KM:'}
                     </span>
                     <span className="text-gray-600 font-medium">
-                      R$ {s.estimativaCusto.km} ({s.estimativaCusto.kmReferencia}km)
+                      R$ {s.estimativaCusto.km} ({s.estimativaCusto.kmReferencia}km {s.estimativaCusto.kmDetalhe ? `· ${s.estimativaCusto.kmDetalhe}` : ''})
                     </span>
                   </div>
                   {s.estimativaCusto.voo > 0 && (
@@ -180,19 +213,26 @@ export default function SugestaoJourney({ lojas }: SugestaoJourneyProps) {
                             BOOKING.COM
                           </span>
                         )}
-                        <span className="text-amber-600">R$ {s.estimativaCusto.hospedagem}</span>
+                        <span className="text-amber-600 font-medium">R$ {s.estimativaCusto.hospedagem}</span>
                       </div>
                     </div>
                   )}
                 </div>
 
-                <p className="text-[10px] text-gray-500 font-medium mb-1">
-                  📍 Base: <span className="text-gray-700 font-bold">{s.endereco || 'Cidade Base'}</span>
-                </p>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-gray-500 font-medium flex items-center justify-between">
+                    <span>📍 Base: <span className="text-gray-700 font-bold">{s.endereco || 'Cidade Base'}</span></span>
+                    {s.aeroportoOrigem && (
+                      <span className="text-[9px] font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100">
+                        🛫 {s.aeroportoOrigem}
+                      </span>
+                    )}
+                  </p>
+                </div>
 
                 {idx === 0 && (
                   <div className="mt-4 pt-3 border-t border-indigo-100 flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">✨ Opção mais barata</span>
+                    <span className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">🏆 Opção mais barata</span>
                     <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></div>
                   </div>
                 )}
