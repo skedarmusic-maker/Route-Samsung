@@ -192,25 +192,43 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    // Mantemos os campos essenciais que existem na tabela: roteiro e updated_at
+    // As decisões individuais de cada loja (decisao_gestor: 'aceito' | 'negado', obs_gestor)
+    // já ficam 100% gravadas dentro do JSONB 'roteiro'.
     const updatePayload: any = {
       roteiro,
       updated_at: new Date().toISOString()
     };
 
+    // Tentar atualizar com status_gestor se a coluna existir, mas se der erro de coluna ausente, tenta sem ela
     if (status_gestor !== undefined) {
-      updatePayload.status_gestor = status_gestor; // 'Ajustes Aceitos' | 'Ajustes Parciais' | 'Ajustes Negados' | 'Em Análise'
+      updatePayload.status_gestor = status_gestor;
     }
 
-    if (observacao_gestor !== undefined) {
-      updatePayload.observacao_gestor = observacao_gestor;
-    }
-
-    const { data, error } = await alteraaiAdminSupabase
+    let { data, error } = await alteraaiAdminSupabase
       .from('jp_validacoes')
       .update(updatePayload)
       .eq('id', id)
       .select()
       .single();
+
+    // Se a coluna status_gestor ou observacao_gestor não existir na tabela jp_validacoes, salva apenas roteiro e updated_at
+    if (error && error.message && error.message.includes('column of \'jp_validacoes\' in the schema cache')) {
+      console.warn('Coluna opcional não encontrada no Supabase, salvando apenas no JSON roteiro:', error.message);
+      const safePayload = {
+        roteiro,
+        updated_at: new Date().toISOString()
+      };
+      const retry = await alteraaiAdminSupabase
+        .from('jp_validacoes')
+        .update(safePayload)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       console.error('Erro ao atualizar decisão do gestor:', error);
