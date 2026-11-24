@@ -3,15 +3,14 @@
 import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
-  Loader2, Download, RefreshCw, FileText, Calendar as CalendarIcon,
+  Loader2, Download, RefreshCw, FileText,
   User, Edit, Trash2, Activity, ChevronRight, ChevronLeft, Tag,
-  BarChart3, Package, Clock, AlertCircle, Send, CheckCircle2, AlertTriangle
+  BarChart3, Package, Clock, AlertCircle, CheckCircle2, FileSpreadsheet
 } from 'lucide-react';
 import * as xlsx from 'xlsx';
 import { getFeriadoNome } from '@/lib/feriados';
 import { getTempoEstimadoFallback } from '@/lib/deslocamento';
 import { getNomePdvAntigo } from '@/lib/lojasDePara';
-import ModalApontamentosValidacao from './ModalApontamentosValidacao';
 
 interface RoteiroSalvo {
   id: string;
@@ -47,9 +46,14 @@ const ROTA_MAP: Record<string, string> = {
 
 const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
-export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
+export default function RoteirosSalvos({
+  onEdit,
+  onViewConsolidated,
+  onOpenSpreadsheet,
+}: {
   onEdit?: (roteiro: any) => void;
   onViewConsolidated?: (roteiros: any[]) => void;
+  onOpenSpreadsheet?: (versaoId: string) => void;
 }) {
   const [roteiros, setRoteiros] = useState<RoteiroSalvo[]>([]);
   const [versoes, setVersoes] = useState<Versao[]>([]);
@@ -57,103 +61,6 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
   const [versaoAtiva, setVersaoAtiva] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [deletingVersaoId, setDeletingVersaoId] = useState<string | null>(null);
-
-  // Estados de Validação dos Consultores (Alteraai)
-  const [validacoes, setValidacoes] = useState<any[]>([]);
-  const [loadingValidacoes, setLoadingValidacoes] = useState(false);
-  const [enviandoValidacao, setEnviandoValidacao] = useState(false);
-  const [enviandoConsultor, setEnviandoConsultor] = useState<string | null>(null);
-  const [modalValidacaoData, setModalValidacaoData] = useState<any | null>(null);
-
-  const validacoesMap = useMemo(() => {
-    const map = new Map<string, any>();
-    validacoes.forEach(v => {
-      if (v.consultor) map.set(v.consultor, v);
-    });
-    return map;
-  }, [validacoes]);
-
-  const fetchValidacoes = async (vid: string) => {
-    if (!vid) return;
-    setLoadingValidacoes(true);
-    try {
-      const res = await fetch(`/api/validacao?versao_id=${encodeURIComponent(vid)}`);
-      const data = await res.json();
-      if (data.success) {
-        setValidacoes(data.validacoes || []);
-      }
-    } catch (err) {
-      console.error('Erro ao buscar validações:', err);
-    } finally {
-      setLoadingValidacoes(false);
-    }
-  };
-
-  useEffect(() => {
-    if (versaoAtiva) {
-      fetchValidacoes(versaoAtiva);
-    } else {
-      setValidacoes([]);
-    }
-  }, [versaoAtiva]);
-
-  const handleEnviarTodosValidacao = async (versaoId: string, versaoNome: string) => {
-    if (!window.confirm(`Deseja enviar todos os roteiros da versão "${versaoNome}" para validação prévia dos consultores no aplicativo Alteraai?`)) return;
-    setEnviandoValidacao(true);
-    try {
-      const res = await fetch('/api/validacao', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ versao_id: versaoId, versao_nome: versaoNome, todos: true })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        if (data.tableNotFound) {
-          alert('⚠️ ATENÇÃO: A tabela de validações ainda precisa ser criada no Supabase do Alteraai.\n\nExecute o script "criar_tabela_validacao_alteraai.sql" no SQL Editor do Supabase.');
-        } else {
-          alert(`Erro ao enviar: ${data.error || 'Falha ao processar'}`);
-        }
-        return;
-      }
-      alert(`✅ ${data.message || 'Roteiros enviados com sucesso para validação dos consultores!'}`);
-      await fetchValidacoes(versaoId);
-    } catch (err: any) {
-      alert(`Erro ao conectar com API de validação: ${err.message}`);
-    } finally {
-      setEnviandoValidacao(false);
-    }
-  };
-
-  const handleEnviarIndividualValidacao = async (roteiro: RoteiroSalvo, versaoNome: string) => {
-    if (!window.confirm(`Enviar o roteiro de ${roteiro.consultor} para validação no aplicativo Alteraai?`)) return;
-    setEnviandoConsultor(roteiro.consultor);
-    try {
-      const res = await fetch('/api/validacao', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          versao_id: roteiro.versao_id,
-          versao_nome: versaoNome,
-          consultor: roteiro.consultor
-        })
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        if (data.tableNotFound) {
-          alert('⚠️ ATENÇÃO: A tabela de validações ainda precisa ser criada no Supabase do Alteraai.');
-        } else {
-          alert(`Erro ao enviar: ${data.error}`);
-        }
-        return;
-      }
-      alert(`✅ Roteiro de ${roteiro.consultor} enviado com sucesso para validação no Alteraai!`);
-      if (roteiro.versao_id) await fetchValidacoes(roteiro.versao_id);
-    } catch (err: any) {
-      alert(`Erro ao enviar: ${err.message}`);
-    } finally {
-      setEnviandoConsultor(null);
-    }
-  };
 
   const fetchTudo = async () => {
     setLoading(true);
@@ -173,28 +80,25 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
 
   useEffect(() => { fetchTudo(); }, []);
 
-  // Mescla versões oficiais com versões 'descobertas' nos roteiros
   const todasVersoesAgrupadas = useMemo(() => {
     const vMap = new Map<string, any>();
-    
-    // 1. Adiciona versões oficiais do banco
+
     versoes.forEach(v => vMap.set(v.id, { ...v, rots: [] }));
-    
-    // 2. Distribui roteiros e descobre versões órfãs
+
     roteiros.forEach(r => {
       const vid = r.versao_id || 'sem-versao';
       if (!vMap.has(vid)) {
-        vMap.set(vid, { 
-          id: vid, 
+        vMap.set(vid, {
+          id: vid,
           nome: r.versao_nome || (vid === 'sem-versao' ? 'Sem Versão' : `Versão ${vid}`),
           created_at: r.created_at,
-          rots: [] 
+          rots: []
         });
       }
       vMap.get(vid).rots.push(r);
     });
-    
-    return Array.from(vMap.values()).sort((a, b) => 
+
+    return Array.from(vMap.values()).sort((a, b) =>
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
   }, [roteiros, versoes]);
@@ -206,6 +110,16 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
   }, [versaoAtiva, todasVersoesAgrupadas]);
 
   const versaoAtivaObj = todasVersoesAgrupadas.find(v => v.id === versaoAtiva);
+
+  const calcVisitasRoteiro = (r: RoteiroSalvo): number => {
+    const d = r.dados_roteiro;
+    if (!d) return 0;
+    if (typeof d.totalVisitas === 'number') return d.totalVisitas;
+    if (Array.isArray(d.roteiro)) {
+      return d.roteiro.reduce((sum: number, dia: any) => sum + (dia.lojas?.length || 0), 0);
+    }
+    return 0;
+  };
 
   const calcKmTotal = (rots: RoteiroSalvo[]) => {
     return rots.reduce((sum, r) => {
@@ -249,7 +163,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
     const rotsNaVersao = (todasVersoesAgrupadas.find(v => v.id === versaoId))?.rots || [];
     if (!window.confirm(
       `Tem certeza que deseja excluir a versão "${versaoNome}"?\n\n` +
-      `${rotsNaVersao.length > 0 ? `⚠️ Os ${rotsNaVersao.length} roteiro(s) desta versão serão movidos para "V0 - Legado".` : 'Esta versão está vazia.'}`
+      `${rotsNaVersao.length > 0 ? `Os ${rotsNaVersao.length} roteiro(s) desta versão serão movidos para "V0 - Legado".` : 'Esta versão está vazia.'}`
     )) return;
 
     setDeletingVersaoId(versaoId);
@@ -314,7 +228,7 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
             'Tempo de Deslocamento': tempo,
             'Check-in': loja.checkIn,
             'Check-out': loja.checkOut,
-            Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem})` : 'Local'
+            Tipo: loja.tipo === 'viagem' ? `Viagem (${loja.estadoViagem || loja.uf})` : 'Local'
           };
         });
       });
@@ -336,8 +250,8 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
       const parking = extraCosts.parking || extraCosts.other || 0;
       const totalCost = d.estimatedCost || d.resumoDeslocamentos?.custoKm || (custoKM + parking);
 
-      let obs = [];
-      if (parking > 0) obs.push(`Estacionamento/Eventos: R$ ${parking.toFixed(2)} (Febrava)`);
+      const obs: string[] = [];
+      if (parking > 0) obs.push(`Estacionamento/Eventos: R$ ${parking.toFixed(2)}`);
 
       return {
         'Consultor': r.consultor,
@@ -374,9 +288,9 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
 
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 mt-8 overflow-hidden">
-        <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white flex items-center justify-between gap-4">
+        <div className="px-6 py-4 bg-[#1428A0] text-white flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <button onClick={() => { setVersaoAtiva(null); setSelectedIds(new Set()); }} className="flex items-center gap-1.5 text-white/80 hover:text-white text-sm transition-colors">
+            <button onClick={() => { setVersaoAtiva(null); setSelectedIds(new Set()); }} className="flex items-center gap-1.5 text-white/80 hover:text-white text-sm transition-colors cursor-pointer">
               <ChevronLeft className="w-4 h-4" /> Versões
             </button>
             <span className="text-white/40">/</span>
@@ -385,33 +299,35 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
               <span className="font-bold">{versaoAtivaObj?.nome || versaoAtiva}</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleEnviarTodosValidacao(versaoAtiva, versaoAtivaObj?.nome || '')}
-              disabled={rots.length === 0 || enviandoValidacao}
-              className="flex items-center gap-2 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 shadow-sm"
-              title="Enviar todos os roteiros desta versão para validação dos consultores no aplicativo Alteraai"
-            >
-              {enviandoValidacao ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              Enviar para Validação (Alteraai)
-            </button>
-            <button onClick={() => onViewConsolidated?.(selecionados.length > 0 ? selecionados : rots)} disabled={rots.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
+          <div className="flex flex-wrap items-center gap-2">
+            {onOpenSpreadsheet && (
+              <button
+                onClick={() => onOpenSpreadsheet(versaoAtiva)}
+                disabled={rots.length === 0}
+                className="flex items-center gap-2 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-sm text-sm font-bold transition-colors disabled:opacity-50 shadow-sm cursor-pointer"
+                title="Abrir esta versão na Planilha Interativa Online para ajustes pontuais e download oficial"
+              >
+                <FileSpreadsheet className="w-4 h-4" />
+                Abrir na Planilha Online (Editar / Validar)
+              </button>
+            )}
+            <button onClick={() => onViewConsolidated?.(selecionados.length > 0 ? selecionados : rots)} disabled={rots.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-sm text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer">
               <Activity className="w-4 h-4" /> Dashboard {selecionados.length > 0 && `(${selecionados.length})`}
             </button>
-            <button onClick={() => handleExportVersao(rots, versaoAtivaObj?.nome || '')} disabled={rots.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
+            <button onClick={() => handleExportVersao(rots, versaoAtivaObj?.nome || '')} disabled={rots.length === 0} className="flex items-center gap-2 px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-sm text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer">
               <Download className="w-4 h-4" /> Baixar {selecionados.length > 0 ? `(${selecionados.length})` : `(${rots.length})`}
             </button>
           </div>
         </div>
 
         {versaoAtivaObj?.descricao && (
-          <div className="px-6 py-2 bg-blue-50 border-b border-blue-100 text-sm text-blue-700">{versaoAtivaObj.descricao}</div>
+          <div className="px-6 py-2 bg-blue-50 border-b border-blue-100 text-sm text-blue-800">{versaoAtivaObj.descricao}</div>
         )}
 
         <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
           <div className="px-6 py-4 text-center">
             <p className="text-2xl font-bold text-gray-900">{rots.length}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Roteiros</p>
+            <p className="text-xs text-gray-500 mt-0.5">Consultores</p>
           </div>
           <div className="px-6 py-4 text-center">
             <p className="text-2xl font-bold text-gray-900">{calcKmTotal(rots).toLocaleString('pt-BR', { maximumFractionDigits: 0 })} km</p>
@@ -439,14 +355,13 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
                   <th className="px-6 py-3">Consultor</th>
                   <th className="px-6 py-3">Referência</th>
                   <th className="px-6 py-3">Cenário</th>
-                  <th className="px-6 py-3 text-center">Validação (Alteraai)</th>
+                  <th className="px-6 py-3 text-center">Atendimentos</th>
                   <th className="px-6 py-3 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {rots.map((roteiro: RoteiroSalvo) => {
-                  const val = validacoesMap.get(roteiro.consultor);
-                  const isEnviandoEste = enviandoConsultor === roteiro.consultor;
+                  const numVisitas = calcVisitasRoteiro(roteiro);
 
                   return (
                     <tr key={roteiro.id} className={`border-b hover:bg-gray-50 transition-colors ${selectedIds.has(roteiro.id) ? 'bg-blue-50/40' : 'bg-white'}`}>
@@ -460,71 +375,26 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
                       <td className="px-6 py-4 font-medium text-gray-900">
                         <div className="flex items-center gap-2">
                           <User className="w-4 h-4 text-gray-400 shrink-0" />
-                          <span className="truncate max-w-[180px]">{roteiro.consultor}</span>
+                          <span className="truncate max-w-[200px]">{roteiro.consultor}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-gray-600">{MESES[(roteiro.mes || 1) - 1]}/{roteiro.ano}</td>
-                      <td className="px-6 py-4 text-blue-600 font-medium text-xs">{roteiro.cenario || 'Principal'}</td>
-                      
-                      {/* Coluna Validação Alteraai */}
+                      <td className="px-6 py-4 text-blue-700 font-medium text-xs">{roteiro.cenario || 'Principal'}</td>
                       <td className="px-6 py-4 text-center">
-                        {loadingValidacoes ? (
-                          <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                            <Loader2 className="w-3 h-3 animate-spin" /> Verificando...
-                          </span>
-                        ) : !val ? (
-                          <button
-                            onClick={() => handleEnviarIndividualValidacao(roteiro, versaoAtivaObj?.nome || '')}
-                            disabled={isEnviandoEste}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
-                            title="Enviar roteiro para validação prévia deste consultor no Alteraai"
-                          >
-                            {isEnviandoEste ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                            Enviar
-                          </button>
-                        ) : val.status === 'Pendente' ? (
-                          <div className="inline-flex items-center gap-1.5">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
-                              <Clock className="w-3 h-3 text-amber-500 animate-pulse" /> Pendente
-                            </span>
-                            <button
-                              onClick={() => handleEnviarIndividualValidacao(roteiro, versaoAtivaObj?.nome || '')}
-                              disabled={isEnviandoEste}
-                              className="p-1 text-slate-400 hover:text-blue-600 rounded transition-colors cursor-pointer"
-                              title="Reenviar roteiro para a tela do consultor"
-                            >
-                              {isEnviandoEste ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RefreshCw className="w-3.5 h-3.5" />}
-                            </button>
-                          </div>
-                        ) : val.status === 'Validado' ? (
-                          <button
-                            onClick={() => setModalValidacaoData(val)}
-                            className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer"
-                            title="Consultor validou 100% das visitas. Clique para ver detalhes."
-                          >
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> 100% Validado
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => setModalValidacaoData(val)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 transition-all cursor-pointer shadow-xs animate-pulse"
-                            title="O consultor fez apontamentos em visitas. Clique para ver as justificativas!"
-                          >
-                            <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
-                            {val.visitas_reavaliar || 1} Apontamento(s)
-                          </button>
-                        )}
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          {numVisitas} visitas
+                        </span>
                       </td>
-
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-3">
                           <button onClick={() => onEdit?.({
                             ...roteiro.dados_roteiro,
                             consultor: roteiro.dados_roteiro?.consultor || roteiro.consultor,
-                            mes: roteiro.dados_roteiro?.mes || roteiro.mes || 11,
-                            ano: roteiro.dados_roteiro?.ano || roteiro.ano || 2026
+                            mes: roteiro.dados_roteiro?.mes || roteiro.mes || 1,
+                            ano: roteiro.dados_roteiro?.ano || roteiro.ano || 2027
                           })} className="text-blue-600 hover:text-blue-900 flex items-center gap-1 text-xs font-medium cursor-pointer">
-                            <Edit className="w-3.5 h-3.5" /> Carregar
+                            <Edit className="w-3.5 h-3.5" /> Mapa/Cards
                           </button>
                           <button onClick={() => handleDelete(roteiro.id, roteiro.consultor)} className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs font-medium cursor-pointer">
                             <Trash2 className="w-3.5 h-3.5" /> Apagar
@@ -538,50 +408,20 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
             </table>
           </div>
         )}
-
-        {/* Modal de Detalhes dos Apontamentos da Validação */}
-        {modalValidacaoData && (
-          <ModalApontamentosValidacao
-            validacao={modalValidacaoData}
-            onClose={() => setModalValidacaoData(null)}
-            onDecisaoSalva={(atualizada) => {
-              setValidacoes(prev => prev.map(v => v.id === atualizada.id ? atualizada : v));
-              setModalValidacaoData(atualizada);
-            }}
-            onAplicarAjustes={(roteiroComAjustes) => {
-              // Carrega o roteiro original deste consultor no editor, aplicando os apontamentos
-              const rotOriginal = rots.find((r: RoteiroSalvo) => r.consultor === roteiroComAjustes.consultor);
-              if (rotOriginal && onEdit) {
-                const dadosOriginais = rotOriginal.dados_roteiro || {};
-                onEdit({
-                  ...dadosOriginais,
-                  consultor: rotOriginal.consultor,
-                  mes: rotOriginal.mes || dadosOriginais.mes || 11,
-                  ano: rotOriginal.ano || dadosOriginais.ano || 2026,
-                  cenario: `Pós Validação (${roteiroComAjustes.consultor.split(' ')[0]})`,
-                  roteiro: roteiroComAjustes.roteiro,
-                  validacaoOrigem: roteiroComAjustes
-                });
-              }
-            }}
-          />
-        )}
       </div>
     );
   }
-
-
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold flex items-center gap-2">
-            <FileText className="w-5 h-5 text-blue-600" /> Versões de Roteiros
+            <FileText className="w-5 h-5 text-blue-600" /> Versões de Roteiros Salvas
           </h2>
-          <p className="text-xs text-gray-500 mt-1">Agrupe e compare diferentes cenários de planejamento.</p>
+          <p className="text-xs text-gray-500 mt-1">Abra qualquer versão diretamente na Planilha Online para validar, editar e baixar o Excel final.</p>
         </div>
-        <button onClick={fetchTudo} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50" title="Atualizar">
+        <button onClick={fetchTudo} className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer" title="Atualizar">
           <RefreshCw className="w-4 h-4" />
         </button>
       </div>
@@ -590,33 +430,33 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
         <div className="text-center py-16 text-gray-400">
           <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-25" />
           <p className="font-medium">Nenhum roteiro salvo ainda.</p>
-          <p className="text-sm mt-1">Gere um roteiro e clique em "Aprovar e Salvar".</p>
+          <p className="text-sm mt-1">Gere um roteiro e clique em &ldquo;Aprovar e Salvar&rdquo;.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {todasVersoesAgrupadas.map(versao => {
             const rots = versao.rots || [];
             const kmTotal = calcKmTotal(rots);
-            const custoTotal = calcCustoTotal(rots);
+            const visitasTotal = rots.reduce((acc: number, r: RoteiroSalvo) => acc + calcVisitasRoteiro(r), 0);
             const isLegado = versao.id === 'v0-legado';
             const isSemVersao = versao.id === 'sem-versao';
 
             if (isSemVersao && rots.length === 0) return null;
 
             return (
-              <div key={versao.id} className={`group relative border rounded-2xl p-5 hover:shadow-md transition-all cursor-pointer bg-white ${
-                isSemVersao ? 'border-dashed border-orange-200 hover:border-orange-400' : 'border-gray-200 hover:border-blue-400'
+              <div key={versao.id} className={`group relative border rounded-xl p-5 hover:shadow-md transition-all cursor-pointer bg-white ${
+                isSemVersao ? 'border-dashed border-orange-200 hover:border-orange-400' : 'border-gray-200 hover:border-[#1428A0]'
               }`} onClick={() => { setVersaoAtiva(versao.id); setSelectedIds(new Set()); }}>
                 {isLegado && <span className="absolute top-3 right-3 text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">Legado</span>}
                 {isSemVersao && <span className="absolute top-3 right-3 text-xs px-2 py-0.5 bg-orange-100 text-orange-700 rounded-full font-medium">Não Organizado</span>}
 
                 <div className="flex items-start gap-3 mb-4">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isLegado ? 'bg-amber-100' : isSemVersao ? 'bg-orange-100' : 'bg-blue-100'}`}>
-                    {isSemVersao ? <AlertCircle className="w-5 h-5 text-orange-600" /> : <Tag className={`w-5 h-5 ${isLegado ? 'text-amber-600' : 'text-blue-600'}`} />}
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isLegado ? 'bg-amber-100' : isSemVersao ? 'bg-orange-100' : 'bg-blue-100'}`}>
+                    {isSemVersao ? <AlertCircle className="w-5 h-5 text-orange-600" /> : <Tag className={`w-5 h-5 ${isLegado ? 'text-amber-600' : 'text-[#1428A0]'}`} />}
                   </div>
-                  <div className="min-w-0 flex-1 pr-12">
-                    <h3 className="font-bold text-gray-900 text-sm leading-tight truncate">{versao.nome}</h3>
-                    {versao.descricao && <p className="text-xs text-gray-400 mt-0.5 truncate">{versao.descricao}</p>}
+                  <div className="min-w-0 flex-1 pr-8">
+                    <h3 className="font-bold text-gray-900 text-sm leading-tight truncate" title={versao.nome}>{versao.nome}</h3>
+                    {versao.descricao && <p className="text-xs text-gray-500 mt-0.5 truncate">{versao.descricao}</p>}
                     <p className="text-xs text-gray-400 mt-1 flex items-center gap-1"><Clock className="w-3 h-3" />{new Date(versao.created_at).toLocaleDateString('pt-BR')}</p>
                   </div>
                 </div>
@@ -624,27 +464,46 @@ export default function RoteirosSalvos({ onEdit, onViewConsolidated }: {
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   <div className="text-center bg-gray-50 rounded-lg py-2">
                     <p className="text-xl font-bold text-gray-800">{rots.length}</p>
-                    <p className="text-[10px] text-gray-500 leading-tight">Roteiros</p>
+                    <p className="text-[10px] text-gray-500 leading-tight">Consultores</p>
+                  </div>
+                  <div className="text-center bg-gray-50 rounded-lg py-2">
+                    <p className="text-sm font-bold text-gray-800">{visitasTotal}</p>
+                    <p className="text-[10px] text-gray-500 leading-tight">Visitas</p>
                   </div>
                   <div className="text-center bg-gray-50 rounded-lg py-2">
                     <p className="text-sm font-bold text-gray-800">{kmTotal > 0 ? `${(kmTotal / 1000).toFixed(1)}k` : '—'}</p>
-                    <p className="text-[10px] text-gray-500 leading-tight">KM</p>
-                  </div>
-                  <div className="text-center bg-gray-50 rounded-lg py-2">
-                    <p className="text-sm font-bold text-gray-800">{custoTotal > 0 ? `R$${(custoTotal / 1000).toFixed(1)}k` : '—'}</p>
-                    <p className="text-[10px] text-gray-500 leading-tight">Custo</p>
+                    <p className="text-[10px] text-gray-500 leading-tight">KM Est.</p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all ${isSemVersao ? 'text-orange-600' : 'text-blue-600'}`}>
-                    {isSemVersao ? 'Ver e organizar' : 'Ver detalhes'} <ChevronRight className="w-3.5 h-3.5" />
-                  </span>
-                  {!isLegado && !isSemVersao && (
-                    <button onClick={e => { e.stopPropagation(); handleDeleteVersao(versao.id, versao.nome); }} disabled={deletingVersaoId === versao.id} className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-600 p-1">
-                      {deletingVersaoId === versao.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
+                  {onOpenSpreadsheet && rots.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={e => {
+                        e.stopPropagation();
+                        onOpenSpreadsheet(versao.id);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1428A0] hover:bg-blue-900 text-white text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      <FileSpreadsheet className="w-3.5 h-3.5" /> Planilha Online
                     </button>
+                  ) : (
+                    <span className="text-xs font-medium text-blue-600 flex items-center gap-1">
+                      Ver detalhes <ChevronRight className="w-3.5 h-3.5" />
+                    </span>
                   )}
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-gray-500 hover:text-gray-900 flex items-center gap-0.5">
+                      Detalhes <ChevronRight className="w-3.5 h-3.5" />
+                    </span>
+                    {!isLegado && !isSemVersao && (
+                      <button onClick={e => { e.stopPropagation(); handleDeleteVersao(versao.id, versao.nome); }} disabled={deletingVersaoId === versao.id} className="opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-600 p-1 cursor-pointer">
+                        {deletingVersaoId === versao.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );

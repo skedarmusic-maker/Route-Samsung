@@ -14,6 +14,7 @@ import { calcularCustoRealEstimado } from '@/lib/calculoCustoReal';
 import benchmark360 from '@/lib/benchmark_custos_real_360.json';
 
 const MES_MAP: Record<string, string> = {
+  '10': 'Outubro',
   '09': 'Setembro',
   '08': 'Agosto',
   '07': 'Julho',

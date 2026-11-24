@@ -36,6 +36,7 @@ interface ConsolidatedDashboardProps {
 }
 
 const MES_OPCOES = [
+  { id: '10', label: 'Outubro/2026 (Vexpenses Aprovado)', short: 'Out/26' },
   { id: '09', label: 'Setembro/2026 (Vexpenses + QT380)', short: 'Set/26' },
   { id: '08', label: 'Agosto/2026 (Vexpenses)', short: 'Ago/26' },
   { id: '07', label: 'Julho/2026 (Vexpenses)', short: 'Jul/26' },
@@ -44,6 +45,20 @@ const MES_OPCOES = [
   { id: '04', label: 'Abril/2026', short: 'Abr/26' },
   { id: '03', label: 'Março/2026', short: 'Mar/26' },
 ];
+
+function matchesConsultor(nameA: string, nameB: string): boolean {
+  const aNorm = normalize(nameA);
+  const bNorm = normalize(nameB);
+  if (aNorm === bNorm) return true;
+  const aWords = aNorm.split(/\s+/).filter(Boolean);
+  const bWords = bNorm.split(/\s+/).filter(Boolean);
+  if (aWords.length === 0 || bWords.length === 0) return false;
+  if (aWords.length <= bWords.length) {
+    return aWords.every(w => bWords.includes(w));
+  } else {
+    return bWords.every(w => aWords.includes(w));
+  }
+}
 
 const ROTA_MAP: Record<string, string> = {
   "LIEDY AQUINO GOMES DOS SANTOS": "SPC1",
@@ -58,7 +73,7 @@ const ROTA_MAP: Record<string, string> = {
 };
 
 export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar, onSelectRoteiro }: ConsolidatedDashboardProps) {
-  const [mesComparacao, setMesComparacao] = useState<string>('09');
+  const [mesComparacao, setMesComparacao] = useState<string>('10');
   const [showModalDespesas, setShowModalDespesas] = useState<boolean>(false);
   const [selectedConsultorModal, setSelectedConsultorModal] = useState<string>('todos');
   const [searchTermModal, setSearchTermModal] = useState<string>('');
@@ -82,7 +97,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
       pastKMTotal += k;
       pastCostTotal += v;
 
-      if (consultoresAtivosNomes.includes(normalize(consultor))) {
+      if (consultoresAtivosNomes.some(cNome => matchesConsultor(cNome, consultor))) {
         pastKMActive += k;
         pastCostActive += v;
       }
@@ -309,9 +324,9 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
     const comparisonRows = Object.entries(stats.consultorStats)
       .sort((a, b) => b[1].km - a[1].km)
       .map(([nome, c]) => {
-        const roteiroOriginal = roteiros.find(r => normalize(r.consultor) === normalize(nome));
+        const roteiroOriginal = roteiros.find(r => matchesConsultor(r.consultor, nome));
         const mesData = (despesasHistoricasMeses as any)[mesComparacao] || {};
-        const hist = Object.entries(mesData).find(([k]) => normalize(k) === normalize(nome))?.[1] as any;
+        const hist = Object.entries(mesData).find(([k]) => matchesConsultor(k, nome))?.[1] as any;
         const kmHist = hist?.km || 0;
         const valorHist = hist?.valor || 0;
         const variacao = valorHist > 0 ? c.custo - valorHist : 0;
@@ -1150,9 +1165,9 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {Object.entries(stats.consultorStats).sort((a, b) => b[1].km - a[1].km).map(([nome, c]) => {
-                    const roteiroOriginal = roteiros.find(r => normalize(r.consultor) === normalize(nome));
+                    const roteiroOriginal = roteiros.find(r => matchesConsultor(r.consultor, nome));
                     const mesData = (despesasHistoricasMeses as any)[mesComparacao] || {};
-                    const hist = Object.entries(mesData).find(([k]) => normalize(k) === normalize(nome))?.[1] as any;
+                    const hist = Object.entries(mesData).find(([k]) => matchesConsultor(k, nome))?.[1] as any;
 
                     const kmHist = hist?.km || 0;
                     const valorHist = hist?.valor || 0;
@@ -1419,7 +1434,7 @@ export default function ConsolidatedDashboard({ roteiros, consultores, onVoltar,
                 if (selectedConsultorModal !== 'todos') {
                   const cStat = stats.consultorStats[selectedConsultorModal];
                   const histData = (despesasHistoricasMeses as any)[mesComparacao] || {};
-                  const hist = Object.entries(histData).find(([k]) => normalize(k) === normalize(selectedConsultorModal))?.[1] as any;
+                  const hist = Object.entries(histData).find(([k]) => matchesConsultor(k, selectedConsultorModal))?.[1] as any;
                   const histValor = hist?.valor || 0;
                   const histKm = hist?.km || 0;
                   const jpCusto = cStat?.custo || 0;

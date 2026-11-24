@@ -18,6 +18,20 @@ export const FERIADOS_CALENDARIO: Record<string, string> = {
   '2026-11-15': 'Feriado Nacional - Proclamação da República',
   '2026-11-20': 'Feriado Nacional - Dia da Consciência Negra',
   '2026-12-25': 'Feriado Nacional - Natal',
+  // 2027
+  '2027-01-01': 'Feriado Nacional - Confraternização Universal',
+  '2027-02-08': 'Carnaval',
+  '2027-02-09': 'Carnaval',
+  '2027-03-26': 'Feriado Nacional - Sexta-feira Santa',
+  '2027-04-21': 'Feriado Nacional - Tiradentes',
+  '2027-05-01': 'Feriado Nacional - Dia do Trabalho',
+  '2027-05-27': 'Feriado Nacional - Corpus Christi',
+  '2027-09-07': 'Feriado Nacional - Independência do Brasil',
+  '2027-10-12': 'Feriado Nacional - Nossa Senhora Aparecida',
+  '2027-11-02': 'Feriado Nacional - Finados',
+  '2027-11-15': 'Feriado Nacional - Proclamação da República',
+  '2027-11-20': 'Feriado Nacional - Dia da Consciência Negra',
+  '2027-12-25': 'Feriado Nacional - Natal',
 };
 
 export function getFeriadoNome(data: string, feriadoExistente?: any): string | null {

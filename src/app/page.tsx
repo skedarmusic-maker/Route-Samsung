@@ -9,10 +9,11 @@ import dynamic from 'next/dynamic';
 import {
   Calendar, Map as MapLucide, CheckCircle, Users, Loader2, AlertCircle,
   Clock, MapPin, Building2, Tag, Plane, ArrowLeft, Navigation, Save, Download,
-  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe, Hotel, Car, Send
+  Activity, TrendingUp, TrendingDown, CheckSquare, Trash2, PlusCircle, Search, Globe, Hotel, Car, Send, FileSpreadsheet
 } from 'lucide-react';
 import SugestaoJourney from '@/components/SugestaoJourney';
 import RoteirosSalvos from '@/components/RoteirosSalvos';
+import SpreadsheetEditor from '@/components/SpreadsheetEditor';
 import DashboardIntel from '@/components/DashboardIntel';
 import EfficiencyAnalysis from '@/components/EfficiencyAnalysis';
 import ConsolidatedDashboard from '@/components/ConsolidatedDashboard';
@@ -812,7 +813,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
   }, [resultado]);
 
   const [viewMode, setViewMode] = useState<'visualizacao' | 'eficiencia'>('visualizacao');
-  const [mesComparacao, setMesComparacao] = useState<string>('09');
+  const [mesComparacao, setMesComparacao] = useState<string>('10');
   const [isSaving, setIsSaving] = useState(false);
   const [showVersionModal, setShowVersionModal] = useState(false);
 
@@ -1379,6 +1380,7 @@ function PreviewRoteiro({ resultado, consultorInfo, lojasBase, initialCenario, o
             onChange={(e) => setMesComparacao(e.target.value)}
             className="px-3 py-1.5 bg-white border border-gray-300 rounded-xl text-xs font-bold text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
+            <option value="10">Outubro/2026 (Vexpenses Aprovado)</option>
             <option value="09">Setembro/2026 (Vexpenses + QT380)</option>
             <option value="08">Agosto/2026 (Vexpenses)</option>
             <option value="07">Julho/2026 (Vexpenses)</option>
@@ -1920,6 +1922,7 @@ export default function ConfigurationPanel() {
   const [resultado, setResultado] = useState<any>(null);
   const [consultorInfo, setConsultorInfo] = useState<ConsultorLocal | undefined>(undefined);
   const [consolidatedRoutes, setConsolidatedRoutes] = useState<any[] | null>(null);
+  const [spreadsheetMode, setSpreadsheetMode] = useState<{ open: boolean; versaoId?: string | null }>({ open: false, versaoId: null });
 
   const [selectedConsultor, setSelectedConsultor] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
@@ -2335,6 +2338,16 @@ export default function ConfigurationPanel() {
     );
   }
 
+  // Mostrar Planilha Interativa Online (Estilo Excel)
+  if (spreadsheetMode.open) {
+    return (
+      <SpreadsheetEditor
+        initialVersaoId={spreadsheetMode.versaoId}
+        onBack={() => setSpreadsheetMode({ open: false, versaoId: null })}
+      />
+    );
+  }
+
   // Mostrar prévia se roteiro foi gerado
   if (resultado) {
     return <PreviewRoteiro resultado={resultado} consultorInfo={consultorInfo} lojasBase={lojas} initialCenario={cenarioNome} onVoltar={() => setResultado(null)} />;
@@ -2369,6 +2382,30 @@ export default function ConfigurationPanel() {
       <div className="flex gap-0 max-w-[1400px] mx-auto">
         {/* ── Coluna Esquerda: Formulário ── */}
         <div className="flex-1 min-w-0 p-6 space-y-6">
+
+          {/* Barra Executiva de Acesso Rápido à Planilha Online */}
+          <div className="bg-slate-900 text-white p-4 border-l-4 border-[#1428A0] shadow-sm flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#1428A0] flex items-center justify-center shrink-0">
+                <FileSpreadsheet className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-sm font-black uppercase tracking-wider">
+                  Validação & Edição em Planilha Online (Estilo Excel)
+                </h2>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  Faça ajustes pontuais de lojas, datas e horários com validação automática de regras e baixe o Excel final em 1 clique.
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSpreadsheetMode({ open: true, versaoId: 'v-janeiro-2027-v1' })}
+              className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black uppercase tracking-wider transition-all cursor-pointer shadow-sm"
+            >
+              Abrir Planilha Online →
+            </button>
+          </div>
 
           {error && (
             <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
@@ -2829,11 +2866,12 @@ export default function ConfigurationPanel() {
                 setResultado({
                   ...dados,
                   consultor: cNome,
-                  mes: dados?.mes || 11,
-                  ano: dados?.ano || 2026
+                  mes: dados?.mes || 1,
+                  ano: dados?.ano || 2027
                 });
               }} 
               onViewConsolidated={(roteiros) => setConsolidatedRoutes(roteiros)}
+              onOpenSpreadsheet={(versaoId) => setSpreadsheetMode({ open: true, versaoId })}
             />
           </div>
         </div>
