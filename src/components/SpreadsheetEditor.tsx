@@ -271,13 +271,26 @@ export default function SpreadsheetEditor({
         .from('roteiros')
         .select('*')
         .eq('versao_id', versaoId)
-        .order('consultor');
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setRawRoteiros(rots || []);
+
+      // Deduplicação defensiva por consultor para evitar linhas duplicadas se houver registros legados no banco
+      const seenConsultores = new Set<string>();
+      const dedupedRots: any[] = [];
+      (rots || []).forEach((rot: any) => {
+        const cKey = (rot.consultor || rot.dados_roteiro?.consultor || '').trim().toUpperCase();
+        if (cKey && !seenConsultores.has(cKey)) {
+          seenConsultores.add(cKey);
+          dedupedRots.push(rot);
+        }
+      });
+      dedupedRots.sort((a, b) => (a.consultor || '').localeCompare(b.consultor || ''));
+
+      setRawRoteiros(dedupedRots);
 
       const flatRows: SheetRow[] = [];
-      (rots || []).forEach((rot: any) => {
+      dedupedRots.forEach((rot: any) => {
         const consultor = rot.consultor || rot.dados_roteiro?.consultor || '';
         const rotaPadrao =
           rot.dados_roteiro?.rota ||
