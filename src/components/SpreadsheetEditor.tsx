@@ -413,6 +413,11 @@ export default function SpreadsheetEditor({
         issues.push({ level: 'error', label: 'PROIBIDO: DUFRIO/UNIAR' });
       }
 
+      // 1b. HAVAN permitida apenas para Márcio
+      if (!consNorm.includes('marcio') && upperAll.includes('HAVAN')) {
+        issues.push({ level: 'error', label: 'PROIBIDO: HAVAN (SÓ MÁRCIO)' });
+      }
+
       // 2. Rodízio SP na quarta-feira (Liedy)
       if (consNorm.includes('liedy') && diaNorm.includes('quarta') && cidNorm === 'sao paulo') {
         issues.push({ level: 'error', label: 'RODÍZIO SP (Quarta)' });
